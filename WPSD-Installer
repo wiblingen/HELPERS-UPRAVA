@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+if [[ ${SUPP_COL} -eq 0 ]]; then
+    COL_NC='\e[0m' # No Color
+    BOLD='\e[1m'
+    REVERSE='\e[7m'
+    COL_LIGHT_GREEN='\e[1;32m'
+    COL_BRIGHT_GREEN='\e[1;92m'
+    COL_LIGHT_RED='\e[31m'
+    COL_BRIGHT_RED='\e[1;31m'
+    COL_LIGHT_CYAN='\e[1;36m'
+    COL_REG_CYAN='\e[38;5;30m'
+    COL_REG_ORANGE='\e[38;5;173m'
+    COL_LIGHT_BLUE='\e[1;46m'
+    COL_LIGHT_MAGENTA='\e[1;35m'
+    COL_LIGHT_YELLOW='\e[1;93m'
+    COL_REG_YELLOW='\e[93m'
+    INFO="${BOLD}[i]${COL_NC}"
+    NOTE="${BOLD}[${COL_LIGHT_YELLOW}!${COL_NC}]"
+    TICK="${BOLD}[${COL_LIGHT_GREEN}✓${COL_NC}]"
+    CROSS="${BOLD}[${COL_BRIGHT_RED}✗${COL_NC}]"
+    DONE="${BOLD}${COL_LIGHT_GREEN}Done!${COL_NC}"
+else
+    INFO="[i]"
+    NOTE="[!]"
+    TICK="[✓]"
+    CROSS="[✗]"
+    DONE="Done!"
+fi
+
+clear
+echo ""
+echo -e "\n${CROSS} ${COL_BRIGHT_RED}ERROR:${COL_NC} You can no longer install WPSD over existing/older Pi-Star installations."
+echo -e "    If you'd like to install WPSD, you will need to install it using a WPSD disk image:"
+echo -e "    https://wpsd.radio/\n"
+echo ""

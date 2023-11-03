@@ -1,0 +1,499 @@
+#!/usr/bin/env bash
+
+#  +-------------------------------------------------------------------------------------------+
+#  | by Chip Cuccio (W0CHP)                                                                    |
+#  |   <https://w0chp.net/w0chp-pistar-dash/>                                                  |
+#  | This progam is distributed under the GNU GPL;                                             |
+#  | https://wpsd-swd.w0chp.net/WPSD-SWD/W0CHP-PiStar-Installer/src/branch/master/LICENSE      |
+#  +-------------------------------------------------------------------------------------------+
+
+# privilege check
+if [ "$(id -u)" != "0" ]; then
+    echo -e "You need to be root to run this command!\n"
+    exit 1
+fi
+
+# common vars
+SUPPORTING_FILES_REPO="https://wpsd-swd.w0chp.net/WPSD-SWD/W0CHP-PiStar-Installer/raw/branch/master/supporting-files"
+PS_SERVICES_SCRIPT="https://wpsd-swd.w0chp.net/WPSD-SWD/W0CHP-PiStar-sbin/raw/branch/master/pistar-services"
+OFFICIAL_DASH_REPO="https://github.com/AndyTaylorTweet/Pi-Star_DV_Dash.git"
+OFFICIAL_SBIN_REPO="https://github.com/AndyTaylorTweet/Pi-Star_Binaries_sbin.git"
+OFFICIAL_BIN_REPO="https://github.com/AndyTaylorTweet/Pi-Star_v4_Binaries_Bin.git"
+# don't fuck with this unless you're brave and adept at troubleshooting
+if [ -z ${W0CHP_DASH_BRANCH} ]; then
+    W0CHP_DASH_BRANCH="master"
+fi
+# internal vars. no need to fuck with these
+UPDATE_SELF=${UPDATE_SELF:-1}
+UPDATE_URI="${W0CHP_INSTALL_SCRIPT_REPO}"
+ROOT_PATH=${ROOT_PATH:-"/"}
+WORK_PATH=${WORK_PATH:-"${ROOT_PATH}/root"}
+SELFUPDATE_SCRIPT="${WORK_PATH}/.updateScript-WPSD.sh"
+SUPPORTED_MAJOR="4"
+SUPPORTED_MIN_MIN="6"
+ALL_ARGS="$@"
+installedDashBranch=$(git --work-tree=/var/www/dashboard --git-dir=/var/www/dashboard/.git symbolic-ref --short HEAD)
+osName=$( lsb_release -cs )
+
+if [[ ${SUPP_COL} -eq 0 ]]; then
+    COL_NC='\e[0m' # No Color
+    BOLD='\e[1m'
+    REVERSE='\e[7m'
+    COL_LIGHT_GREEN='\e[1;32m'
+    COL_BRIGHT_GREEN='\e[1;92m'
+    COL_LIGHT_RED='\e[31m'
+    COL_BRIGHT_RED='\e[1;31m'
+    COL_LIGHT_CYAN='\e[1;36m'
+    COL_REG_CYAN='\e[38;5;30m'
+    COL_REG_ORANGE='\e[38;5;173m'
+    COL_LIGHT_BLUE='\e[1;46m'
+    COL_LIGHT_MAGENTA='\e[1;35m'
+    COL_LIGHT_YELLOW='\e[1;93m'
+    COL_REG_YELLOW='\e[93m'
+    INFO="${BOLD}[i]${COL_NC}"
+    NOTE="${BOLD}[${COL_LIGHT_YELLOW}!${COL_NC}]"
+    TICK="${BOLD}[${COL_LIGHT_GREEN}✓${COL_NC}]"
+    CROSS="${BOLD}[${COL_BRIGHT_RED}✗${COL_NC}]"
+    DONE="${BOLD}${COL_LIGHT_GREEN}Done!${COL_NC}"
+else
+    INFO="[i]"
+    NOTE="[!]"
+    TICK="[✓]"
+    CROSS="[✗]"
+    DONE="Done!"
+fi
+
+# check if already running W0CHP and set result in var.
+if grep W0CHP /var/www/dashboard/config/version.php > /dev/null 2>/dev/null ; then
+    RUNNING_W0CHP=1
+fi
+
+function _rw() {
+    # Prevent the FS to be remounted as RO
+    systemctl stop cron.service > /dev/null 2>/dev/null &
+    mount -o remount,rw /
+}
+
+function _ro() {
+    sync
+    mount -o remount,ro / > /dev/null 2<&1
+    systemctl start cron.service > /dev/null 2>/dev/null &
+}
+
+function WaitForUnattendedUpgrade() {
+    /usr/bin/systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true > /dev/null 2<&1
+}
+
+function SaveConfigs () {
+    cp -a /etc /tmp > /dev/null 2>/dev/null
+}
+
+function RestoreConfigs () {
+    cp -a /tmp/etc / > /dev/null 2>/dev/null
+    rm -rf /tmp/etc > /dev/null 2>/dev/null
+    sed -i '/vnstat/d' /etc/fstab 2>/dev/null
+    sed -i '/-RMB//g' /etc/pistar-release 2>/dev/null
+    /usr/local/sbin/pistar-services start > /dev/null 2<&1 &
+}
+
+# $1 directory
+# $2 repo
+function ChangeAndCheckoutRepo() {
+    # ensure repos can be updated
+    if ! grep -q 'safe' /root/.gitconfig > /dev/null 2<&1 ; then
+	git config --global --add safe.directory /var/www/dashboard > /dev/null 2<&1
+	git config --global --add safe.directory /usr/local/bin > /dev/null 2<&1
+	git config --global --add safe.directory /usr/local/sbin > /dev/null 2<&1
+    fi
+    dir="$1"
+    repo="$2"
+    if [[ $dir == "/var/www/dashboard" ]] ; then
+	AppSec="Web Dashboard Software"
+    fi
+    if [[ $dir == "/usr/local/bin" ]] ; then
+	AppSec="Digital Voice and Related Binaries"
+    fi
+    if [[ $dir == "/usr/local/sbin" ]] ; then
+	AppSec="Scripts and Support Programs"
+    fi
+    echo -e "${INFO} Retrieving files (${AppSec}) from git repository..."
+    echo -e "    * Git repo: ${repo}"
+    echo -e "    * Installing ${AppSec} into: \"${dir}\""
+    cd "$1"
+    cp -a  /var/www/dashboard/config/{config.php,ircddblocal.php,language.php} /tmp/ # save user config files.
+    git reset --hard > /dev/null # need this for initial install, since two/three php config files are over-written when user applies config
+    git remote add newrepo "$repo" > /dev/null 2<&1
+    git fetch -q newrepo > /dev/null 2<&1
+    git remote remove origin > /dev/null
+    git remote rename newrepo origin > /dev/null
+    # special case for buster vs. bullseye bins:
+    if [ "${osName}" = "buster" ]; then
+	#branch="buster" # sunsetting
+	branch="master"
+    else
+	branch="master"
+    fi
+    if [[ $dir == "/usr/local/bin" ]] ; then
+	git checkout -q "${branch}" > /dev/null 2<&1
+        git reset --hard origin/"$branch" > /dev/null 2<&1
+    fi
+    git reset --hard origin/master > /dev/null
+    mv /tmp/{config.php,ircddblocal.php,language.php} /var/www/dashboard/config/ # move back the user config files
+    git stash > /dev/null 2<&1 # stash user config files in local repo
+    git checkout stash@{0} -- config/config.php config/ircddblocal.php config/language.php > /dev/null 2<&1 #restore config  from stash
+    git stash clear > /dev/null 2<&1 # housekeeping
+    echo -e "    ${TICK} ${DONE}\n"
+}
+
+function ApplyConfigs() {
+    _rw
+    sleep 5
+    _rw
+    # temp allow localhost to submit config form without auth to enter new configs
+    sed -i '/try_files/i satisfy any;' /etc/nginx/sites-enabled/pi-star
+    sed -i '/satisfy any/a allow 127.0.0.1;' /etc/nginx/sites-enabled/pi-star
+    sed -i '/allow 127.0.0.1/a deny all;' /etc/nginx/sites-enabled/pi-star
+    systemctl restart nginx > /dev/null 2<&1
+    sleep 5
+    _rw
+    sleep 5
+    _rw
+    # apply config/submit form
+    curl -s -X POST -F name=config http://127.0.0.1/admin/configure.php > /dev/null
+    curl -s http://127.0.0.1/admin/expert/edit_dashboard.php > /dev/null
+    sleep 5
+    _rw
+    sleep 5
+    _rw
+    # remove localhost auth bypass
+    sed -i '/satisfy any/d' /etc/nginx/sites-enabled/pi-star
+    sed -i '/allow 127.0.0.1/d' /etc/nginx/sites-enabled/pi-star
+    sed -i '/deny all/d' /etc/nginx/sites-enabled/pi-star
+    systemctl restart nginx > /dev/null 2<&1
+    sleep 3
+}
+
+function CleanStrayFiles() {
+    echo -e "${INFO} Cleaning up stray W0CHP-PiStar-Dash Files..."
+    if compgen -G "/usr/local/etc/BM_TGs.json*" > /dev/null; then
+        rm -r /usr/local/etc/BM_TGs.json*
+    fi
+    if compgen -G "/var/www/dashboard/.bm_tgs.json*" > /dev/null; then
+        rm -r /var/www/dashboard/.bm_tgs.json*
+    fi
+    if compgen -G "/usr/local/etc/tgif-talkgroups*" > /dev/null; then
+        rm -r /usr/local/etc/tgif-talkgroups*
+    fi
+    if compgen -G "/etc/.GETNAMES*" > /dev/null; then
+        rm -r /etc/.GETNAMES*
+    fi
+    if compgen -G "/etc/.CALLERDETAILS*" > /dev/null; then
+        rm -r /etc/.CALLERDETAILS*
+    fi
+    if compgen -G "/etc/.TGNAMES*" > /dev/null; then
+        rm -r /etc/.TGNAMES*
+    fi
+    if compgen -G "/etc/.W0CHP-PiStar-Dash.remote_version*" > /dev/null; then
+        rm -r /etc/.W0CHP-PiStar-Dash.remote_version*
+    fi
+    if compgen -G "/usr/local/bin/README.md*" > /dev/null; then
+        rm -r /usr/local/bin/README.md*
+    fi
+    if compgen -G "/usr/sbin/WPSD-Installer*" > /dev/null; then
+	rm -r /usr/sbin/WPSD-Installer*
+    fi
+    if compgen -G "/etc/tinyfilemanager-*" > /dev/null; then
+        rm -r /etc/tinyfilemanager-*
+    fi
+    # remove mmdvmhost log backup services
+    rm -rf /etc/systemd/system/default.target.wants/mmdvm-log-restore.service \
+	/etc/systemd/system/multi-user.target.wants/mmdvm-log-backup.service \
+	/etc/systemd/system/shutdown.target.wants/mmdvm-log-shutdown.service \
+	/etc/systemd/system/timers.target.wants/mmdvm-log-backup.timer \
+	/lib/systemd/system/mmdvm-log-backup.service \
+	/lib/systemd/system/mmdvm-log-backup.timer \
+	/lib/systemd/system/mmdvm-log-restore.service \
+	/lib/systemd/system/mmdvm-log-shutdown.service
+    systemctl daemon-reload > /dev/null 2<&1 
+    if [ -d '/home/pi-star/.backup-mmdvmhost-logs' ]; then
+	rm -rf /home/pi-star/.backup-mmdvmhost-logs
+    fi
+
+    echo -e "    ${TICK} ${DONE}\n"
+}
+
+function BullseyeChk () {
+    lsb_release -cs | grep 'bullseye' &> /dev/null # if this is my bullseye image, there's nothing to "restore"...
+    if [ $? == 0 ]; then
+	if [[ ${FORCE_RD} -ne 1 ]]; then
+	    echo -e "\n${NOTE} You are running the custom Bullseye-based W0CHP-PiStar-Dash disk image...there is nothing to restore!\n"
+	    exit 1
+	fi
+    fi
+}
+
+function RestoreDashboard() {
+    curl -Ls $PS_SERVICES_SCRIPT -o /tmp/pistar-services > /dev/null
+    chmod +x /tmp/pistar-services
+    echo -e "${INFO} Stopping services. Please wait..."
+    /tmp/pistar-services fullstop > /dev/null 2<&1
+    WaitForUnattendedUpgrade
+    sleep 1
+    # remove m17gw unit files
+    /usr/local/sbin/m17gateway.service uninstall > /dev/null 2<&1
+    # Revert MobileGPS
+    systemctl disable mobilegps.timer > /dev/null 2<&1
+    if [ ! -f "/etc/mobilegps" ]; then
+        curl -Ls  $SUPPORTING_FILES_REPO/mobilegps -o /etc/mobilegps > /dev/null
+        chown -R www-data:www-data /etc/mobilegps
+    fi
+    rm -f /lib/systemd/system/mobilegps.timer
+    echo '[Unit]' > /lib/systemd/system/mobilegps.service
+    echo 'Description=Pi-Star MobileGPS Service' >> /lib/systemd/system/mobilegps.service
+    echo 'After=syslog.target network.target' >> /lib/systemd/system/mobilegps.service
+    echo '' >> /lib/systemd/system/mobilegps.service
+    echo '[Service]' >> /lib/systemd/system/mobilegps.service
+    echo 'Type=forking' >> /lib/systemd/system/mobilegps.service
+    echo 'ExecStart=/usr/local/sbin/mobilegps.service start' >> /lib/systemd/system/mobilegps.service
+    echo 'ExecStop=/usr/local/sbin/mobilegps.service stop' >> /lib/systemd/system/mobilegps.service
+    echo 'ExecReload=/usr/local/sbin/mobilegps.service restart' >> /lib/systemd/system/mobilegps.service
+    echo '' >> /lib/systemd/system/mobilegps.service
+    echo '[Install]' >> /lib/systemd/system/mobilegps.service
+    echo 'WantedBy=multi-user.target' >> /lib/systemd/system/mobilegps.service
+    # Enable the service
+    systemctl daemon-reload > /dev/null 2<&1
+    systemctl enable mobilegps.service > /dev/null 2<&1
+    echo -e "    ${TICK} ${DONE}"
+    echo -e ""
+
+    # Remove pistar-service bash completion
+    rm -f /usr/share/bash-completion/completions/pistar-services
+
+    ChangeAndCheckoutRepo "/var/www/dashboard" "$OFFICIAL_DASH_REPO"
+    ChangeAndCheckoutRepo "/usr/local/sbin" "$OFFICIAL_SBIN_REPO"
+    ChangeAndCheckoutRepo "/usr/local/bin" "$OFFICIAL_BIN_REPO"
+
+    # orig motd:
+    /usr/local/sbin/pistar-motdgen
+
+    # more cleanup
+    sed -i '/cache modem info/d' /etc/rc.local
+    sed -i '/pistar-modemcache/d' /etc/rc.local
+    sed -i '/pistar-hwcache/d' /etc/rc.local
+    systemctl stop vnstat.service > /dev/null
+    echo -e "${INFO} Removing packages specific to W0CHP-PiStar-Dash, which"
+    echo -e "    are no longer required.\n    This will take some time..."
+    apt-get -qq purge -y jq libgps-dev gpsd vnstat systemd-timesyncd > /dev/null 2<&1
+    apt-get -qq autoremove -y > /dev/null 2<&1
+    apt-get -qq install -y ntp > /dev/null 2>&1
+    umount /var/lib/vnstat > /dev/null 2<&1
+    rm -rf /var/lib/vnstat > /dev/null 2<&1
+    sed -i '/vnstat/d' /etc/fstab
+    echo -e "    ${TICK} ${DONE}"
+
+    # re-init stock Pi-Star FW:
+    echo -e "\n${INFO} Reinitializing firewall..."
+    /usr/local/sbin/pistar-firewall > /dev/null 2<&1
+    echo -e "    ${TICK} ${DONE}\n"
+
+    # Put platformDetect.sh and orig/official bins back..
+    cd /usr/local/bin
+    git stash clear > /dev/null 2<&1 # housekeeping
+    git --work-tree=/usr/local/bin --git-dir=/usr/local/bin/.git reset --hard > /dev/null
+
+    echo -e "${INFO} Reverting all Original Pi-Star Services."
+    echo -e "    Be patient! This will take some time..."
+    # Enable unattended-upgrades
+    if  systemctl status unattended-upgrades.service | grep masked > /dev/null 2<&1 ; then
+	systemctl unmask unattended-upgrades > /dev/null 2<&1
+	LC_ALL=C systemctl enable unattended-upgrades > /dev/null 2<&1
+    fi
+    # Enable SAMBA
+    systemctl unmask smbd > /dev/null 2<&1
+    systemctl unmask nmbd > /dev/null 2<&1
+    LC_ALL=C systemctl enable smbd > /dev/null 2<&1
+    LC_ALL=C systemctl enable nmbd > /dev/null 2<&1
+    # revert stock avahi config
+    rm -rf /etc/avahi/services/
+    mv /etc/avahi/avahi-daemon.conf.dist /etc/avahi/avahi-daemon.conf > /dev/null 2<&1
+    systemctl restart avahi-daemon > /dev/null 2<&1
+    /bin/bash /usr/local/sbin/HostFilesUpdate.sh  > /dev/null 2<&1
+    if [[ ${NO_AC} -ne 1 ]]; then
+        ApplyConfigs
+    fi
+    # restart WPSD services once more
+    /tmp/pistar-services restart > /dev/null 2<&1
+    if [ -f "/tmp/pistar-services" ] ; then
+        rm /tmp/pistar-services
+    fi
+    echo -e "    ${TICK} ${DONE}\n"
+    # remove custon "Name:" field from MMDVMHost logs:
+    sed -i 's/- Name:.*//g' /var/log/pi-star/MMDVM-*.log  > /dev/null 2<&1
+}
+
+function UpdateSelf() {
+    _rw
+    echo -e "\n${INFO} Performing self-update..."
+    conn_check
+    sleep 0.5
+    local _tempFileName="$0.tmp"
+
+    if ! eval curl -Ls --output "${_tempFileName}" "${UPDATE_URI}"; then
+        echo -e "${CROSS} ${COL_BRIGHT_RED}ERROR:${COL_NC} Failed to download update for installation script!"
+	echo -e "You may have disk or network issues."
+        exit 1
+    fi
+    
+    if [[ "$(tail -1 ${_tempFileName})" != '# end marker' ]]; then
+        echo -e "${CROSS} ${COL_BRIGHT_RED}ERROR:${COL_NC} Failed to download update for installation script!"
+        echo -e "Contents of file is not as expected; you may have disk or network issues."
+        exit 1
+    fi
+    
+    local OCTAL_MODE=$(stat -c '%a' "$0")
+    if ! chmod ${OCTAL_MODE} "${_tempFileName}" ; then
+        echo -e "${CROSS} ${COL_BRIGHT_RED}ERROR:${COL_NC} Error while trying to set mode on ${_tempFileName}"
+        exit 1
+    fi
+    
+    cat > "${SELFUPDATE_SCRIPT}" << EOF
+      	mount -o remount,rw /
+    	mount -o remount,rw /boot
+        if mv "${_tempFileName}" "$0"; then
+            rm -- "\$0"
+            systemctl restart cron.service > /dev/null 2>/dev/null &
+            exec env UPDATE_SELF=0 /usr/bin/env bash "$0" "$ALL_ARGS"
+        else
+            echo "ERROR: Self-Update & Execution Failed!"
+        fi
+EOF
+
+    echo -e "${TICK} Self-Update Successful; Relaunching..."
+    sleep 0.5
+    exec /usr/bin/env bash "${SELFUPDATE_SCRIPT}"
+}
+
+function DisplayConfigUpdate() {
+    echo -e "${COL_LIGHT_YELLOW} ************************ NOTICE *************************"
+    echo -e " *                                                       *"
+    echo -e " *   Now you need to refresh your hotspot webpage in     *"
+    echo -e " *         order to see the changes take effect.         *"
+    echo -e " *                                                       *"
+    echo -e " *********************************************************"
+    echo -e "${COL_NC}"
+}
+
+# $1 directory
+# $2 original repo
+function DisplayRepoStatus() {
+    dir="$1"
+
+    case $1 in
+	"/var/www/dashboard")
+	    TARGET="Web Dashboard Software"
+	    ;;
+	"/usr/local/sbin")
+	    TARGET="Scripts and Support Programs"
+	    ;;
+	"/usr/local/bin")
+	    TARGET="Digital Voice and Related Binaries"
+	    ;;
+    esac
+
+    repo=$(git --work-tree=${dir} --git-dir=${dir}/.git config --get remote.origin.url)
+    branch=$(git --work-tree=${dir} --git-dir=${dir}/.git symbolic-ref --short HEAD)
+    ver_cmd=$( git --work-tree=${dir} --git-dir=${dir}/.git rev-parse HEAD | tail -1 | awk '{ print substr($1,1,10) }' ) # last pipe to awk: converts long hash to 10 chars.
+    if [ "${branch}" != "master" ] ; then
+        echo -e "  $TARGET:\n\tOn the '${BOLD}${branch}${COL_NC}' branch; Ver. # ${COL_REG_YELLOW}${ver_cmd}${COL_NC}\n"
+    else
+        echo -e "  $TARGET:\n\tVer. # ${COL_REG_YELLOW}${ver_cmd}${COL_NC}\n"
+    fi
+}
+
+function DisplayStatus() {
+    if [[ $RUNNING_W0CHP ]] ; then 
+	echo -e "${COL_LIGHT_CYAN}W0CHP-PiStar-Dash${COL_NC} Version Status"
+	echo -e "--------------------------------"
+	DisplayRepoStatus "/var/www/dashboard"
+	DisplayRepoStatus "/usr/local/sbin"
+	DisplayRepoStatus "/usr/local/bin"
+    else
+	echo -e "${COL_REG_YELLOW}W0CHP-PiStar-Dash not installed${COL_NC}\n"
+    fi
+}
+
+
+function DisplayHelp() {
+    echo ""
+    echo -e "${INFO} ${COL_LIGHT_CYAN}W0CHP PiStar-Dash Installer Command Usage:${COL_NC}"
+    echo ""
+    echo "  -h,   --help                   :  Display this help text"
+    echo ""
+    echo "  -rd,  --restore-dashboard      :  Restore Original dashboard"
+    echo ""
+    echo "  -s,   --status                 :  Display version status/info"
+    echo ""
+}
+
+if [ $# -eq 0 ]; then
+    DisplayHelp
+    exit 1
+fi
+
+if [ -z "$NO_SELF_UPDATE" -a x"$NO_UPDATE_SELF" != "x1" ]; then
+    if [[ ${UPDATE_SELF} -ne 0 ]]; then
+        UpdateSelf
+    else
+        rm -f "${SELFUPDATE_SCRIPT}"
+    fi
+fi
+
+## Parse command line
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+	"-rd" | "--restore-dashboard")
+            clear
+	    BullseyeChk
+	    echo -e "\n${INFO} Restoring the original Pi-Star dashboard and files.\n    This will take some time...\n"
+	    _rw
+            SaveConfigs
+            _rw
+	    RestoreDashboard
+            _rw
+            RestoreConfigs
+            _rw
+	    CleanStrayFiles
+	    _rw
+	    if [ -f "/etc/pistar-css.ini" ]; then
+                rm -f /etc/pistar-css.ini
+            fi
+	    DisplayConfigUpdate
+	    _rw
+	    /usr/local/sbin/pistar-motdgen
+	    systemctl start cron.service > /dev/null 2>/dev/null &
+	    echo -e "${TICK} ${COL_LIGHT_GREEN}Official Pi-Star Dashboard and files restoration complete!${COL_NC}\n"
+	    shift
+	    ;;
+
+	"-s" | "--status")
+	    echo ""
+	    DisplayStatus
+	    shift
+	    ;;
+
+	"-h" | "--help")
+	    DisplayHelp
+	    shift
+	    ;;
+
+	*)
+	    DisplayHelp;
+	    exit 1
+	    ;;
+    esac
+done
+
+exit 0
+# end marker

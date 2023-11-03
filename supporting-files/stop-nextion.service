@@ -1,0 +1,12 @@
+[Unit]
+Description=Have systemd gracfully shutdown NextionDriver so the display updates the status
+DefaultDependencies=no
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/nextion-driver-term
+TimeoutStartSec=0
+
+[Install]
+WantedBy=shutdown.target

@@ -1,0 +1,6 @@
+Since Pi-Star uses an EOL OS and packages, I store the critical packages here for posterity.
+------
+
+sudo dpkg -i *.deb
+sudo apt-get -f install
+sudo dpkg --configure -a
