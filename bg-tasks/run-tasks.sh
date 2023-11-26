@@ -13,7 +13,7 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 
 # func to fix stuck updates
 if [ ! -f '/usr/local/sbin/wpsd-update' ]; then
-    curl -s -A "sbin-phix $uaStr"-Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
+    curl -s -A "sbin-phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
 fi
 
 # func to fixup sbin and stash any upnp service changes:
