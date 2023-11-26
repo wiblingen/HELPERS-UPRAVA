@@ -14,8 +14,9 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 
 # func to fixup sbin and stash any upnp service changes:
 gitFolder="/usr/local/sbin"
-git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git update-index --no-assume-unchanged pistar-upnp.service > /dev/null 2<&1
-git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git stash > /dev/null 2<&1
-env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="${uaStr}" git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git pull -q origin master &> /dev/null
-git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git checkout stash@{0} -- pistar-upnp.service > /dev/null 2<&1
-git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git stash clear > /dev/null 2<&1
+cd ${gitFolder}
+git update-index --no-assume-unchanged pistar-upnp.service > /dev/null 2<&1
+git stash > /dev/null 2<&1
+env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="${uaStr}" git pull -q origin master &> /dev/null
+git checkout stash@{0} -- pistar-upnp.service > /dev/null 2<&1
+git stash clear > /dev/null 2<&1
