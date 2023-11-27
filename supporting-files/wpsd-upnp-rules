@@ -10,9 +10,9 @@
 START_RULES=(
 
     ### these three rules managed by config page - NO NOT TOUCH/MODIFY/LOOK AT/THINK ABOUT
-    #"$DAEMON -u ${igdURL} -e ${hostVar}_SSH -a $ipVar 22 22 TCP > /dev/null 2>&1"
-    #"$DAEMON -u ${igdURL} -e ${hostVar}_Dashboard -a $ipVar 80 80 TCP > /dev/null 2>&1"
-    #"$DAEMON -u ${igdURL} -e ${hostVar}_ircDDBgwRemote -a $ipVar 10022 10022 UDP > /dev/null 2>&1"
+    #    "$DAEMON -u ${igdURL} -e ${hostVar}_SSH -a $ipVar 22 22 TCP > /dev/null 2>&1"
+    #    "$DAEMON -u ${igdURL} -e ${hostVar}_Dashboard -a $ipVar 80 80 TCP > /dev/null 2>&1"
+    #    "$DAEMON -u ${igdURL} -e ${hostVar}_ircDDBgwRemote -a $ipVar 10022 10022 UDP > /dev/null 2>&1"
 
     "$DAEMON -u ${igdURL} -e ${hostVar}_D-Plus1 -a $ipVar 20001 20001 UDP > /dev/null 2>&1"
     "$DAEMON -u ${igdURL} -e ${hostVar}_D-Plus2 -a $ipVar 20002 20002 UDP > /dev/null 2>&1"
