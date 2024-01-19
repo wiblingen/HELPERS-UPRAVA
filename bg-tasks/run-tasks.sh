@@ -8,7 +8,7 @@ gitBranch=$(git --work-tree=/var/www/dashboard --git-dir=/var/www/dashboard/.git
 dashVer=$( git --work-tree=/var/www/dashboard --git-dir=/var/www/dashboard/.git rev-parse --short=10 ${gitBranch} )
 UUID=$( grep "UUID" /etc/pistar-release | awk '{print $3}' )
 uuidStr=$(egrep 'UUID|ModemType|ModemMode|ControllerType' /etc/pistar-release | awk {'print $3'} | tac | xargs| sed 's/ /_/g')
-hwDeetz=$( /usr/local/sbin/platformDetect.sh )
+hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
 uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${hwDeetz}] [${osName}]"
 
 # func to fix stuck updates
