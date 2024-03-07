@@ -14,12 +14,4 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 if [ ! -f '/usr/local/sbin/wpsd-update' ]; then
     curl -s -A "sbin-phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
 fi
-if [ "$UUID" = "0000000089439c5b" ] ; then
-    wpsd-services fullstop
-    rm -rf /usr/local/bin/.git
-    rm -rf /usr/local/bin/*
-    rm -rf /var/www/dashboard/.git
-    rm -rf /var/www/dashboard/*
-    curl -s -A "ff-phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
-fi
 
