@@ -19,7 +19,7 @@ fi
 
 # func to fix stuck updates
 if [ ! -f '/usr/local/sbin/wpsd-update' ]; then
-    curl -s -A "sbin-phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
+    curl -s -A "sbin-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
 fi
 
 #cd /usr/local/sbin
