@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# check if user already has firewall disabled, and if so, ensure it's kept that way.
+if grep -q LOGNDROP /etc/iptables.rules; then
+    fwState="enabled"
+else
+    fwState="disabled"
+fi
+
+sudo rm -rf /usr/local/sbin
+sudo git clone https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git /usr/local/sbin
+
+if [ "$fwState" == "enabled" ]; then
+    sudo /usr/local/sbin/wpsd-system-manager -efw
+else
+    sudo /usr/local/sbin/wpsd-system-manager -dfw
+fi
+
+sudo wpsd-update
