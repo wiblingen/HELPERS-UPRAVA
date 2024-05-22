@@ -22,14 +22,14 @@ if [ ! -f '/usr/local/sbin/wpsd-update' ]; then
     curl -s -A "sbin-phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
 fi
 
-cd /usr/local/sbin
-env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="$uaStr sbin reset" git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git reset --hard origin/master
-env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="$uaStr sbin reset" git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git pull origin master
-if [ "$fwState" == "enabled" ]; then
-    /usr/local/sbin/wpsd-system-manager -efw
-else
-    /usr/local/sbin/wpsd-system-manager -dfw
-fi
+#cd /usr/local/sbin
+#env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="$uaStr sbin reset" git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git reset --hard origin/master
+#env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="$uaStr sbin reset" git --work-tree=/usr/local/sbin --git-dir=/usr/local/sbin/.git pull origin master
+#if [ "$fwState" == "enabled" ]; then
+#    /usr/local/sbin/wpsd-system-manager -efw
+#else
+#    /usr/local/sbin/wpsd-system-manager -dfw
+#fi
 
 # BW fixes
 UABWU=false
@@ -72,3 +72,4 @@ if grep -q "genesis" "$modemfile"; then
     sed -i '/Hardware=.*/d' "$modemfile"
     wpsd-services fullstop > /dev/null 2>&1
 fi
+
