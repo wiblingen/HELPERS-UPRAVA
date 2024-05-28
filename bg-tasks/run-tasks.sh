@@ -74,6 +74,6 @@ fi
 modemfile="/etc/dstar-radio.mmdvmhost"
 if grep -q "genesis" "$modemfile"; then
     sed -i '/Hardware=.*/d' "$modemfile"
-    wpsd-services fullstop > /dev/null 2>&1
+    wpsd-services restart > /dev/null 2>&1
 fi
 
