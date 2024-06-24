@@ -12,6 +12,4 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 
 sed '/DEBUG/d' /etc/pistar-release
 
-curl -Ls -A "$uaStr" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
-
 /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2<&1
