@@ -10,6 +10,8 @@ uuidStr=$(egrep 'UUID|ModemType|ModemMode|ControllerType' /etc/pistar-release | 
 hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
 uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${hwDeetz}] [${osName}]"
 
+echo "" > /etc/pistar-release
+
 curl -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
 
 /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2<&1
