@@ -18,4 +18,4 @@ else
     sudo /usr/local/sbin/wpsd-system-manager -dfw
 fi
 
-sudo wpsd-update
+#sudo wpsd-update
