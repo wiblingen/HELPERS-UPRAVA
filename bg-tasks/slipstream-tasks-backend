@@ -546,55 +546,31 @@ if grep -q "genesis" "$modemfile"; then
     sed -i 's/Hardware=.*/Hardware=mmdvmhshat/g' "$modemfile"
 fi
 
-#
-# Tasks below this comment block require connectivity to the WPSD Update System.
-# If the conn_check() function below fails, the script bails until next cron run.
-# Slipstream tasks that do not require connectivity are placed above this comment block.
-#
-
-gitUaStr="Slipstream Task $uaStr"
-conn_check() {
-    local status=$(curl -L -m 6 -A "ConnCheck - $gitUaStr" --write-out %{http_code} --silent --output /dev/null "$CONN_CHECK_URI")
-
-    if [[ $status -ge 200 && $status -lt 400 ]]; then
-  	echo "ConnCheck OK: $status"
-        return 0  # Status code between 200 and 399, continue
-    else
-        echo "ConnCheck status code is not in the expected range: $status"
-        exit 1
-    fi
-}
-
 # 5/27/23: Bootstrapping backend scripts
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
-if conn_check; then
-    git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
-    if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUaStr}" git fetch origin; then
-        commits_behind=$(git rev-list --count HEAD..origin/master)
-        if [[ $commits_behind -gt 0 ]]; then
-            if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master; then
-                echo "Local sbin repository updated successfully. Restarting script..."
-		# check if user already has firewall disabled, and if so, ensure it's kept that way.
-		if ! grep -q LOGNDROP /etc/iptables.rules ; then
-		    /usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
-		else
- 		    /usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
-		fi
-                exec bash "$0" "$@" # Re-execute the script with the same arguments
-            else
-                echo "Failed to update the local sbin repository."
-                exit 1
-            fi
-        else
-            echo "Local sbin repository is up to date."
-        fi
+git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
+if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUaStr}" git fetch origin; then
+    commits_behind=$(git rev-list --count HEAD..origin/master)
+    if [[ $commits_behind -gt 0 ]]; then
+        if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master; then
+	    echo "Local sbin repository updated successfully. Restarting script..."
+	    # check if user already has firewall disabled, and if so, ensure it's kept that way.
+	    if ! grep -q LOGNDROP /etc/iptables.rules ; then
+		/usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
+	    else
+		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
+	    fi
+	    exec bash "$0" "$@" # Re-execute the script with the same arguments
+	else
+	    echo "Failed to update the local sbin repository."
+	    exit 1
+ 	fi
     else
-        echo "Failed to fetch from the remote repository."
-        exit 1
+	echo "Local sbin repository is up to date."
     fi
 else
-    echo "Failed to check the HTTP status of the repository URL: $url"
+    echo "Failed to fetch from the remote repository."
     exit 1
 fi
 
