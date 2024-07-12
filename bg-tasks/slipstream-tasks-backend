@@ -11,6 +11,8 @@ git config --global pull.ff only
 
 source /usr/local/sbin/.wpsd-common-funcs
 
+gitUaStr="Slipstream Task - Server-Side $uaStr"
+
 # 6/4/23 Ensure we can update successfully:
 find /usr/local/sbin -type f -exec chattr -i {} +
 find /usr/local/sbin -type d -exec chattr -i {} +
