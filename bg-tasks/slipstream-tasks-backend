@@ -726,3 +726,9 @@ check_os_empty() {
 }
 #check_os_empty
 
+# grab and cache latest version
+gitFolder="/var/www/dashboard"
+gitRemoteURL=$(git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git config --get remote.origin.url)
+gitBranch="$( git --git-dir=${gitFolder}/.git symbolic-ref --short HEAD )"
+gitStatusRemote=$(env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD-UpdateCheck Version Cacher (Hourly-Cron Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr} [${hwDeetz}] [${osName}]" git ls-remote --heads ${gitRemoteURL} | grep ${gitBranch} | awk {'print $1'} | awk '{ print substr($1,1,10) }') # last pipe to awk: converts long hash to 10 chars.
+echo ${gitStatusRemote} > /etc/.WPSD_remote_version
