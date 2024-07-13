@@ -564,7 +564,8 @@ if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUa
 		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
 	    fi
 	    rm -rf /var/run/wpsd-slipstream-tasks
-	    exec bash /usr/local/sbin/.wpsd-slipstream-tasks # Re-execute the script with the same arguments
+	    exec bash /usr/local/sbin/.wpsd-slipstream-tasks
+	    exit
 	else
 	    echo "Failed to update the local sbin repository."
 	    exit 1
