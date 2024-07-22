@@ -734,3 +734,21 @@ gitRemoteURL=$(git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git config -
 gitBranch="$( git --git-dir=${gitFolder}/.git symbolic-ref --short HEAD )"
 gitStatusRemote=$(env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD-UpdateCheck Version Cacher (Slipstream-Task) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr} [${hwDeetz}] [${osName}]" git ls-remote --heads ${gitRemoteURL} | grep ${gitBranch} | awk {'print $1'} | awk '{ print substr($1,1,10) }') # last pipe to awk: converts long hash to 10 chars.
 echo ${gitStatusRemote} > /etc/.WPSD_remote_version
+
+# 
+# 7/2024 W0CHP: terrible bug in Debian bullseye TZdata 2024; missing/corrupted zones...force working version
+#
+if [ "${OS_VER}" -lt "12" ] ; then # only for bullseye
+    desired_version="2021a-1+deb11u10"
+    installed_version=$(dpkg-query -W -f='${Version}' tzdata 2>/dev/null)
+    if [ "$installed_version" == "$desired_version" ]; then
+	: # working version already installed. bail.
+    else # install working version
+	curl -L https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/tzdata.deb -o /tmp/tzdata.deb
+	dpkg -i --force-all /tmp/tzdata.deb
+	apt-mark hold tzdata
+    fi
+fi
+#
+
+
