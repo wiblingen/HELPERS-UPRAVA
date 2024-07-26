@@ -288,6 +288,7 @@ fi
 
 # Armbian for NanoPi Neo / OrangePi Zero handling..
 if [ -f "$armbian_env_file" ] && [[ $(grep "console=serial" $armbian_env_file) ]] ; then
+    mount -o remount,rw /boot
     sed -i '/console=serial/d' $armbian_env_file
 fi
 # ensure serial port exists by creating it during bootup in rc.local...
@@ -365,7 +366,13 @@ if [ -f "$armbian_env_file" ] ; then
 	sed -i 's/beta\.armbian\.com/apt.armbian.com/g' /etc/apt/sources.list.d/armbian.list
     fi
 fi
-
+# mac fix: 7/24 W0CHP
+if [ -f "$armbian_env_file" ] ; then
+    if grep -q 'ethaddr' $armbian_env_file ; then
+	mount -o remount,rw /boot
+	sed -i '/ethaddr/d' $armbian_env_file
+    fi
+fi
 # ensure gpsd is only enabled by the user:
 if ! `systemctl status gpsd.socket | grep -q masked` && [ `sed -n '/^\[GPSD\]/,/^\[/p' /etc/dmrgateway | grep "^Enable" | awk -F '=' '{print $2}'` == 0 ] ; then
     systemctl stop gpsd.service > /dev/null 2>&1
