@@ -554,6 +554,9 @@ modemfile="/etc/dstar-radio.mmdvmhost"
 if grep -q "genesis" "$modemfile"; then
     sed -i 's/Hardware=.*/Hardware=mmdvmhshat/g' "$modemfile"
 fi
+if grep -q "genesys" "$modemfile"; then
+    sed -i 's/Hardware=.*/Hardware=mmdvmhshat/g' "$modemfile"
+fi
 
 # 5/27/23: Bootstrapping backend scripts
 repo_path="/usr/local/sbin"
