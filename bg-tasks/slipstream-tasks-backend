@@ -111,6 +111,10 @@ function gitURIupdate () {
 gitURIupdate "/var/www/dashboard"
 gitURIupdate "/usr/local/bin"
 gitURIupdate "/usr/local/sbin"
+castResult=$(isDVmegaCast)
+if [ "$castResult" == "true" ]; then
+    gitURIupdate "/opt/cast"
+fi
 #
 
 # Git repo name changes/migrations
