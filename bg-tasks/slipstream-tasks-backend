@@ -758,4 +758,26 @@ if [ "${OS_VER}" -lt "12" ] ; then # only for bullseye
 fi
 #
 
-
+#
+# 8/24 W0CHP: bw missing root host file fix
+#
+cust_host_files=(
+    "APRSHosts.txt"
+    "DCS_Hosts.txt"
+    "DExtra_Hosts.txt"
+    "DMR_Hosts.txt"
+    "DPlus_Hosts.txt"
+    "M17Hosts.txt"
+    "NXDNHosts.txt"
+    "P25Hosts.txt"
+    "XLXHosts.txt"
+    "YSFHosts.txt"
+)
+directory="/root"
+for file in "${cust_host_files[@]}"; do
+    filepath="$directory/$file"
+    if [ ! -f "$filepath" ]; then
+        touch "$filepath"
+    fi
+done
+#
