@@ -778,7 +778,7 @@ for file in "${cust_host_files[@]}"; do
     filepath="$directory/$file"
     if [ ! -f "$filepath" ]; then
         touch "$filepath"
-	chown www-data:www-data "$filepath"
+	chown www-data "$filepath"
     fi
 done
 #
