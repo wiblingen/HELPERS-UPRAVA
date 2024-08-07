@@ -384,6 +384,11 @@ fi
 #    fi
 #fi
 
+proc_num=$(grep -E '^ProcNum' /etc/pistar-release | awk -F'=' '{print $2}' | xargs)
+if [[ $proc_num < 4 ]] ; then
+    rm -rf /etc/.TGNAMES /etc/.CALLERDETAILS
+fi
+
 # ensure gpsd is only enabled by the user:
 if ! `systemctl status gpsd.socket | grep -q masked` && [ `sed -n '/^\[GPSD\]/,/^\[/p' /etc/dmrgateway | grep "^Enable" | awk -F '=' '{print $2}'` == 0 ] ; then
     systemctl stop gpsd.service > /dev/null 2>&1
