@@ -383,6 +383,7 @@ fi
 #	echo "ethaddr=$MAC_ADDRESS" | sudo tee -a "$armbian_env_file" > /dev/null
 #    fi
 #fi
+
 # ensure gpsd is only enabled by the user:
 if ! `systemctl status gpsd.socket | grep -q masked` && [ `sed -n '/^\[GPSD\]/,/^\[/p' /etc/dmrgateway | grep "^Enable" | awk -F '=' '{print $2}'` == 0 ] ; then
     systemctl stop gpsd.service > /dev/null 2>&1
