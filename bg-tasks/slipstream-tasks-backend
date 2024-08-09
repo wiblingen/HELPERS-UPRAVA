@@ -357,7 +357,7 @@ if [ -f "$armbian_env_file" ]; then
         armbian-firmware-full \
         armbian-firmware > /dev/null 2>&1
 fi
-# cleanup NanoPi/OPi  modprobing
+# cleanup NanoPi/OPi modprobing
 if [ -f "$armbian_env_file" ] && [[ $(grep 'modprobe -r rtl8' $rc_local_file) ]] ; then
     sed -i '/modprobe -r rtl8/d' $rc_local_file
 fi
@@ -370,20 +370,20 @@ if [ -f "$armbian_env_file" ] ; then
 	sed -i 's/beta\.armbian\.com/apt.armbian.com/g' /etc/apt/sources.list.d/armbian.list
     fi
 fi
-# random eth0 mac fix: 8/24 W0CHP
-#if [ -f "$armbian_env_file" ] ; then
-#    MACHINE_ID=$( cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2 )
-#    HASH=$(echo -n "$MACHINE_ID" | md5sum | awk '{print $1}')
-#    MAC_ADDRESS="${HASH:0:2}:${HASH:2:2}:${HASH:4:2}:${HASH:6:2}:${HASH:8:2}:${HASH:10:2}"
-#    if grep -q "^ethaddr=" "$armbian_env_file"; then
-#	mount -o remount,rw /boot
-#	sudo sed -i "s/^ethaddr=.*/ethaddr=$MAC_ADDRESS/" "$armbian_env_file"
-#    else
-#	mount -o remount,rw /boot
-#	echo "ethaddr=$MAC_ADDRESS" | sudo tee -a "$armbian_env_file" > /dev/null
-#    fi
-#fi
+# random eth0 mac fix/reversion for new Nano/Orange Pi DTBs: 8/24 W0CHP
+if [ -f "$armbian_env_file" ] ; then
+    if grep -q 'ethaddr' $armbian_env_file ; then
+	mount -o remount,rw /boot
+	sed -i '/ethaddr/d' $armbian_env_file
+	reboot
+    fi
+    if [ -f "/etc/network/if-pre-up.d/static-mac" ] ; then
+	rm -rf /etc/network/if-pre-up.d/static-mac
+	reboot
+    fi
+fi
 
+# shitty hardware/cheap hams be dammed
 proc_num=$(grep -E '^ProcNum' /etc/pistar-release | awk -F'=' '{print $2}' | xargs)
 if [[ $proc_num < 4 ]] ; then
     rm -rf /etc/.TGNAMES /etc/.CALLERDETAILS
