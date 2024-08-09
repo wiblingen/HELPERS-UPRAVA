@@ -379,7 +379,7 @@ if [ -f "$armbian_env_file" ] ; then
     fi
     if [ -f "/etc/network/if-pre-up.d/static-mac" ] ; then
 	rm -rf /etc/network/if-pre-up.d/static-mac
-	reboot
+	#reboot
     fi
 fi
 
