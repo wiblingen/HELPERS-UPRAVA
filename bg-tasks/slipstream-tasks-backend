@@ -375,7 +375,7 @@ if [ -f "$armbian_env_file" ] ; then
     if grep -q 'ethaddr' $armbian_env_file ; then
 	mount -o remount,rw /boot
 	sed -i '/ethaddr/d' $armbian_env_file
-	reboot
+	#reboot
     fi
     if [ -f "/etc/network/if-pre-up.d/static-mac" ] ; then
 	rm -rf /etc/network/if-pre-up.d/static-mac
