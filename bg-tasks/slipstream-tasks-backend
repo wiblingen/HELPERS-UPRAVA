@@ -382,6 +382,26 @@ if [ -f "$armbian_env_file" ] ; then
 	#reboot
     fi
 fi
+# get more modern kernel and dtb's for NanoPi in DVM casts & euronodes; 8/24 W0CHP
+if [ -f "$armbian_env_file" ] ; then
+    if dpkg-query -l | grep -q "nanopi" ; then
+        if grep -q "dvmpi" /etc/dstar-radio.mmdvmhost ; then
+            if uname -r | grep -q "6.6." ; then
+                apt update
+                apt -y autoremove
+                apt -y clean
+                apt -y autoclean
+                apt -y upgrade
+                apt -y remove --purge --allow-change-held-packages linux-u-boot-nanopineo-edge linux-image-edge-sunxi linux-dtb-edge-sunxi
+                apt -y install --reinstall --allow-change-held-packages linux-u-boot-nanopineo-edge linux-image-edge-sunxi linux-dtb-edge-sunxi
+                apt -y autoremove
+                apt -y clean
+                apt -y autoclean
+                reboot
+            fi
+        fi
+    fi
+fi
 
 # shitty hardware/cheap hams be dammed
 proc_num=$(grep -E '^ProcNum' /etc/pistar-release | awk -F'=' '{print $2}' | xargs)
