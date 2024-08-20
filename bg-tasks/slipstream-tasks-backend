@@ -808,3 +808,31 @@ for file in "${cust_host_files[@]}"; do
     fi
 done
 #
+
+#
+# Empty custom host file fix: W0CHP 8/24
+#
+files=(
+    "/root/APRSHosts.txt"
+    "/root/DCS_Hosts.txt"
+    "/root/DExtra_Hosts.txt"
+    "/root/DMR_Hosts.txt"
+    "/root/DPlus_Hosts.txt"
+    "/root/M17Hosts.txt"
+    "/root/NXDNHosts.txt"
+    "/root/P25Hosts.txt"
+    "/root/XLXHosts.txt"
+    "/root/YSFHosts.txt"
+)
+for file in "${files[@]}"; do
+    if [ -f "$file" ]; then 
+        if [ ! -s "$file" ]; then 
+            echo "#" > "$file" 
+        else
+	    :
+        fi
+    else
+	:
+    fi
+done
+
