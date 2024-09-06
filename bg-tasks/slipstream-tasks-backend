@@ -608,7 +608,7 @@ if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUa
         if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master; then
 	    echo "Local sbin repository updated successfully. Restarting script..."
 	    # check if user already has firewall disabled, and if so, ensure it's kept that way.
-	    if [ $FW = "true" ] ; then
+	    if [ "$FW" == "true" ] ; then
 		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
 	    else
 		/usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
