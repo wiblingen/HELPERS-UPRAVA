@@ -595,19 +595,23 @@ if grep -q "genesys" "$modemfile"; then
 fi
 
 # 5/27/23: Bootstrapping backend scripts
+if grep -q LOGNDROP /etc/iptables.rules ; then
+   FW=true
+fi 
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
 git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
+git reset --hard
 if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUaStr}" git fetch origin; then
     commits_behind=$(git rev-list --count HEAD..origin/master)
     if [[ $commits_behind -gt 0 ]]; then
         if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master; then
 	    echo "Local sbin repository updated successfully. Restarting script..."
 	    # check if user already has firewall disabled, and if so, ensure it's kept that way.
-	    if ! grep -q LOGNDROP /etc/iptables.rules ; then
-		/usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
-	    else
+	    if [ $FW = "true" ] ; then
 		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
+	    else
+		/usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
 	    fi
 	    rm -rf /var/run/wpsd-slipstream-tasks
 	    exec bash /usr/local/sbin/.wpsd-slipstream-tasks
