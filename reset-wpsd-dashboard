@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cp -av /var/www/dashboard/config /tmp
+
+rm -rf /var/www/dashboard
+
+git clone https://repo.w0chp.net/WPSD-Dev/WPSD-WebCode.git /var/www/dashboard
+
+rm -rf /var/www/dashboard/config
+
+mv -v /tmp/config /var/www/dashboard/
+
+echo -e "\nDone\"
