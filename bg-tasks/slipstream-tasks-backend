@@ -628,6 +628,8 @@ else
     exit 1
 fi
 
+cd /usr/local/bin && git pull origin master
+
 # dvmega cast-specific stuff
 castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
