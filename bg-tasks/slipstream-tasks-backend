@@ -606,7 +606,7 @@ if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUa
     commits_behind=$(git rev-list --count HEAD..origin/master)
     if [[ $commits_behind -gt 0 ]]; then
         if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master; then
-	    echo "Local sbin repository updated successfully. Restarting script..."
+	    echo "Local sbin repository updated successfully."
 	    # check if user already has firewall disabled, and if so, ensure it's kept that way.
 	    if [ "$FW" == "true" ] ; then
 		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
@@ -614,8 +614,6 @@ if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUa
 		/usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
 	    fi
 	    rm -rf /var/run/wpsd-slipstream-tasks
-	    exec bash /usr/local/sbin/.wpsd-slipstream-tasks
-	    exit
 	else
 	    echo "Failed to update the local sbin repository."
 	    exit 1
