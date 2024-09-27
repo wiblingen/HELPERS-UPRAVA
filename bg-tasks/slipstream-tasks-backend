@@ -626,7 +626,7 @@ else
     exit 1
 fi
 
-cd /usr/local/bin && git pull origin master
+cd /usr/local/bin && env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="binary update bootstrap ${gitUaStr}" git pull origin master
 
 # dvmega cast-specific stuff
 castResult=$(isDVmegaCast)
