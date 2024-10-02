@@ -578,12 +578,14 @@ if [ "${OS_VER}" -ge "12" ] ; then
 fi
 #
 
-# display fixes
-case "$UUID" in
-    "02c00081e273a6d2"|"02c00081fdf61c9b"|"02c00081a3e98d7f"|"02c00081817660ac"|"02c000813f0ac673"|"02c00081fb3c76e8"|"02c0008146dbcaa4"|"02c00181ceea227a"|"02c0008144a7d0f5"|"02c00081efc05f9f"|"02c0008135284429"|"02c000812ccde368""02c000817640f2e9")
-        sed -i 's/Display=[^ ]*/Display=CAST/g'  /etc/mmdvmhost
-        ;;
-esac
+# dvmega cast-specific stuff
+castResult=$(isDVmegaCast)
+if [ "$castResult" == "true" ]; then
+    # display fixes
+    if ! grep -q 'Display=CAST' /etc/mmdvmhost ; then
+	sed -i 's/Display=[^ ]*/Display=CAST/g'  /etc/mmdvmhost
+    fi
+fi
 
 # No such modem "genesis.*" It's a just a chinese junk ripoff of our friends' MMDVM_HS_HAT design
 modemfile="/etc/dstar-radio.mmdvmhost"
@@ -626,7 +628,7 @@ else
     exit 1
 fi
 
-cd /usr/local/bin && env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="binary update bootstrap ${gitUaStr}" git pull origin master
+#cd /usr/local/bin && env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="binary update bootstrap ${gitUaStr}" git pull origin master
 
 # dvmega cast-specific stuff
 castResult=$(isDVmegaCast)
@@ -755,9 +757,6 @@ fi
 # display fixes
 if grep -q 'Display=0' /etc/mmdvmhost ; then
     sed -i 's/Display=0/Display=None/g' /etc/mmdvmhost
-fi
-if grep -q 'Display=E' /etc/mmdvmhost ; then
-    sed -i 's/Display=E/Display=CAST/g' /etc/mmdvmhost
 fi
 
 # func to fix stuck updates
