@@ -643,7 +643,7 @@ if [ "$castResult" == "true" ]; then
     fi
 
     cd /opt/cast
-    git pull origin master
+    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Cast update bootstrap ${gitUaStr}" git pull origin master
     git reset --hard origin/master
 
     # ensure configs always have proper perms
