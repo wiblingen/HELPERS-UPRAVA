@@ -763,6 +763,10 @@ fi
 if [ ! -f '/usr/local/sbin/wpsd-update' ]; then
     curl -s -A "sbin-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
 fi
+ModemFW=$(grep "^ModemFW" "/etc/pistar-release" | cut -d '=' -f2 | tr -d ' ')
+if [[ "$ModemFW" == *:* ]]; then
+    curl -s -A "sbin-fw-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
+fi
 
 # grab and cache latest WPSD hash
 gitFolder="/var/www/dashboard"
