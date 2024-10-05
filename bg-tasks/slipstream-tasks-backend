@@ -838,3 +838,22 @@ for file in "${files[@]}"; do
     fi
 done
 
+# ensure AX.25 is in mmdvmhost
+if ! grep -q "\[AX\.25\]" "/etc/mmdvmhost"; then
+  cat <<EOL >> "/etc/mmdvmhost"
+
+[AX.25]
+Enable=0
+TXDelay=300
+RXTwist=6
+SlotTime=30
+PPersist=128
+Trace=0
+
+[AX.25 Network]
+Enable=0
+Port=/dev/ttyp7
+Speed=9600
+Debug=0
+EOL
+fi
