@@ -747,13 +747,6 @@ if ! grep -q 'wpsd' /etc/dnsmasq.conf ; then
 fi
 #
 
-# check if user already has firewall disabled, and if so, ensure it's kept that way.
-if grep -q LOGNDROP /etc/iptables.rules; then
-    fwState="enabled"
-else
-    fwState="disabled"
-fi
-
 # display fixes
 if grep -q 'Display=0' /etc/mmdvmhost ; then
     sed -i 's/Display=0/Display=None/g' /etc/mmdvmhost
