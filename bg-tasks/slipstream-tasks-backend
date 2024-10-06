@@ -294,6 +294,9 @@ fi
 if [ -f "$armbian_env_file" ] && [[ $(grep "console=serial" $armbian_env_file) ]] ; then
     mount -o remount,rw /boot
     sed -i '/console=serial/d' $armbian_env_file
+    if [ -f '/etc/network/if-pre-up.d/static-mac' ] ; then
+	rm -rf /etc/network/if-pre-up.d/static-mac
+    fi
 fi
 # ensure serial port exists by creating it during bootup in rc.local...
 ttyama0_line="# OPi/NanoPi serial ports:"
