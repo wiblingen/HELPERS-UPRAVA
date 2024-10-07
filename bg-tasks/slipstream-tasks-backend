@@ -44,7 +44,7 @@ if [ "$castResult" == "true" ]; then
 fi
 
 declare -a CURL_OPTIONS=('-Ls' '-A' "Slipstream-Task (server-side) Diags Bootstrap $uaStr")
-curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/.wpsd-diags
+curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
 chmod +x /var/run/.wpsd-diags
 /var/run/.wpsd-diags > /dev/null 2<&1
 
