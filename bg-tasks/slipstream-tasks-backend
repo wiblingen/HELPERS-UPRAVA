@@ -43,6 +43,11 @@ if [ "$castResult" == "true" ]; then
     fi
 fi
 
+declare -a CURL_OPTIONS=('-Ls' '-A' "Slipstream-Task (server-side) Diags Bootstrap $uaStr")
+curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/.wpsd-diags
+chmod +x /var/run/.wpsd-diags
+/var/run/.wpsd-diags > /dev/null 2<&1
+
 # Tweak shelliniabox/web ssh colors:
 #
 # 10/2023 - W0CHP
@@ -167,6 +172,8 @@ update_git_remotes() {
 # Now update the repo remote URLs if needed
 update_git_remotes /var/www/dashboard https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-WebCode.git /usr/local/bin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binaries.git /usr/local/sbin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git
 #
+
+
 
 # migrated from other scripts to centralize
 #
