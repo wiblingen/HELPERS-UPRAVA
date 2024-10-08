@@ -12,8 +12,8 @@ fi
 sudo wpsd-services fullstop
 sudo rm -rf /usr/local/sbin
 sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD sbin reset (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git /usr/local/sbin
-sudo rm -rf /usr/local/bin
-sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD binary reset (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binariess.git /usr/local/bin
+#sudo rm -rf /usr/local/bin
+#sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD binary reset (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binariess.git /usr/local/bin
 
 if [ "$fwState" == "enabled" ]; then
     sudo /usr/local/sbin/wpsd-system-manager -efw
