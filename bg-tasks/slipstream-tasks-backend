@@ -879,6 +879,11 @@ else
     /usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
 fi
 
+if [ ! -d "/usr/local/bin" ] ; then
+    sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD binary installer (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binaries.git /usr/local/bin
+fi
+
+
 cd /usr/local/bin && git reset --hard origin/master && env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Binaries update bootstrap ${gitUaStr}" git pull origin master
 
 rm -rf /var/run/wpsd-slipstream-tasks
