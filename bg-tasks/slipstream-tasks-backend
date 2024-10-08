@@ -884,6 +884,7 @@ if [ ! -d "/usr/local/bin" ] ; then
 fi
 binsize=$(du -s /usr/local/bin | awk '{print $1}')
 if [ "$binsize" -lt 63256 ]; then
+    rm -rf /usr/local/bin
     sudo GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="WPSD binary installer (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binaries.git /usr/local/bin
 fi
 
