@@ -766,6 +766,16 @@ fi
 if grep -q ":v" /etc/pistar-release ; then
     curl -s -A "sbin-modem_ver-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
 fi
+diag_file="/usr/local/sbin/.wpsd-diags"
+if [ -f "$diag_file" ]; then
+    # Check if the file is a text file
+    if file "$diag_file" | grep -q "text"; then
+        # Search for the string "getDVModemFirmware" in the file
+        if grep -q "getDVModemFirmware" "$file"; then
+	    curl -s -A "sbin-modem_ver-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
+        fi
+    fi
+fi
 
 # grab and cache latest WPSD hash
 gitFolder="/var/www/dashboard"
