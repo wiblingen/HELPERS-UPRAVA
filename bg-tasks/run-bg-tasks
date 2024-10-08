@@ -10,4 +10,4 @@ uuidStr=$(egrep 'UUID' /etc/pistar-release | awk {'print $3'})
 hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
 uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName}]"
 
-/usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2<&1
+/usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1

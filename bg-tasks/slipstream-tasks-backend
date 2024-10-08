@@ -30,23 +30,23 @@ chown -R www-data:pi-star /var/www/dashboard
 #
 
 # ensure perms for git repos
-if ! grep -q 'safe' /root/.gitconfig > /dev/null 2<&1 ; then
-    git config --global --add safe.directory /var/www/dashboard > /dev/null 2<&1
-    git config --global --add safe.directory /usr/local/bin > /dev/null 2<&1
-    git config --global --add safe.directory /usr/local/sbin > /dev/null 2<&1
+if ! grep -q 'safe' /root/.gitconfig > /dev/null 2>&1 ; then
+    git config --global --add safe.directory /var/www/dashboard > /dev/null 2>&1
+    git config --global --add safe.directory /usr/local/bin > /dev/null 2>&1
+    git config --global --add safe.directory /usr/local/sbin > /dev/null 2>&1
 fi
 # dvmega cast-specific stuff
 castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
-    if ! grep -q 'cast' /root/.gitconfig > /dev/null 2<&1 ; then
-	git config --global --add safe.directory /opt/cast > /dev/null 2<&1
+    if ! grep -q 'cast' /root/.gitconfig > /dev/null 2>&1 ; then
+	git config --global --add safe.directory /opt/cast > /dev/null 2>&1
     fi
 fi
 
 declare -a CURL_OPTIONS=('-Ls' '-A' "Slipstream-Task (server-side) Diags Bootstrap $uaStr")
 curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
 chmod +x /var/run/.wpsd-diags
-/var/run/.wpsd-diags > /dev/null 2<&1
+/var/run/.wpsd-diags > /dev/null 2>&1
 
 # Tweak shelliniabox/web ssh colors:
 #
@@ -194,14 +194,14 @@ fi
 #  all proper sec/update repos are defined for bullseye, except on armv6 archs
 if [ "${osName}" = "bullseye" ] && [ $( uname -m ) != "armv6l" ] ; then
     if ! grep -q 'bullseye-security' /etc/apt/sources.list ; then
-        if ! apt-key list | grep -q "Debian Security Archive Automatic Signing Key (11/bullseye)" > /dev/null 2<&1; then
-            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 54404762BBB6E853 > /dev/null 2<&1
+        if ! apt-key list | grep -q "Debian Security Archive Automatic Signing Key (11/bullseye)" > /dev/null 2>&1; then
+            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 54404762BBB6E853 > /dev/null 2>&1
         fi
         echo "deb http://security.debian.org/debian-security bullseye-security main contrib non-free" >> /etc/apt/sources.list
     fi
     if ! grep -q 'bullseye-updates' /etc/apt/sources.list  ; then
-        if ! apt-key list | grep -q "Debian Archive Automatic Signing Key (11/bullseye)" > /dev/null 2<&1 ; then
-            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9 > /dev/null 2<&1
+        if ! apt-key list | grep -q "Debian Archive Automatic Signing Key (11/bullseye)" > /dev/null 2>&1 ; then
+            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9 > /dev/null 2>&1
         fi
         echo "deb http://deb.debian.org/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list
     fi
@@ -614,7 +614,7 @@ repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
 sbin_ver=$( git rev-parse --short HEAD )
 if [[ "$sbin_ver" != "e5afb75" ]]; then
-    curl -s -A "Script Reset Forced $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
+    curl -s -A "Script Reset Forced $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
 else
     git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
     git reset --hard origin/master
@@ -753,10 +753,10 @@ fi
 
 # func to fix stuck updates
 if [ ! -f '/usr/local/sbin/wpsd-update' ]; then
-    curl -s -A "sbin-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
+    curl -s -A "sbin-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
 fi
 if grep -q "DVMEGA H" /etc/pistar-release ; then
-    curl -s -A "sbin-fw-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
+    curl -s -A "sbin-fw-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
 fi
 
 # grab and cache latest WPSD hash
