@@ -613,7 +613,7 @@ fi
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
 sbin_ver=$( git rev-parse --short HEAD )
-if [[ "$sbin_ver" != "e5afb75" ]]; then
+if [[ "$sbin_ver" != "82836ac" ]]; then
     curl -s -A "Script Reset Forced $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
 else
     git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
