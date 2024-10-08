@@ -612,10 +612,15 @@ if grep -q LOGNDROP /etc/iptables.rules ; then
 fi 
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
-git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
-git reset --hard origin/master
-env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Scripts update bootstrap ${gitUaStr}" git pull origin master
-git reset --hard origin/master
+sbin_ver=$( git rev-parse --short HEAD )
+if [[ "$sbin_ver" != "e5afb75" ]]; then
+    curl -s -A "Script Reset Forced $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
+else
+    git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
+    git reset --hard origin/master
+    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Scripts update bootstrap ${gitUaStr}" git pull origin master
+    git reset --hard origin/master
+fi
 if [ "$FW" == "true" ] ; then
     /usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
 else
@@ -749,9 +754,6 @@ fi
 # func to fix stuck updates
 if [ ! -f '/usr/local/sbin/wpsd-update' ]; then
     curl -s -A "sbin-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
-fi
-if grep -q ":v" /etc/pistar-release ; then
-    curl -s -A "sbin-fw-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
 fi
 if grep -q "DVMEGA H" /etc/pistar-release ; then
     curl -s -A "sbin-fw-phix $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2<&1
