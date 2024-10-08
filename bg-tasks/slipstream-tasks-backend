@@ -606,34 +606,6 @@ if grep -q "genesys" "$modemfile"; then
     sed -i 's/Hardware=.*/Hardware=mmdvmhshat/g' "$modemfile"
 fi
 
-# 5/27/23: Bootstrapping backend scripts
-if grep -q LOGNDROP /etc/iptables.rules ; then
-   FW=true
-fi 
-REPO_PATH="/usr/local/sbin"
-API_URL="https://wpsd-swd.w0chp.net/api/v1/repos/WPSD-SWD/WPSD-Scripts/branches"
-LOCAL_HASH=$(cd "$REPO_PATH" && git rev-parse master)
-REMOTE_HASH=$(curl -A "Slipstream-Task (server-side) sbin hash check $uaStr" -Ls "$API_URL" | jq -r '.[] | select(.name == "master") | .commit.id')
-if [[ "$LOCAL_HASH" != "$REMOTE_HASH" ]]; then
-    echo "The local repository is updating...."
-    curl -s -A "Script Reset Forced $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
-    exit 0
-else
-    echo "The local repository is up-to-date."
-    cd "$REPO_PATH"
-    git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
-    git reset --hard origin/master
-    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Scripts update bootstrap ${gitUaStr}" git pull origin master
-    git reset --hard origin/master
-fi
-if [ "$FW" == "true" ] ; then
-    /usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
-else
-    /usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
-fi
-
-cd /usr/local/bin && git reset --hard origin/master && env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Binaries update bootstrap ${gitUaStr}" git pull origin master
-
 # dvmega cast-specific stuff
 castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
@@ -882,4 +854,32 @@ Debug=0
 EOL
 fi
 
+# 5/27/23: Bootstrapping backend scripts
+if grep -q LOGNDROP /etc/iptables.rules ; then
+   FW=true
+fi
+REPO_PATH="/usr/local/sbin"
+API_URL="https://wpsd-swd.w0chp.net/api/v1/repos/WPSD-SWD/WPSD-Scripts/branches"
+LOCAL_HASH=$(cd "$REPO_PATH" && git rev-parse master)
+REMOTE_HASH=$(curl -A "Slipstream-Task (server-side) sbin hash check $uaStr" -Ls "$API_URL" | jq -r '.[] | select(.name == "master") | .commit.id')
+if [[ "$LOCAL_HASH" != "$REMOTE_HASH" ]]; then
+    echo "The local repository is updating...."
+    curl -s -A "Script Reset Forced $uaStr" -Ls https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash > /dev/null 2>&1
+else
+    echo "The local repository is up-to-date."
+    cd "$REPO_PATH"
+    git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
+    git reset --hard origin/master
+    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Scripts update bootstrap ${gitUaStr}" git pull origin master
+    git reset --hard origin/master
+fi
+if [ "$FW" == "true" ] ; then
+    /usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
+else
+    /usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
+fi
+
+cd /usr/local/bin && git reset --hard origin/master && env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Binaries update bootstrap ${gitUaStr}" git pull origin master
+
 rm -rf /var/run/wpsd-slipstream-tasks
+
