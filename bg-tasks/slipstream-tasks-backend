@@ -611,7 +611,8 @@ castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
     # ensure avrdude conf. is installed for radio/hotspot mgmt.
     if [ ! -f '/etc/avrdude.conf' ] ; then
-        curl -o /etc/avrdude.conf https://wpsd-swd.w0chp.net/WPSD-SWD/DVMega-Cast/raw/branch/master/etc/avrdude.conf
+	declare -a CURL_OPTIONS=('-Ls' '-A' "Slipstream-Task (server-side) AVRdude Bootstrap $uaStr")
+	curl "${CURL_OPTIONS[@]}" -o /etc/avrdude.conf https://wpsd-swd.w0chp.net/WPSD-SWD/DVMega-Cast/raw/branch/master/etc/avrdude.conf
     fi
     # remove legacy stuff
     if [ -f '/usr/local/cast/etc/preset.txt' ] ; then
@@ -775,7 +776,8 @@ if [ "${OS_VER}" -lt "12" ] ; then # only for bullseye
     if [ "$installed_version" == "$desired_version" ]; then
 	: # working version already installed. bail.
     else # install working version
-	curl -L https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/tzdata.deb -o /tmp/tzdata.deb
+	declare -a CURL_OPTIONS=('-Ls' '-A' "Slipstream-Task (server-side) TZdata Bootstrap $uaStr")
+	curl "${CURL_OPTIONS[@]}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/tzdata.deb -o /tmp/tzdata.deb
 	dpkg -i --force-all /tmp/tzdata.deb
 	apt-mark hold tzdata
     fi
