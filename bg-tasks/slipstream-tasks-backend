@@ -857,3 +857,5 @@ fi
 
 rm -rf /var/run/wpsd-slipstream-tasks
 
+exit 0
+
