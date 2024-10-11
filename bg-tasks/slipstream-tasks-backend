@@ -828,6 +828,10 @@ fi
 # 5/27/23: Bootstrapping backend scripts
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
+if grep -rq 'Hourly-Cron' /usr/local/sbin ; then
+    git reset --hard origin/master
+    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="stuck sbin reset ${gitUaStr}" git pull origin master
+fi
 git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
 git reset --hard origin/master
 if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUaStr}" git fetch origin; then
