@@ -10,4 +10,11 @@ uuidStr=$(egrep 'UUID' /etc/pistar-release | awk {'print $3'})
 hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
 uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName}]"
 
+repo_path="/usr/local/sbin"
+cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
+if egrep -rq 'Hourly-Cron|hwDeetz' /usr/local/sbin ; then
+    git reset --hard origin/master
+    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="stuck sbin reset ${gitUaStr}" git pull origin master
+fi
+
 /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
