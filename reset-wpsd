@@ -22,5 +22,7 @@ mv -v /tmp/config /var/www/dashboard/
 
 sudo wpsd-services start
 
+sudo .wpsd-sys-cache
+
 echo "WPSD has been reset."
 
