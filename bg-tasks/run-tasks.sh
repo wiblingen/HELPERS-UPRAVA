@@ -15,6 +15,7 @@ cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
 if egrep -rq 'Hourly-Cron|hwDeetz' /usr/local/sbin ; then
     git reset --hard origin/master
     env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="legacy sbin reset ${uaStr}" git pull origin master
+    /usr/local/sbin/.wpsd-sys-cache /dev/null 2>&
 fi
 
 /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
