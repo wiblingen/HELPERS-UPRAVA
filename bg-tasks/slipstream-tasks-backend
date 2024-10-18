@@ -175,7 +175,8 @@ update_git_remotes /var/www/dashboard https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-W
 
 # default loc.
 sed -i -E 's/(Latitude=)50\.00/\144.127691/' /etc/mmdvmhost
-sed -i -E 's/(Longitude=)-3\.00/\1--91.762659/' /etc/mmdvmhost
+sed -i -E 's/(Longitude=)-3\.00/\1-91.762659/' /etc/mmdvmhost
+sed -i -E 's/(Longitude=)--91.762659/\1-91.762659/' /etc/mmdvmhost
 
 # migrated from other scripts to centralize
 #
