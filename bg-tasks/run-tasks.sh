@@ -8,7 +8,8 @@ dashVer=$( git --work-tree=/var/www/dashboard --git-dir=/var/www/dashboard/.git 
 UUID=$( grep "UUID" /etc/pistar-release | awk '{print $3}' )
 uuidStr=$(egrep 'UUID' /etc/pistar-release | awk {'print $3'})
 hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
-uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName}]"
+modem=$(grep '^ModemFW\s*=\s*.*' /etc/pistar-release | sed 's/ModemFW = //g')
+uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: "$modem"]"
 
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
