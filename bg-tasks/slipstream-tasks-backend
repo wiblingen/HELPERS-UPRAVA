@@ -173,6 +173,18 @@ update_git_remotes() {
 update_git_remotes /var/www/dashboard https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-WebCode.git /usr/local/bin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binaries.git /usr/local/sbin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git
 #
 
+# Special Pi4/5 handling...
+if [ "$(/usr/local/sbin/.wpsd-platform-detect | grep "Pi 4 Model" | wc -l)" -ge 1 ]; then
+  model="Pi4"
+elif [ "$(/usr/local/sbin/.wpsd-platform-detect | grep "Pi 5 Model" | wc -l)" -ge 1 ]; then
+  model="Pi5"
+else
+  model=""
+fi
+if [ "${model}" != "Pi4" ] && [ "${model}" != "Pi5" ]; then
+    systemctl disable mmdbmhost.service > /dev/null 2>&1
+fi
+
 # default loc.
 sed -i -E 's/(Latitude=)50\.00/\144.127691/' /etc/mmdvmhost
 sed -i -E 's/(Longitude=)-3\.00/\1-91.762659/' /etc/mmdvmhost
