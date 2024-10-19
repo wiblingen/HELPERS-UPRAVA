@@ -184,14 +184,8 @@ fi
 
 SERVICE_NAME="mmdvmhost.service"
 STATUS=$(systemctl is-enabled "$SERVICE_NAME" 2>/dev/null)
-if [ "${model}" != "Pi4" ] && [ "${model}" != "Pi5" ]; then
-    if [[ "$STATUS" == "disabled" ]]; then
-	systemctl enable mmdvmhost.service > /dev/null 2>&1
-    fi
-else 
-    if [[ "$STATUS" == "enabled" ]]; then
-	systemctl disable mmdvmhost.service > /dev/null 2>&1
-    fi
+if [[ "$STATUS" == "enabled" ]]; then
+    systemctl disable mmdvmhost.service > /dev/null 2>&1
 fi
 
 # default loc.
