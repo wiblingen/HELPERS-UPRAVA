@@ -627,6 +627,10 @@ Debug=0
 EOL
 fi
 
+# bootstrap
+repo_path="/usr/local/sbin"
+cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
+git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
 git reset --hard origin/master
 if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUaStr}" git fetch origin; then
     commits_behind=$(git rev-list --count HEAD..origin/master)
