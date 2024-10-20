@@ -1,0 +1,11 @@
+[Unit]
+Description=Run WPSD Tasks at random intervals
+
+[Timer]
+# Run the service every 2-4 hours, with randomized delay
+OnUnitActiveSec=2h
+RandomizedDelaySec=2h
+
+[Install]
+WantedBy=timers.target
+
