@@ -4,4 +4,5 @@ Conflicts=wpsd-running-tasks.service
 
 [Service]
 ExecStart=/usr/local/sbin/.wpsd-nightly-tasks
-
+User=root
+Group=root
