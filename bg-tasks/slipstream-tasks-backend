@@ -22,8 +22,6 @@ find /var/www/dashboard -type f -exec chattr -i {} +
 find /var/www/dashboard -type d -exec chattr -i {} +
 #
 
-sed -i '/DEBUG/d' /etc/pistar-release
-
 # 5/30/23: ensure www perms are correct:
 cd /var/www/dashboard && chmod 755 `find  -type d`
 chown -R www-data:pi-star /var/www/dashboard
@@ -47,80 +45,6 @@ declare -a CURL_OPTIONS=('-Ls' '-A' "Slipstream-Task (server-side) Diags Bootstr
 curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
 chmod +x /var/run/.wpsd-diags
 /var/run/.wpsd-diags  > /dev/null 2>&1
-
-# Tweak shelliniabox/web ssh colors:
-#
-# 10/2023 - W0CHP
-if ! grep -q "Terminal.css" "/etc/default/shellinabox"; then
-    sed -i 's/SHELLINABOX_ARGS=.*$/SHELLINABOX_ARGS="--no-beep --disable-ssl-menu --disable-ssl --css=\/etc\/shellinabox\/options-enabled\/00_White\\ On\\ Black.css --css=\/etc\/shellinabox\/options-enabled\/01+Color\\ Terminal.css"/' /etc/default/shellinabox
-    systemctl restart shellinabox.service
-fi
-# 
-
-# migrate legacy network info URLs
-# 
-# 10/23 W0CHP
-files=(
-  /etc/dmrgateway
-  /etc/ysfgateway
-  /etc/p25gateway
-  /etc/nxdngateway
-  /etc/ircddbgateway
-  /etc/m17gateway
-  /etc/mmdvmhost
-  /etc/nxdn2dmr
-  /etc/ysf2dmr
-  /etc/ysf2nxdn
-  /etc/ysf2p25
-  /etc/WPSD_config_mgr/*/*
-)
-old_url="http://www.mw0mwz.co.uk/pi-star/"
-new_url="https://wpsd.radio"
-for file in "${files[@]}"; do
-  if [[ -f "$file" ]]; then
-    if grep -qi "$old_url" "$file"; then
-      file_content=$(<"$file")
-      if [[ $file_content == *'URL='* ]]; then
-        file_content="${file_content//URL=/URL=}"
-        file_content="${file_content//$old_url/$new_url}"
-        echo -n "$file_content" > "$file"
-      elif [[ $file_content == *'url='* ]]; then # ircddbgw etc. uses lowercase keys
-        file_content="${file_content//url=/url=}"
-        file_content="${file_content//$old_url/$new_url}"
-        echo -n "$file_content" > "$file"
-      fi
-    fi
-  fi
-done
-for file in "${files[@]}"; do
-  if [[ -f "$file" ]]; then
-    sed -i 's/_W0CHP-PiStar-Dash/_WPSD/g' "$file"
-  fi
-done
-#
-
-# Git URI changed when transferring repos from me to the org.
-#
-# 2/2023 - W0CHP
-#
-function gitURIupdate () {
-    dir="$1"
-    gitRemoteURI=$(git --work-tree=${dir} --git-dir=${dir}/.git config --get remote.origin.url)
-
-    git --work-tree=${dir} --git-dir=${dir}/.git config --get remote.origin.url | grep 'WPSD-Dev' &> /dev/null
-    if [ $? == 0 ]; then
-        newURI=$( echo $gitRemoteURI | sed 's|repo\.w0chp\.net/WPSD-Dev|wpsd-swd.w0chp.net/WPSD-SWD|g' )
-        git --work-tree=${dir} --git-dir=${dir}/.git remote set-url origin $newURI
-    fi
-}
-gitURIupdate "/var/www/dashboard"
-gitURIupdate "/usr/local/bin"
-gitURIupdate "/usr/local/sbin"
-castResult=$(isDVmegaCast)
-if [ "$castResult" == "true" ]; then
-    gitURIupdate "/opt/cast"
-fi
-#
 
 # Git repo name changes/migrations
 #
@@ -172,15 +96,6 @@ update_git_remotes() {
 # Now update the repo remote URLs if needed
 update_git_remotes /var/www/dashboard https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-WebCode.git /usr/local/bin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binaries.git /usr/local/sbin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git
 #
-
-# Special Pi4/5 handling...
-if [ "$(/usr/local/sbin/.wpsd-platform-detect | grep "Pi 4 Model" | wc -l)" -ge 1 ]; then
-  model="Pi4"
-elif [ "$(/usr/local/sbin/.wpsd-platform-detect | grep "Pi 5 Model" | wc -l)" -ge 1 ]; then
-  model="Pi5"
-else
-  model=""
-fi
 
 SERVICE_NAME="mmdvmhost.service"
 STATUS=$(systemctl is-enabled "$SERVICE_NAME" 2>/dev/null)
@@ -239,80 +154,11 @@ if [ $( uname -m ) == "armv6l" ] ; then
 fi
 #
 
-# legacy cleanups
-if [ -f '/usr/sbin/WPSD-Installer' ]; then
-    rm -rf /usr/sbin/WPSD-Installer
-fi
-
-# update daily cron shuffle rules in rc.local; 2am-4am
-if grep -q 'shuf -i 3-4' $rc_local_file ; then
-  sed -i "s/shuf -i 3-4/shuf -i 2-4/g" $rc_local_file
-fi
-
-# cleanup slipstream in rc.local
-if grep -q "slipstream" $rc_local_file; then
-  sed -i '/slipstream/d' $rc_local_file
-fi
-
-# boot config restore cleanup
-if grep -q 'pistar-bootconfig.sh' $rc_local_file ; then
-    sed -i 's/pistar-bootconfig.sh/.wpsd-config-restore/g' $rc_local_file
-fi
-if grep -q 'pistar-expand' $rc_local_file ; then
-    sed -i 's/pistar-expand/.wpsd-expand/g' $rc_local_file
-fi
-
-# cleanup legacy ver. cache:
-if [ -f '/etc/.W0CHP-PiStar-Dash.remote_version' ] ; then
-    rm -r /etc/.W0CHP-PiStar-Dash.remote_version
-    touch /etc/.WPSD_remote_version
-fi
-
-# cleanup legacy motdgen
-if grep -q 'pistar-motdgen' $rc_local_file ; then
-   sed -i 's/pistar-motdgen/motdgen/g' $rc_local_file
-fi
-
 # add sys cache to rc.local and exec
 if grep -q 'pistar-hwcache' $rc_local_file ; then
     sed -i '/# cache hw info/,/\/usr\/local\/sbin\/pistar-hwcache/d' $rc_local_file
     sed -i '/^\/usr\/local\/sbin\/motdgen/a \\n# cache hw info\n\/usr/local/sbin/.wpsd-sys-cache' $rc_local_file
     /usr/local/sbin/.wpsd-sys-cache
-fi
-
-# Add wpsd-service bash completion & remove legacy one
-OLD_DEST="/usr/share/bash-completion/completions/pistar-services"
-DEST="/usr/share/bash-completion/completions/wpsd-services"
-COMPLETION_CONFIG="/etc/bash_completion.d/wpsd-services"
-if [ -f "$OLD_DEST" ]; then
-    rm -f "$OLD_DEST"
-    echo "Removed $OLD_DEST"
-fi
-if [ -f "$DEST" ]; then
-    rm -f "$DEST"
-    echo "Removed $DEST"
-fi
-if [ ! -f "$COMPLETION_CONFIG" ]; then
-    echo "#!/bin/bash" | sudo tee "$COMPLETION_CONFIG" >/dev/null
-    echo "" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "_wpsd_services()" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "{" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "    local cur prev words cword" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "    _init_completion -n = || return" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "    _expand || return 0" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "    COMPREPLY=( \$( compgen -W 'start stop restart fullstop status' -- \"\$cur\" ) )" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "} &&" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "complete -F _wpsd_services wpsd-services" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    echo "" | sudo tee -a "$COMPLETION_CONFIG" >/dev/null
-    chown root:root "$COMPLETION_CONFIG"
-    chmod 0644 "$COMPLETION_CONFIG"
-    echo "New completion file created"
-fi
-if [ -f /devnull ] ; then # ugh - cleanup prev. typo.
-    rm -f /devnull
 fi
 
 # Armbian for NanoPi Neo / OrangePi Zero handling..
@@ -470,19 +316,6 @@ if [ -f "$armbian_env_file" ] ; then
     fi
 fi
 
-# m0ar leg. cleanups; already called from rc.local
-if [ -f '/etc/network/if-up.d/pistar-motdgen' ] ; then
-    rm -rf /etc/network/if-up.d/pistar-motdgen
-fi
-
-# aaaaand more legacy cleanups
-if grep -q "Pi-Star_Build_Date" "/etc/pistar-release"; then
-    sed -i '/Pi-Star_Build_Date/d' "/etc/pistar-release"
-fi
-if grep -q "Version =" "/etc/pistar-release"; then
-    sed -i '/Version =/d' "/etc/pistar-release"
-fi
-
 # retro. m17gateway ini malformed callsign fix:
 file_path="/etc/m17gateway"
 invalid_lines=$(awk -F'=' '/Callsign=.*-($| )|Callsign=.* / {print NR, $0}' "$file_path")
@@ -495,35 +328,10 @@ if grep -q '_Cross-over' /etc/dmrgateway ; then
     sed -i 's/_Cross-over/_Cross-Mode/g' /etc/dmrgateway
 fi
 
-# fix red css color to newer more visible red:
-if grep -q 'b23b3b' /etc/pistar-css.ini ; then
-    sed -i 's/b23b3b/8C0C26/g' /etc/pistar-css.ini
-fi
-
 # use WPSD TG as sample in ysf2dmr
 if grep -q 'StartupDstId=31672' /etc/ysf2dmr ; then
     sed -i 's/StartupDstId=31672/StartupDstId=3170603/g' /etc/ysf2dmr
 fi
-
-# profile manager name robustness when it has spaces
-profile="/etc/WPSD_config_mgr/"
-if [[ $(find "$profile" -maxdepth 1 -type d -name "* *" -print -quit) ]]; then
-    for d in "$profile"/*\ *; do
-        if [ -d "$d" ]; then
-            new_name=$(echo "$d" | tr ' ' '_')
-            mv "$d" "$new_name"
-        fi
-    done
-fi
-
-#
-# slipstream bkgnd/rc.local task cleanup
-# 1/11/2024 - W0CHP
-#
-if [ -f '/nohup.out' ] ; then
-    rm -f /nohup.out
-fi
-#
 
 #
 # placeholder dapnet api file if it doesn't exst
@@ -558,15 +366,6 @@ else
     apt-get update
     apt-get install -y python-is-python3
 fi
-#py2packages=$(dpkg -l | grep python2 | awk '{print $2}' | sed 's/:.*//g')
-#if [ -n "$py2packages" ]; then
-#    apt-get purge -y $py2packages
-#    if [ $? -eq 0 ]; then
-#        echo "Legacy python2 Packages have been successfully removed and purged."
-#    else
-#        echo "Failed to remove and purge legacy python2 packages. Please check for errors."
-#    fi
-#fi
 
 #
 # htpasswd bookworm
@@ -690,16 +489,6 @@ if [ -L "$libOLEDfull_path" ]; then
 fi
 #
 
-# Install new WPSD uPnP rules engine
-#
-# 11/23 W0CHP
-#
-if [ ! -f '/etc/wpsd-upnp-rules' ]; then
-    declare -a CURL_OPTIONS=('-Ls' '-A' "uPnP Rules Engine Installer (slipstream) $uaStr")
-    curl "${CURL_OPTIONS[@]}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-upnp-rules -o /etc/wpsd-upnp-rules
-fi
-#
-
 # avahi tweak
 #
 # 6/2024 W0CHP
@@ -741,11 +530,6 @@ if ! grep -q 'wpsd' /etc/dnsmasq.conf ; then
     systemctl restart dnsmasq
 fi
 #
-
-# display fixes
-if grep -q 'Display=0' /etc/mmdvmhost ; then
-    sed -i 's/Display=0/Display=None/g' /etc/mmdvmhost
-fi
 
 # grab and cache latest WPSD hash
 gitFolder="/var/www/dashboard"
@@ -843,35 +627,13 @@ Debug=0
 EOL
 fi
 
-# 5/27/23: Bootstrapping backend scripts
-ignored_callsigns=("M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC")
-ignore_call=false  # Initialize
-for ignored in "${ignored_callsigns[@]}"; do
-    if [[ "$CALL" == "$ignored" ]]; then
-        ignore_call=true
-        break
-    fi
-done
-repo_path="/usr/local/sbin"
-cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
-modem=$(grep '^ModemFW\s*=\s*.*' /etc/pistar-release | sed 's/ModemFW = //g')
-modemType=$(grep '^ModemType\s*=\s*.*' /etc/pistar-release | sed 's/ModemType = //g')
-if grep -qE 'Hourly-Cron|hwDeetz' /usr/local/sbin 2>/dev/null || \
-   grep -q ':v' /etc/pistar-release 2>/dev/null || \
-   ! grep -qE '^ModemFW\s*=\s*.*-v\.' /etc/pistar-release 2>/dev/null && [ "$ignore_call" = false ]; then
-    git reset --hard origin/master
-    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="legacy sbin reset ${gitUaStr} ${modem} ${modemType}" git pull origin master
-    /usr/local/sbin/.wpsd-sys-cache /dev/null 2>&1
-fi
-
-git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
 git reset --hard origin/master
 if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUaStr}" git fetch origin; then
     commits_behind=$(git rev-list --count HEAD..origin/master)
     if [[ $commits_behind -gt 0 ]]; then
         if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master; then
 	    git reset --hard origin/master
-	    echo "Local sbin repository updated successfully. Restarting script..."
+	    #echo "Local sbin repository updated successfully. Restarting script..."
 	    # check if user already has firewall disabled, and if so, ensure it's kept that way.
 	    if ! grep -q LOGNDROP /etc/iptables.rules ; then
 		/usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
@@ -879,7 +641,6 @@ if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUa
 		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
 	    fi
 	    rm -rf /var/run/wpsd-slipstream-tasks
-	    bash /usr/local/sbin/.wpsd-slipstream-tasks
 	    exit
 	else
 	    echo "Failed to update the local sbin repository."
