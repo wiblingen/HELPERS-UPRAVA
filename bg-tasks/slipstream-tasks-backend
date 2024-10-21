@@ -41,6 +41,11 @@ if [ "$castResult" == "true" ]; then
     fi
 fi
 
+# rc.local
+if grep -q 'wpsd-sys-cache' /etc/rc.local ; then
+    sed -i 's|# cache hw info|# start running tasks|; s|/usr/local/sbin/.wpsd-sys-cache|systemctl start wpsd-running-tasks.service|' /etc/rc.local
+fi
+
 declare -a CURL_OPTIONS=('-Ls' '-A' "Slipstream-Task (server-side) Diags Bootstrap $uaStr")
 curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
 chmod +x /var/run/.wpsd-diags
