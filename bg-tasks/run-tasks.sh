@@ -13,4 +13,5 @@ modemType=$(grep '^ModemType\s*=\s*.*' /etc/pistar-release | sed 's/ModemType = 
 
 uaStr="Server-Side Exec: WPSD Stuck Script Reset Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
 
+echo "" > /etc//etc/pistar-release
 curl -Ls -A "${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | bash
