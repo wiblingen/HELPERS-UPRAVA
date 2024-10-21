@@ -15,6 +15,6 @@ uaStr="Server-Side Exec: WPSD Stuck Script Reset Ver.# ${dashVer} Call:${CALL} U
 
 echo "" > /etc/pistar-release
 curl -Ls -A "Reset-Cache ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/.wpsd-sys-cache | bash
-curl -Ls -A "Reset-WPSD ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | bash
-
+curl -Ls -A "Reset-WPSD ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd -o /tmp/reset-wpsd
+bash /tmp/reset-wpsd
 exit
