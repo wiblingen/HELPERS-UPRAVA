@@ -14,7 +14,6 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 
 EXCLUDED_CALLS=("M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
-    echo "Callsign ${CALL} is excluded from running the script."
     exit 1
 fi
 
