@@ -684,7 +684,12 @@ else
 
     if grep -q "mount -o remount,rw / && cd / && " /etc/crontab; then
         sed -i 's/mount -o remount,rw \/ && cd \/ && //g' /etc/crontab
+
     fi
+    if grep -q "cd / && " /etc/crontab; then
+        sed -i 's/cd \/ && //g' /etc/crontab
+    fi
+
     if [[ -f /etc/cron.hourly/pistar-hourly ]]; then
         rm -f /etc/cron.hourly/pistar-hourly
     fi
