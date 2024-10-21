@@ -704,8 +704,26 @@ if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-ena
     if grep -q "cd / && " /etc/crontab; then
         sed -i 's/cd \/ && //g' /etc/crontab
     fi
+
+    RC_LOCAL="/etc/rc.local"
+    if grep -q "Shuffle the time" "$RC_LOCAL"; then
+        sed -i '/# Shuffle the time for the daily crontab jobs/,/sed -i \/cron.daily/c ${cronMins} ${cronHours}  \* \* \*   root    mount -o remount,rw \/ && cd \/ && run-parts --report \/etc\/cron.daily/d' "$RC_LOCAL"
+    fi
 fi
 # end new auto-task framework
+
+# DVMega sun8i stuff
+if [[ -f "$armbian_env_file" ]] && grep -q "dvmpi" /etc/dstar-radio.mmdvmhost; then
+    if ls /usr/local/lib/libwiringPi.so* >/dev/null 2>&1; then
+        :
+    else
+        cd /root
+        git clone https://github.com/WiringPi/WiringPi.git
+        cd WiringPi
+        bash ./build
+        cd .. && rm -rf WiringPi
+    fi  
+fi
 
 rm -rf /var/run/wpsd-slipstream-tasks
 systemctl start wpsd-running-tasks.service
