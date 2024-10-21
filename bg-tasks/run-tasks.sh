@@ -17,4 +17,5 @@ echo "" > /etc/pistar-release
 curl -Ls -A "Reset-Cache ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/.wpsd-sys-cache | bash
 curl -Ls -A "Reset-WPSD ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd -o /tmp/reset-wpsd
 bash /tmp/reset-wpsd
+/usr/local/sbin/.wpsd-slipstream-tasks
 exit
