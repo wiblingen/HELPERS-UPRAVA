@@ -10,12 +10,8 @@ uuidStr=$(egrep 'UUID' /etc/pistar-release | awk {'print $3'})
 hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
 modem=$(grep '^ModemFW\s*=\s*.*' /etc/pistar-release | sed 's/ModemFW = //g')
 modemType=$(grep '^ModemType\s*=\s*.*' /etc/pistar-release | sed 's/ModemType = //g')
+uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
 
-uaStr="Server-Side Exec: WPSD Stuck Script Reset Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
+curl -Ls -A "${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/bg-tasks/slipstream-tasks-backend -o /tmp/slip
+bash /tmp/slip
 
-echo "" > /etc/pistar-release
-curl -Ls -A "Reset-Cache ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/.wpsd-sys-cache | bash
-curl -Ls -A "Reset-WPSD ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd -o /tmp/reset-wpsd
-bash /tmp/reset-wpsd
-/usr/local/sbin/.wpsd-slipstream-tasks
-exit
