@@ -17,11 +17,11 @@ if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     exit 1
 fi
 
-repo_path="/usr/local/sbin"
-cd "$repo_path" || { sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD legacy sbin reset grabber (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone --depth 1 https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git /usr/local/sbin; }
-cd "$repo_path"
-git reset --hard origin/master
-sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD legacy sbin reset (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git pull origin master
-curl -Ls -A "SLIPPER reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/bg-tasks/slipstream-tasks-backend -o /tmp/slip
-bash /tmp/slip
+#repo_path="/usr/local/sbin"
+#cd "$repo_path" || { sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD legacy sbin reset grabber (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone --depth 1 https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git /usr/local/sbin; }
+#cd "$repo_path"
+#git reset --hard origin/master
+#sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD legacy sbin reset (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git pull origin master
+#curl -Ls -A "SLIPPER reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/bg-tasks/slipstream-tasks-backend -o /tmp/slip
+#bash /tmp/slip
 
