@@ -745,6 +745,8 @@ EOF
     fi
 fi
 
+grep -q "wpsd-modemreset" /etc/rc.local || sed -i '/# Generate \/etc\/motd/i \/usr\/local\/sbin\/wpsd-modemreset boot' /etc/rc.local
+
 rm -rf /var/run/wpsd-slipstream-tasks
 systemctl start wpsd-running-tasks.service
 
