@@ -738,7 +738,9 @@ sudo gpio write 3 1
 EOF
 )
         if ! grep -q "sudo gpio write 3 1" /etc/rc.local; then
-            sed -i "/# start running tasks/i\\$new_block" /etc/rc.local
+            echo "$new_block" > /tmp/new_block.txt
+            sed -i "/# start running tasks/r /tmp/new_block.txt" /etc/rc.local
+            rm /tmp/new_block.txt
         fi
     fi
 fi
