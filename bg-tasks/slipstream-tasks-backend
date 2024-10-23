@@ -737,6 +737,14 @@ EOF
     fi
 fi
 
+# display fixes
+if grep -q 'Display=0' /etc/mmdvmhost ; then
+    sed -i 's/Display=0/Display=None/g' /etc/mmdvmhost
+fi
+if grep -q 'Display=0' /etc/mmdvmhost ; then
+    sed -i 's/Display=NEXTION/Display=Nextion/g' /etc/mmdvmhost
+fi
+
 grep -q "wpsd-modemreset" /etc/rc.local || sed -i '/# Generate \/etc\/motd/i \/usr\/local\/sbin\/wpsd-modemreset boot' /etc/rc.local
 
 rm -rf /var/run/wpsd-slipstream-tasks
