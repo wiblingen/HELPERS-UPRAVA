@@ -14,3 +14,18 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 
 /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
 
+TIMERS=("wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
+for TIMER in "${TIMERS[@]}"; do
+    if ! systemctl is-active --quiet "$TIMER"; then
+        echo "$TIMER is not running. Starting it..."
+        systemctl start "$TIMER"
+        if systemctl is-active --quiet "$TIMER"; then
+            echo "$TIMER started successfully."
+        else
+            echo "Failed to start $TIMER."
+        fi
+    else
+        echo "$TIMER is already running."
+    fi
+done
+
