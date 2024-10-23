@@ -31,4 +31,6 @@ else
 fi
 
 sudo .wpsd-sys-cache
+sudo .wpsd-slipstream-tasks
 sudo systemctl restart wpsd-running-tasks.service
+sudo systemctl restart wpsd-nightly-tasks.service
