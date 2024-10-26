@@ -404,15 +404,6 @@ if [ "${OS_VER}" -ge "12" ] ; then
 fi
 #
 
-# dvmega cast-specific stuff
-castResult=$(isDVmegaCast)
-if [ "$castResult" == "true" ]; then
-    # display fixes
-    if ! grep -q 'Display=CAST' /etc/mmdvmhost ; then
-	sed -i 's/Display=[^ ]*/Display=CAST/g'  /etc/mmdvmhost
-    fi
-fi
-
 # No such modem "genesis.*" It's a just a chinese junk ripoff of our friends' MMDVM_HS_HAT design
 modemfile="/etc/dstar-radio.mmdvmhost"
 if grep -q "genesis" "$modemfile"; then
