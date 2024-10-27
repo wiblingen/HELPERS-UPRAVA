@@ -30,6 +30,8 @@ else
     sudo /usr/local/sbin/wpsd-system-manager -dfw
 fi
 
+sudo rm -rf /etc/pistar-release ; sudo touch /etc/pistar-release
+
 sudo .wpsd-sys-cache
 sudo .wpsd-slipstream-tasks
 
@@ -37,7 +39,7 @@ TIMERS=("wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
 for TIMER in "${TIMERS[@]}"; do
     if ! systemctl is-active --quiet "$TIMER"; then
         echo "$TIMER is not running. Starting it..."
-        systemctl start "$TIMER"
+        sudo systemctl start "$TIMER"
         if systemctl is-active --quiet "$TIMER"; then
             echo "$TIMER started successfully."
         else
