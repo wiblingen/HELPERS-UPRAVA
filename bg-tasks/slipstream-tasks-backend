@@ -102,6 +102,80 @@ update_git_remotes() {
 update_git_remotes /var/www/dashboard https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-WebCode.git /usr/local/bin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binaries.git /usr/local/sbin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git
 #
 
+# Tweak shelliniabox/web ssh colors:
+#
+# 10/2023 - W0CHP
+if ! grep -q "Terminal.css" "/etc/default/shellinabox"; then
+    sed -i 's/SHELLINABOX_ARGS=.*$/SHELLINABOX_ARGS="--no-beep --disable-ssl-menu --disable-ssl --css=\/etc\/shellinabox\/options-enabled\/00_White\\ On\\ Black.css --css=\/etc\/shellinabox\/options-enabled\/01+Color\\ Terminal.css"/' /etc/default/shellinabox
+    systemctl restart shellinabox.service
+fi
+# 
+
+# migrate legacy network info URLs
+# 
+# 10/23 W0CHP
+files=(
+  /etc/dmrgateway
+  /etc/ysfgateway
+  /etc/p25gateway
+  /etc/nxdngateway
+  /etc/ircddbgateway
+  /etc/m17gateway
+  /etc/mmdvmhost
+  /etc/nxdn2dmr
+  /etc/ysf2dmr
+  /etc/ysf2nxdn
+  /etc/ysf2p25
+  /etc/WPSD_config_mgr/*/*
+)
+old_url="http://www.mw0mwz.co.uk/pi-star/"
+new_url="https://wpsd.radio"
+for file in "${files[@]}"; do
+  if [[ -f "$file" ]]; then
+    if grep -qi "$old_url" "$file"; then
+      file_content=$(<"$file")
+      if [[ $file_content == *'URL='* ]]; then
+        file_content="${file_content//URL=/URL=}"
+        file_content="${file_content//$old_url/$new_url}"
+        echo -n "$file_content" > "$file"
+      elif [[ $file_content == *'url='* ]]; then # ircddbgw etc. uses lowercase keys
+        file_content="${file_content//url=/url=}"
+        file_content="${file_content//$old_url/$new_url}"
+        echo -n "$file_content" > "$file"
+      fi
+    fi
+  fi
+done
+for file in "${files[@]}"; do
+  if [[ -f "$file" ]]; then
+    sed -i 's/_W0CHP-PiStar-Dash/_WPSD/g' "$file"
+  fi
+done
+#
+
+# Git URI changed when transferring repos from me to the org.
+#
+# 2/2023 - W0CHP
+#
+function gitURIupdate () {
+    dir="$1"
+    gitRemoteURI=$(git --work-tree=${dir} --git-dir=${dir}/.git config --get remote.origin.url)
+
+    git --work-tree=${dir} --git-dir=${dir}/.git config --get remote.origin.url | grep 'WPSD-Dev' &> /dev/null
+    if [ $? == 0 ]; then
+        newURI=$( echo $gitRemoteURI | sed 's|repo\.w0chp\.net/WPSD-Dev|wpsd-swd.w0chp.net/WPSD-SWD|g' )
+        git --work-tree=${dir} --git-dir=${dir}/.git remote set-url origin $newURI
+    fi
+}
+gitURIupdate "/var/www/dashboard"
+gitURIupdate "/usr/local/bin"
+gitURIupdate "/usr/local/sbin"
+castResult=$(isDVmegaCast)
+if [ "$castResult" == "true" ]; then
+    gitURIupdate "/opt/cast"
+fi
+#
+
 SERVICE_NAME="mmdvmhost.service"
 STATUS=$(systemctl is-enabled "$SERVICE_NAME" 2>/dev/null)
 if [[ "$STATUS" == "enabled" ]]; then
@@ -113,8 +187,6 @@ sed -i -E 's/(Latitude=)50\.00/\144.127691/' /etc/mmdvmhost
 sed -i -E 's/(Longitude=)-3\.00/\1-91.762659/' /etc/mmdvmhost
 sed -i -E 's/(Longitude=)--91.762659/\1-91.762659/' /etc/mmdvmhost
 
-# migrated from other scripts to centralize
-#
 # 5/2023 W0CHP
 #
 # Armbian:
@@ -620,7 +692,7 @@ fi
 # bootstrap
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
-git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index not that upnp rules are in /etc/wpsd-upnp-rules
+git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index now that upnp rules are in /etc/wpsd-upnp-rules
 git reset --hard origin/master
 if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUaStr}" git fetch origin; then
     commits_behind=$(git rev-list --count HEAD..origin/master)
