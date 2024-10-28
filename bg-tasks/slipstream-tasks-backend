@@ -250,7 +250,6 @@ fi
 
 # Armbian for NanoPi Neo / OrangePi Zero handling..
 if [ -f "$armbian_env_file" ] && [[ $(grep "console=serial" $armbian_env_file) ]] ; then
-    mount -o remount,rw /boot
     sed -i '/console=serial/d' $armbian_env_file
     if [ -f '/etc/network/if-pre-up.d/static-mac' ] ; then
 	rm -rf /etc/network/if-pre-up.d/static-mac
@@ -334,7 +333,6 @@ fi
 # random eth0 mac fix/reversion for new Nano/Orange Pi DTBs: 8/24 W0CHP
 if [ -f "$armbian_env_file" ] ; then
     if grep -q 'ethaddr' $armbian_env_file ; then
-	mount -o remount,rw /boot
 	sed -i '/ethaddr/d' $armbian_env_file
 	#reboot
     fi
