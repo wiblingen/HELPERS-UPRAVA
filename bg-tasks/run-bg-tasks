@@ -29,6 +29,8 @@ for TIMER in "${TIMERS[@]}"; do
     fi
 done
 
+cd /var/www/dashboard && git reset --hard origin/master
+
 EXCLUDED_CALLS=("M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     :
