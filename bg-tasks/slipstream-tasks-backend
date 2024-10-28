@@ -28,6 +28,8 @@ chown -R www-data:pi-star /var/www/dashboard
 cd /var/www/dashboard && git reset --hard origin/master
 #
 
+find /etc/WPSD_config_mgr/ -type f -name "*.php" -exec rm -f {} +
+
 # ensure perms for git repos
 if ! grep -q 'safe' /root/.gitconfig > /dev/null 2>&1 ; then
     git config --global --add safe.directory /var/www/dashboard > /dev/null 2>&1
