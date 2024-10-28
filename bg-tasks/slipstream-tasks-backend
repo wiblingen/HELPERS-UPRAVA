@@ -853,6 +853,11 @@ else
         sed -i "s|^DashLanguage = .*|DashLanguage = $pistar_language|" "$new_config"
     fi
 fi
+MMDVMCALL=$( grep -oP '^Callsign=\K.*' /etc/mmdvmhost | head -n 1 )
+CONFIGCALL=$( grep -oP '^Callsign=\K.*' $new_config)
+if [[ "$CONFIGCALL" != "$MMDVMCALL" ]] ; then
+    sed -i "s|^Callsign = .*|Callsign = $MMDVMCALL|" "$new_config"
+fi
 
 rm -rf /var/run/wpsd-slipstream-tasks
 systemctl start wpsd-running-tasks.service
