@@ -28,7 +28,18 @@ chown -R www-data:pi-star /var/www/dashboard
 cd /var/www/dashboard && git reset --hard origin/master
 #
 
+# profile manager cleanups and updates
 find /etc/WPSD_config_mgr/ -type f -name "*.php" -exec rm -f {} +
+config_value=$(cat /etc/.WPSD_config)
+target_dir="/etc/WPSD_config_mgr/$config_value"
+target_file="$target_dir/WPSD-Dashboard-Config.ini"
+if [[ ! -f "$target_file" ]]; then
+  mkdir -p "$target_dir"
+  cp /etc/WPSD-Dashboard-Config.ini "$target_file"
+  echo "Config file copied to $target_file"
+else
+  echo "Config file already exists at $target_file"
+fi
 
 # ensure perms for git repos
 if ! grep -q 'safe' /root/.gitconfig > /dev/null 2>&1 ; then
