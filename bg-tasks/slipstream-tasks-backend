@@ -860,7 +860,6 @@ if [[ "$CONFIGCALL" != "$MMDVMCALL" ]] ; then
 fi
 
 rm -rf /var/run/wpsd-slipstream-tasks
-systemctl start wpsd-running-tasks.service
 
 exit 0
 
