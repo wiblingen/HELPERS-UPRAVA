@@ -714,7 +714,6 @@ if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUa
 	    else
 		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
 	    fi
-	    rm -rf /var/run/wpsd-slipstream-tasks
 	    exit
 	else
 	    echo "Failed to update the local sbin repository."
@@ -863,8 +862,6 @@ CONFIGCALL=$( grep -oP '^Callsign=\K.*' $new_config)
 if [[ "$CONFIGCALL" != "$MMDVMCALL" ]] ; then
     sed -i "s|^Callsign = .*|Callsign = $MMDVMCALL|" "$new_config"
 fi
-
-rm -rf /var/run/wpsd-slipstream-tasks
 
 exit 0
 
