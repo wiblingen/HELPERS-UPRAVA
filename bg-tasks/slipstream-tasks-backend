@@ -34,11 +34,7 @@ config_value=$(cat /etc/.WPSD_config)
 target_dir="/etc/WPSD_config_mgr/$config_value"
 target_file="$target_dir/WPSD-Dashboard-Config.ini"
 if [[ ! -f "$target_file" ]]; then
-  mkdir -p "$target_dir"
   cp /etc/WPSD-Dashboard-Config.ini "$target_file"
-  echo "Config file copied to $target_file"
-else
-  echo "Config file already exists at $target_file"
 fi
 
 # ensure perms for git repos
