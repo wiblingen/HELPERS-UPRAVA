@@ -774,6 +774,8 @@ if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-ena
         sed -i '/# Shuffle the time for the daily crontab jobs/,/sed -i \/cron.daily/c ${cronMins} ${cronHours}  \* \* \*   root    mount -o remount,rw \/ && cd \/ && run-parts --report \/etc\/cron.daily/d' "$RC_LOCAL"
     fi
 fi
+grep -q '^Conflicts=wpsd-running-tasks.service$' /etc/systemd/system/wpsd-nightly-tasks.service && sudo sed -i '/^Conflicts=wpsd-running-tasks.service$/d' /etc/systemd/system/wpsd-nightly-tasks.service && sudo systemctl daemon-reload
+
 # end new auto-task framework
 
 # DVMega sun8i stuff
