@@ -2,7 +2,7 @@
 Description=NextionDriver service
 DefaultDependencies=no
 After=local-fs.target wifi-country.service network-online.target
-Before=timers.target
+Before=avahi-daemon.socket avahi-daemon.service timers.target
 
 [Service]
 User=root
