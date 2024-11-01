@@ -865,7 +865,7 @@ if [[ "$CONFIGCALL" != "$MMDVMCALL" ]] ; then
     sed -i "s|^Callsign = .*|Callsign = $MMDVMCALL|" "$new_config"
 fi
 
-# ensure avahi loads BEFORE NextionDriver, as Lucas found that avahi likes to socket to any random port, which caused a Transparent Data port conflict
+# ensure avahi loads BEFORE NextionDriver, as Lucas, AE0LI, found that avahi likes to socket to any random port, which can cause a Transparent Data port conflict
 if ! grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
     sed -i 's/^Before=timers.target$/Before=avahi-daemon.socket avahi-daemon.service timers.target/' /lib/systemd/system/nextiondriver.service
     systemctl daemon-reload
