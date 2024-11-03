@@ -902,5 +902,10 @@ if grep -q 'WPSDrelease' /var/www/dashboard/includes/messages.php ; then
     fi
 fi
 
+# css migrator
+if [ ! -f '/etc/wpsd-css.ini']; then
+    mv /etc/pistar-css.ini /etc/wpsd-css.ini
+fi
+
 exit 0
 
