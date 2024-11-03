@@ -906,7 +906,7 @@ fi
 if [ ! -f '/etc/wpsd-css.ini']; then
     cp -a /etc/pistar-css.ini /etc/wpsd-css.ini
 fi
-if grep -q 'Not found' /etc/wpsd-css.ini ; then
+if grep -q 'found' /etc/wpsd-css.ini ; then
     cp -a /etc/pistar-css.ini /etc/wpsd-css.ini
 fi
 
