@@ -891,6 +891,18 @@ if [ -n "$call_provider_line" ]; then
     fi
 fi
 
+# release migrator
+source_file="/etc/pistar-release"
+destination_file="/etc/WPSD-release"
+if [[ ! -f "$destination_file" ]]; then
+    while IFS= read -r line; do
+        if [[ "$line" == "[Pi-Star]" ]]; then
+            echo "[WPSD]" >> "$destination_file"
+        else
+            echo "$line" >> "$destination_file"
+        fi
+    done < "$source_file"
+fi
 
 exit 0
 
