@@ -895,8 +895,10 @@ if [[ ! -f "$destination_file" ]]; then
             echo "$line" >> "$destination_file"
         fi
     done < "$source_file"
-    if [[ -f "$destination_file" && -n "$source_file" ]]; then
-	rm -rf "$source_file"
+fi
+if grep -q 'WPSDrelease' /var/www/dashboard/includes/messages.php ; then
+    if [[ -f "$destination_file" && -n "$destination_file" ]]; then
+        rm -rf "$source_file"
     fi
 fi
 
