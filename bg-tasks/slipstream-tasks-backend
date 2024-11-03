@@ -241,13 +241,6 @@ if [ $( uname -m ) == "armv6l" ] ; then
 fi
 #
 
-# add sys cache to rc.local and exec
-if grep -q 'pistar-hwcache' $rc_local_file ; then
-    sed -i '/# cache hw info/,/\/usr\/local\/sbin\/pistar-hwcache/d' $rc_local_file
-    sed -i '/^\/usr\/local\/sbin\/motdgen/a \\n# cache hw info\n\/usr/local/sbin/.wpsd-sys-cache' $rc_local_file
-    /usr/local/sbin/.wpsd-sys-cache
-fi
-
 # Armbian for NanoPi Neo / OrangePi Zero handling..
 if [ -f "$armbian_env_file" ] && [[ $(grep "console=serial" $armbian_env_file) ]] ; then
     sed -i '/console=serial/d' $armbian_env_file
@@ -363,12 +356,12 @@ if [ -f "$armbian_env_file" ] ; then
 fi
 
 # shitty hardware/cheap hams be dammed
-proc_num=$(grep -E '^ProcNum' /etc/pistar-release | awk -F'=' '{print $2}' | xargs)
+proc_num=$(grep -E '^ProcNum' /etc/WPSD-release | awk -F'=' '{print $2}' | xargs)
 if [[ $proc_num < 4 ]] ; then
     rm -rf /etc/.TGNAMES /etc/.CALLERDETAILS
 fi
 
-sed -i '/DEBUG/d' /etc/pistar-release
+sed -i '/DEBUG/d' /etc/WPSD-release
 
 # ensure gpsd is only enabled by the user:
 if ! `systemctl status gpsd.socket | grep -q masked` && [ `sed -n '/^\[GPSD\]/,/^\[/p' /etc/dmrgateway | grep "^Enable" | awk -F '=' '{print $2}'` == 0 ] ; then
