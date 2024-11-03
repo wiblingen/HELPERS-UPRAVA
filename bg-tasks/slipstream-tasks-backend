@@ -871,5 +871,26 @@ if ! grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
     systemctl daemon-reload
 fi
 
+# dash prefs migrator
+PISTAR_FILE="/etc/pistar-release"
+DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
+phonetic_line=$(grep '^PhoneticCallsigns =' "$PISTAR_FILE")
+call_provider_line=$(grep '^CallLookupProvider =' "$PISTAR_FILE")
+if [ -n "$phonetic_line" ]; then
+    phonetic_value="$phonetic_line"
+    sed -i '/^PhoneticCallsigns =/d' "$PISTAR_FILE"
+    if ! grep -q '^PhoneticCallsigns =' "$DASHBOARD_CONFIG"; then
+        echo "$phonetic_value" >> "$DASHBOARD_CONFIG"
+    fi
+fi
+if [ -n "$call_provider_line" ]; then
+    lookup_value="$call_provider_line"
+    sed -i '/^CallLookupProvider =/d' "$PISTAR_FILE"
+    if ! grep -q '^CallLookupProvider =' "$DASHBOARD_CONFIG"; then
+        echo "$call_provider_line" >> "$DASHBOARD_CONFIG"
+    fi
+fi
+
+
 exit 0
 
