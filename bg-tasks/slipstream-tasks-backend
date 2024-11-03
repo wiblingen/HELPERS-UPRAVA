@@ -904,7 +904,7 @@ fi
 
 # css migrator
 if [ ! -f '/etc/wpsd-css.ini']; then
-    mv /etc/pistar-css.ini /etc/wpsd-css.ini
+    cp -a /etc/pistar-css.ini /etc/wpsd-css.ini
 fi
 
 exit 0
