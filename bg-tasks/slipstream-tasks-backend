@@ -865,22 +865,24 @@ if ! grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
 fi
 
 # dash prefs migrator
-PISTAR_FILE="/etc/pistar-release"
-DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
-phonetic_line=$(grep '^PhoneticCallsigns =' "$PISTAR_FILE")
-call_provider_line=$(grep '^CallLookupProvider =' "$PISTAR_FILE")
-if [ -n "$phonetic_line" ]; then
-    phonetic_value="$phonetic_line"
-    sed -i '/^PhoneticCallsigns =/d' "$PISTAR_FILE"
-    if ! grep -q '^PhoneticCallsigns =' "$DASHBOARD_CONFIG"; then
-        echo "$phonetic_value" >> "$DASHBOARD_CONFIG"
+if [ -f "/etc/pistar-release" ]; then
+    PISTAR_FILE="/etc/pistar-release"
+    DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
+    phonetic_line=$(grep '^PhoneticCallsigns =' "$PISTAR_FILE")
+    call_provider_line=$(grep '^CallLookupProvider =' "$PISTAR_FILE")
+    if [ -n "$phonetic_line" ]; then
+        phonetic_value="$phonetic_line"
+        sed -i '/^PhoneticCallsigns =/d' "$PISTAR_FILE"
+        if ! grep -q '^PhoneticCallsigns =' "$DASHBOARD_CONFIG"; then
+            echo "$phonetic_value" >> "$DASHBOARD_CONFIG"
+        fi
     fi
-fi
-if [ -n "$call_provider_line" ]; then
-    lookup_value="$call_provider_line"
-    sed -i '/^CallLookupProvider =/d' "$PISTAR_FILE"
-    if ! grep -q '^CallLookupProvider =' "$DASHBOARD_CONFIG"; then
-        echo "$call_provider_line" >> "$DASHBOARD_CONFIG"
+    if [ -n "$call_provider_line" ]; then
+        lookup_value="$call_provider_line"
+        sed -i '/^CallLookupProvider =/d' "$PISTAR_FILE"
+        if ! grep -q '^CallLookupProvider =' "$DASHBOARD_CONFIG"; then
+            echo "$call_provider_line" >> "$DASHBOARD_CONFIG"
+        fi
     fi
 fi
 
@@ -903,7 +905,7 @@ if grep -q 'WPSDrelease' /var/www/dashboard/includes/messages.php ; then
 fi
 
 # css migrator
-if [ ! -f '/etc/wpsd-css.ini']; then
+if [ -f '/etc/pistar-css.ini' ]; then
     cp -a /etc/pistar-css.ini /etc/wpsd-css.ini
 fi
 if grep -q 'found' /etc/wpsd-css.ini ; then
