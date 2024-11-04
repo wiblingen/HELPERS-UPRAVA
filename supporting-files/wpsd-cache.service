@@ -1,0 +1,8 @@
+[Unit]
+Description=WPSD Sys Cache Service
+Conflicts=wpsd-running-task.service wpsd-nightly-task.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/.wpsd-sys-cache
+

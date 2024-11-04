@@ -769,6 +769,16 @@ if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-ena
 fi
 grep -q '^Conflicts=wpsd-running-tasks.service$' /etc/systemd/system/wpsd-nightly-tasks.service && sudo sed -i '/^Conflicts=wpsd-running-tasks.service$/d' /etc/systemd/system/wpsd-nightly-tasks.service && sudo systemctl daemon-reload
 
+if systemctl is-enabled wpsd-cache.timer &>/dev/null; then
+    : # skip
+else
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-cache.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-cache.service
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-cache.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-cache.timer
+
+    systemctl daemon-reload
+
+    systemctl start wpsd-cache.timer
+fi
 # end new auto-task framework
 
 # DVMega sun8i stuff
