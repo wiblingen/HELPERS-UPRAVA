@@ -929,5 +929,9 @@ fi
 #    rm -rf /etc/pistar-css.in"
 #fi
 
+if [ -f '/usr/local/sbin/INI_FILE' ]; then
+    rm -rf /usr/local/sbin/INI_FILE
+fi
+
 exit 0
 
