@@ -2,8 +2,8 @@
 Description=Run WPSD Tasks at random intervals
 
 [Timer]
-# Run the service every 2-4 hours, with randomized delay
-OnUnitActiveSec=2h
+# Set the timer to trigger every 2 hours, with randomized start time within each window
+OnCalendar=*:0/2:00
 RandomizedDelaySec=2h
 
 [Install]
