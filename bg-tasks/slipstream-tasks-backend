@@ -358,7 +358,7 @@ fi
 # shitty hardware/cheap hams be dammed
 proc_num=$(grep -E '^ProcNum' /etc/WPSD-release | awk -F'=' '{print $2}' | xargs)
 if [[ $proc_num < 4 ]] ; then
-    rm -rf /etc/.TGNAMES /etc/.CALLERDETAILS
+    #rm -rf /etc/.TGNAMES /etc/.CALLERDETAILS
 fi
 
 sed -i '/DEBUG/d' /etc/WPSD-release
