@@ -935,5 +935,13 @@ if [ -f '/usr/local/sbin/INI_FILE' ]; then
     rm -rf /usr/local/sbin/INI_FILE
 fi
 
+# Check if the fake-hwclock package is installed
+if dpkg -l | grep -q "^ii  fake-hwclock"; then
+    sudo apt-get remove --purge -y fake-hwclock
+fi
+if grep -q "flock -n /run/lock/ntpdate /usr/sbin/ntpdate-debian -s -b" /etc/rc.local; then
+    sed -i "/# Print the IP address/,/fi/d" /etc/rc.local
+fi
+
 exit 0
 
