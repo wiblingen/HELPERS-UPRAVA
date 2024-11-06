@@ -1,6 +1,5 @@
 [Unit]
 Description=WPSD Sys Cache Service
-Conflicts=wpsd-running-tasks.service wpsd-nightly-tasks.service
 
 [Service]
 Type=oneshot

@@ -776,7 +776,7 @@ else
     systemctl enable wpsd-cache.timer
     systemctl start wpsd-cache.timer
 fi
-if grep -q 'Conflicts=wpsd-running-task.service wpsd-nightly-task.service' /etc/systemd/system/wpsd-cache.service ; then
+if grep -q 'Conflicts' /etc/systemd/system/wpsd-cache.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-cache.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-cache.service
     systemctl daemon-reload
 fi
