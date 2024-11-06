@@ -914,6 +914,19 @@ if grep -q 'WPSDrelease' /var/www/dashboard/includes/messages.php ; then
         rm -rf "$source_file"
     fi
 fi
+patterns=(
+    "# Update the Kernel version"
+    "_KernelVer="
+    "_MMDVMHostVer="
+    "mount -o remount,rw /"
+    "sed -i \"/kernel/c kernel = \$_KernelVer\""
+    "sed -i \"/MMDVMHost/c MMDVMHost = \$_MMDVMHostVer\""
+)
+if grep -q '# Update the Kernel version' /etc/rc.local ; then
+    for pattern in "${patterns[@]}"; do
+        sed -i "\|$pattern|d" /etc/rc.local
+    done
+fi
 
 # css migrator
 if [ -f '/etc/pistar-css.ini' ]; then
