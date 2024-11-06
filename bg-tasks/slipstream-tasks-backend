@@ -25,7 +25,6 @@ find /var/www/dashboard -type d -exec chattr -i {} +
 # 5/30/23: ensure www perms are correct:
 cd /var/www/dashboard && chmod 755 `find  -type d`
 chown -R www-data:pi-star /var/www/dashboard
-cd /var/www/dashboard && git reset --hard origin/master
 #
 
 # profile manager cleanups and updates
@@ -354,12 +353,6 @@ if [ -f "$armbian_env_file" ] ; then
         fi
     fi
 fi
-
-# shitty hardware/cheap hams be dammed
-proc_num=$(grep -E '^ProcNum' /etc/WPSD-release | awk -F'=' '{print $2}' | xargs)
-#if [[ $proc_num < 4 ]] ; then
-    #rm -rf /etc/.TGNAMES /etc/.CALLERDETAILS
-#fi
 
 # ensure gpsd is only enabled by the user:
 if ! `systemctl status gpsd.socket | grep -q masked` && [ `sed -n '/^\[GPSD\]/,/^\[/p' /etc/dmrgateway | grep "^Enable" | awk -F '=' '{print $2}'` == 0 ] ; then
@@ -932,8 +925,8 @@ fi
 if [[ -f "/etc/wpsd-css.ini" && -n "/etc/wpsd-css.ini" ]]; then
     rm -rf /etc/pistar-css.ini
 fi
-if [ -f '/usr/local/sbin/INI_FILE' ]; then
-    rm -rf /usr/local/sbin/INI_FILE
+if [ -f '/INI_FILE' ]; then
+    rm -rf /INI_FILE
 fi
 
 # Check if the fake-hwclock package is installed
