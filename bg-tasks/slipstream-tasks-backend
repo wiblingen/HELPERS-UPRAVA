@@ -929,9 +929,9 @@ if grep -q '# Update the Kernel version' /etc/rc.local ; then
 fi
 
 # css migrator
-if [ -f '/etc/pistar-css.ini' ]; then
-    cp -a /etc/pistar-css.ini /etc/wpsd-css.ini
-fi
+#if [ -f '/etc/pistar-css.ini' ]; then
+#    cp -a /etc/pistar-css.ini /etc/wpsd-css.ini
+#fi
 if grep -q 'found' /etc/wpsd-css.ini ; then
     cp -a /etc/pistar-css.ini /etc/wpsd-css.ini
 fi
