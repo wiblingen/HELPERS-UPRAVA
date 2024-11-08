@@ -759,7 +759,7 @@ if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-ena
     fi
 fi
 if ! grep -q 'Conflicts=wpsd-running-tasks.service' /etc/systemd/system/wpsd-nightly-tasks.service ; then
-    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tassk.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
     systemctl daemon-reload
 fi
 grep -q 'OnUnitActiveSec' /etc/systemd/system/wpsd-running-tasks.timer &&  \
@@ -782,6 +782,15 @@ if grep -q 'Conflicts' /etc/systemd/system/wpsd-cache.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-cache.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-cache.service
     systemctl daemon-reload
 fi
+if [ -f '/etc/systemd/system/wpsd-nigjtly-tassk.service' ]; then
+    rm -rf /etc/systemd/system/wpsd-nigjtly-tassk.service
+    systemctl daemon-reload
+fi
+if [ -f '/etc/systemd/system/wpsd-nightly-tassk.service' ]; then
+    rm -rf /etc/systemd/system/wpsd-nightly-tassk.service
+    systemctl daemon-reload
+fi
+
 # end new auto-task framework
 
 # DVMega sun8i stuff
