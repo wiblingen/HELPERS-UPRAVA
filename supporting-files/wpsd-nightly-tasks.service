@@ -1,5 +1,6 @@
 [Unit]
 Description=WPSD Nightly Tasks
+Conflicts=wpsd-runnning-tasks.service
 
 [Service]
 ExecStart=/usr/local/sbin/.wpsd-nightly-tasks
