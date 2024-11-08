@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 ## This script is for near-real-time and periodic fixes, etc.
 
 if [ "$(id -u)" != "0" ]; then
@@ -758,7 +760,7 @@ if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-ena
         sed -i '/# Shuffle the time for the daily crontab jobs/,/sed -i \/cron.daily/c ${cronMins} ${cronHours}  \* \* \*   root    mount -o remount,rw \/ && cd \/ && run-parts --report \/etc\/cron.daily/d' "$RC_LOCAL"
     fi
 fi
-if ! grep -q 'Conflicts=wpsd-running-tasks.service' /etc/systemd/system/wpsd-nightly-tasks.service ; then
+if ! grep -q 'Conflicts' /etc/systemd/system/wpsd-nightly-tasks.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
     systemctl daemon-reload
 fi
