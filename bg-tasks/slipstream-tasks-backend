@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 ## This script is for near-real-time and periodic fixes, etc.
 
 if [ "$(id -u)" != "0" ]; then
