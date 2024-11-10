@@ -30,10 +30,8 @@ else
     sudo /usr/local/sbin/wpsd-system-manager -dfw
 fi
 
-sudo /usr/local/sbin/wpsd-services restart
-
-sudo .wpsd-sys-cache
-sudo .wpsd-slipstream-tasks
+sudo /usr/local/sbin/.wpsd-slipstream-tasks
+sudo /usr/local/sbin/.wpsd-sys-cache
 
 TIMERS=("wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
 for TIMER in "${TIMERS[@]}"; do
