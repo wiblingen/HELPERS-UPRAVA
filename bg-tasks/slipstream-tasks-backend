@@ -962,7 +962,7 @@ if grep -q "flock -n /run/lock/ntpdate /usr/sbin/ntpdate-debian -s -b" /etc/rc.l
     sed -i "/# Print the IP address/,/fi/d" /etc/rc.local
 fi
 
-if grep 'Iface' /etc/WPSD-release ; then
+if grep -q 'Iface' /etc/WPSD-release ; then
     rm -rf /etc/WPSD-release
     rm -rf /usr/local/etc/.WPSD-release
     /usr/local/sbin/.wpsd-sys-cache
