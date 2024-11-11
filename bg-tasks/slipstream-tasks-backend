@@ -963,8 +963,10 @@ if grep -q "flock -n /run/lock/ntpdate /usr/sbin/ntpdate-debian -s -b" /etc/rc.l
 fi
 
 if grep -q 'Iface' /etc/WPSD-release ; then
+    systemctl stop wpsd-cache.timer
     rm -rf /etc/WPSD-release
     rm -rf /usr/local/etc/.WPSD-release
+    systemctl start wpsd-cache.timer
 fi
 
 exit 0
