@@ -766,6 +766,9 @@ fi
 if grep 'nightly' /etc/systemd/system/wpsd-running-tasks.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
 fi
+if grep 'running' /etc/systemd/system/wpsd-nightly-tasks.service ; then
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
+fi
 grep -q 'OnUnitActiveSec' /etc/systemd/system/wpsd-running-tasks.timer &&  \
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.timer \
 	https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.timer && \
