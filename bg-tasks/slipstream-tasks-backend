@@ -792,7 +792,6 @@ if [ -f '/etc/systemd/system/wpsd-nightly-tassk.service' ]; then
     rm -rf /etc/systemd/system/wpsd-nightly-tassk.service
     systemctl daemon-reload
 fi
-
 # end new auto-task framework
 
 # DVMega sun8i stuff
@@ -961,6 +960,13 @@ if dpkg -l | grep -q "^ii  fake-hwclock"; then
 fi
 if grep -q "flock -n /run/lock/ntpdate /usr/sbin/ntpdate-debian -s -b" /etc/rc.local; then
     sed -i "/# Print the IP address/,/fi/d" /etc/rc.local
+fi
+
+if grep 'Iface' /etc/WPSD-release ; then
+    rm -rf /etc/WPSD-release
+    rm -rf /usr/local/etc/.WPSD-release
+    /usr/local/sbin/.wpsd-sys-cache
+    /usr/local/sbin/.wpsd-slipstream-tasks
 fi
 
 exit 0
