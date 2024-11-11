@@ -965,8 +965,6 @@ fi
 if grep -q 'Iface' /etc/WPSD-release ; then
     rm -rf /etc/WPSD-release
     rm -rf /usr/local/etc/.WPSD-release
-    /usr/local/sbin/.wpsd-sys-cache
-    /usr/local/sbin/.wpsd-slipstream-tasks
 fi
 
 exit 0
