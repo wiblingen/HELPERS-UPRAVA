@@ -760,8 +760,11 @@ if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-ena
 fi
 if ! grep -q 'Type=oneshot' /etc/systemd/system/wpsd-nightly-tasks.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
-    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
     systemctl daemon-reload
+fi
+if grep 'nightly' /etc/systemd/system/wpsd-running-tasks.service ; then
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
 fi
 grep -q 'OnUnitActiveSec' /etc/systemd/system/wpsd-running-tasks.timer &&  \
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.timer \
