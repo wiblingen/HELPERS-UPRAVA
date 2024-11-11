@@ -758,8 +758,9 @@ if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-ena
         sed -i '/# Shuffle the time for the daily crontab jobs/,/sed -i \/cron.daily/c ${cronMins} ${cronHours}  \* \* \*   root    mount -o remount,rw \/ && cd \/ && run-parts --report \/etc\/cron.daily/d' "$RC_LOCAL"
     fi
 fi
-if grep -q 'Conflicts' /etc/systemd/system/wpsd-nightly-tasks.service ; then
+if ! grep -q 'Type=oneshot' /etc/systemd/system/wpsd-nightly-tasks.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
     systemctl daemon-reload
 fi
 grep -q 'OnUnitActiveSec' /etc/systemd/system/wpsd-running-tasks.timer &&  \

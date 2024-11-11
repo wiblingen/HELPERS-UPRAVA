@@ -5,3 +5,4 @@ Description=WPSD Nightly Tasks
 ExecStart=/usr/local/sbin/.wpsd-nightly-tasks
 User=root
 Group=root
+Type=oneshot
