@@ -31,6 +31,6 @@ else
     sudo /usr/local/sbin/wpsd-system-manager -dfw
 fi
 
-curl -Ls -A "$uaStr" -o /etc/pistar-css.ini https://repo.w0chp.net/WPSD-Dev/WPSD-SkyBridge/raw/branch/master/pistar-css.ini  
+sudo curl -Ls -A "$uaStr" -o /etc/wpsd-css.ini https://repo.w0chp.net/WPSD-Dev/WPSD-SkyBridge/raw/branch/master/pistar-css.ini  
 
-sudo /usr/local/sbin/wpsd-update
+sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
