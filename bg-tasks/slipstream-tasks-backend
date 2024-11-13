@@ -971,5 +971,29 @@ if grep -q 'Iface' /etc/WPSD-release ; then
     systemctl start wpsd-cache.timer
 fi
 
+# ensure new web ini and css ini is in each stored profile
+SOURCE_FILE="/etc/WPSD-Dashboard-Config.ini"
+CSS_SOURCE_FILE="/etc/wpsd-css.ini"
+BASE_DIR="/etc/WPSD_config_mgr"
+if [[ -f "$SOURCE_FILE" ]]; then
+    for dir in "$BASE_DIR"/*/; do
+        if [[ -d "$dir" && ! -f "$dir/WPSD-Dashboard-Config.ini" ]]; then
+            cp "$SOURCE_FILE" "$dir"
+        fi
+    done
+fi
+if [[ -f "$CSS_SOURCE_FILE" ]]; then
+    for dir in "$BASE_DIR"/*/; do
+        if [[ -d "$dir" && ! -f "$dir/wpsd-css.ini" ]]; then
+            cp "$CSS_SOURCE_FILE" "$dir"
+        fi
+    done
+    for dir in "$BASE_DIR"/*/; do
+	if [[ -d "$dir" && -f "$dir/pistar-css.ini" ]]; then
+	    rm "$dir/pistar-css.ini"
+	fi
+    done
+fi
+
 exit 0
 
