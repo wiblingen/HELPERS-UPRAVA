@@ -995,5 +995,14 @@ if [[ -f "$CSS_SOURCE_FILE" ]]; then
     done
 fi
 
+# new first boot logic
+file="/etc/rc.local"
+check_string=".wpsd-first-boot"
+insert_before="# Generate"
+new_block="if [ ! -f '/boot/.WPSD_Booted' ] ; then\n    /usr/local/sbin/.wpsd-first-boot\nfi\n"
+if ! grep -q "$check_string" "$file"; then
+    sed -i "/$insert_before/i $new_block" "$file"
+fi
+
 exit 0
 
