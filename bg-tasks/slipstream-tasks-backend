@@ -953,7 +953,7 @@ if [ -f '/INI_FILE' ]; then
     rm -rf /INI_FILE
 fi
 if [[ -f "/etc/wpsd-css.ini" && -f "/etc/pistar-css.ini" ]] && cmp -s "/etc/wpsd-css.ini" "/etc/pistar-css.ini"; then
-    rm -rf /etc/pistar-css.ini
+    #rm -rf /etc/pistar-css.ini
 fi
 
 # Check if the fake-hwclock package is installed
