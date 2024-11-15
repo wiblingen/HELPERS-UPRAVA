@@ -952,9 +952,9 @@ fi
 if [ -f '/INI_FILE' ]; then
     rm -rf /INI_FILE
 fi
-if [[ -f "/etc/wpsd-css.ini" && -f "/etc/pistar-css.ini" ]] && cmp -s "/etc/wpsd-css.ini" "/etc/pistar-css.ini"; then
+#if [[ -f "/etc/wpsd-css.ini" && -f "/etc/pistar-css.ini" ]] && cmp -s "/etc/wpsd-css.ini" "/etc/pistar-css.ini"; then
     #rm -rf /etc/pistar-css.ini
-fi
+#fi
 
 # Check if the fake-hwclock package is installed
 if dpkg -l | grep -q "^ii  fake-hwclock"; then
@@ -1002,6 +1002,13 @@ insert_before="# Generate"
 new_block="if [ ! -f '/boot/.WPSD_Booted' ] ; then\n    /usr/local/sbin/.wpsd-first-boot\nfi\n"
 if ! grep -q "$check_string" "$file"; then
     sed -i "/$insert_before/i $new_block" "$file"
+fi
+
+# cron
+if `systemctl status cron.service | grep -q masked` ; then
+    systemctl unmask cron.service
+    systemctl enable cron.service
+    systemctl restart cron.service
 fi
 
 exit 0
