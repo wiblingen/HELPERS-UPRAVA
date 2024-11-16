@@ -794,6 +794,22 @@ if [ -f '/etc/systemd/system/wpsd-nightly-tassk.service' ]; then
 fi
 # end new auto-task framework
 
+# new auto hostfile framweork: 11/24 W0CHP
+if systemctl is-enabled wpsd-hostfile-update.timer &>/dev/null; then
+    : # skip
+else
+    if [[ ! -f /etc/systemd/system/wpsd-hostfile-update.timer ]]; then
+
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-hostfile-update.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-hostfile-update.timer
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-hostfile-update.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-hostfile-update.service
+        systemctl daemon-reload
+
+        systemctl enable wpsd-hostfile-update.timer
+        systemctl start wpsd-hostfile-update.timer
+    fi
+fi
+# end auto hostfiles
+
 # DVMega sun8i stuff
 if [[ -f "$armbian_env_file" ]] && grep -q "dvmpi" /etc/dstar-radio.mmdvmhost; then
     # ensure wiringpi is installed
