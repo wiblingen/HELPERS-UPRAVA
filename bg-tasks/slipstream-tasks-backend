@@ -1010,5 +1010,39 @@ if `systemctl status cron.service | grep -q masked` ; then
     systemctl restart cron.service
 fi
 
+# 11/2024... tweak from Lucas, AE0LI, @ BC; This is to prevent the "Access Code Declined" message from BrandMeister when using remote commands by diverting it to a local TG that won't pass to the network.
+ini_file="/etc/dmrgateway"
+section="[DMR Network 1]"
+check_string="PCRewrite1=2,9999991,2,1,9"
+insert_after="PCRewrite0=2,94000,2,4000,1001"
+if ! grep -q 'PCRewrite1=2,9999991,2,1,9' "$ini_file" ; then
+    awk -v section="$section" \
+        -v check="$check_string" \
+        -v insert="$insert_after" '
+BEGIN {
+    in_section = 0
+    check_exists = 0
+}
+/^\[/ {
+    # If we leave the section and the line wasn’t found, stop tracking
+    if (in_section && check_exists == 0) {
+        check_exists = 1
+    }
+    in_section = ($0 == section)
+}
+in_section && $0 == check {
+    check_exists = 1
+}
+{
+    print
+}
+in_section && $0 == insert && check_exists == 0 {
+    print check
+    check_exists = 1
+}
+    ' "$ini_file" > "${ini_file}.tmp"
+    mv "${ini_file}.tmp" "$ini_file"
+fi
+
 exit 0
 
