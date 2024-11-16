@@ -698,7 +698,6 @@ if env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin check ${gitUa
 	    else
 		/usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
 	    fi
-	    exit
 	else
 	    echo "Failed to update the local sbin repository."
 	    exit 1
