@@ -894,7 +894,7 @@ if grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
     systemctl daemon-reload
 fi
 # install new nx driver shutdown service
-if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.service' ] ||  || ! grep -q 'multi-user.target' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
+if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.service' ] || grep -q 'multi-user.target' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service
     systemctl daemon-reload
     systemctl enable nextiondriver-shutdown.service
