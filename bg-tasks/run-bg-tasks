@@ -14,13 +14,6 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 
 sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
 
-TIMERS=("wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
-for TIMER in "${TIMERS[@]}"; do
-    if ! systemctl is-active --quiet "$TIMER"; then
-        sudo systemctl start "$TIMER"
-    fi
-done
-
 EXCLUDED_CALLS=("M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     :
@@ -30,4 +23,12 @@ else
 	cd /var/www/dashboard && sudo git reset --hard origin/master
     fi
 fi
+
+TIMERS=("wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
+for TIMER in "${TIMERS[@]}"; do
+    if ! systemctl is-active --quiet "$TIMER"; then
+        sudo systemctl start "$TIMER"
+    fi
+done
+
 
