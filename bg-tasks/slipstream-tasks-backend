@@ -1000,9 +1000,20 @@ fi
 file="/etc/rc.local"
 check_string=".wpsd-first-boot"
 insert_before="# Generate"
-new_block="if [ ! -f '/boot/.WPSD_Booted' ] ; then\n    /usr/local/sbin/.wpsd-first-boot\nfi\n"
-if ! grep -q "$check_string" "$file"; then
-    sed -i "/$insert_before/i $new_block" "$file"
+new_block="if [ ! -f '/boot/.WPSD_Booted' ] ; then
+    /usr/local/sbin/.wpsd-first-boot
+fi"
+#if ! grep -q "$check_string" "$file"; then
+#    sed -i "/$insert_before/i $new_block" "$file"
+#fi
+if grep -q "$check_string" "$file"; then
+    awk '
+BEGIN { found = 0 }
+/^if \[ ! -f '\''\/boot\/\.WPSD_Booted'\'' \] ; then$/ { found = 1; next }
+found && /^\s+\/usr\/local\/sbin\/\.wpsd-first-boot$/ { next }
+found && /^fi$/ { found = 0; next }
+!found { print }
+' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
 fi
 
 # cron
