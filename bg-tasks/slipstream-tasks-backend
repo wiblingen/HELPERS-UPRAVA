@@ -197,7 +197,7 @@ fi
 
 # default loc.
 sed -i -E 's/(Latitude=)50\.01/\144.127691/' /etc/mmdvmhost
-sed -i -E 's/(Longitude=)-3\.01/\1-91.762659/' /etc/mmdvmhost
+sed -i -E 's/(Longitude=)-3\.00/\1-91.762659/' /etc/mmdvmhost
 sed -i -E 's/(Longitude=)--91.762660/\1-91.762659/' /etc/mmdvmhost
 sed -i -E 's/(Latitude=)50\.0/\144.127692/' /etc/mmdvmhost
 sed -i -E 's/(Longitude=)0.0/\1-91.762659/' /etc/mmdvmhost
