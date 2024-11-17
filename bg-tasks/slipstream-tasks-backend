@@ -893,6 +893,13 @@ if grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
     sed -i '/^Before=/s/.*/Before=timers.target/' /lib/systemd/system/nextiondriver.service
     systemctl daemon-reload
 fi
+# install new nx driver shutdown service
+if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.service' ] ; then
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service
+    systemctl daemon-reload
+    systemctl enable nextiondriver-shutdown.service
+    systemctl start nextiondriver-shutdown.service
+fi
 
 # dash prefs migrator
 if [ -f "/etc/pistar-release" ]; then
