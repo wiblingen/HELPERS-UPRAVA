@@ -898,7 +898,7 @@ if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.service' ] || grep -q 'mul
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service
     systemctl daemon-reload
     systemctl enable nextiondriver-shutdown.service
-    systemctl start nextiondriver-shutdown.service
+    systemctl restart nextiondriver-shutdown.service
 fi
 
 # dash prefs migrator
