@@ -39,9 +39,13 @@ fi
 # ensure perms for git repos
 if ! grep -q 'safe' /root/.gitconfig > /dev/null 2>&1 ; then
     git config --global --add safe.directory /var/www/dashboard > /dev/null 2>&1
+    rm -rf /var/www/dashboard/.git/index.lock
     git config --global --add safe.directory /usr/local/bin > /dev/null 2>&1
+    rm -rf /usr/local/bin/.git/index.lock
     git config --global --add safe.directory /usr/local/sbin > /dev/null 2>&1
+    rm -rf /usr/local/sbin/.git/index.lock
 fi
+
 # dvmega cast-specific stuff
 castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
