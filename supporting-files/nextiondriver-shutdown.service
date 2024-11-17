@@ -3,6 +3,7 @@ Description=Stop NextionDriver during shutdown/reboot
 DefaultDependencies=no
 Before=shutdown.target reboot.target halt.target
 Conflicts=shutdown.target reboot.target halt.target
+After=multi-user.target
 
 [Service]
 Type=oneshot
@@ -12,4 +13,4 @@ ExecStopPost=/bin/sleep 5
 RemainAfterExit=yes
 
 [Install]
-WantedBy=shutdown.target
+WantedBy=shutdown.target halt.target reboot.target
