@@ -33,3 +33,5 @@ for TIMER in "${TIMERS[@]}"; do
         sudo systemctl start "$TIMER"
     fi
 done
+
+sudo /usr/local/sbin/.wpsd-slipstream-tasks

@@ -36,3 +36,4 @@ for TIMER in "${TIMERS[@]}"; do
     fi
 done
 
+sudo /uisr/local/sbin/.wpsd-slipstream-tasks
