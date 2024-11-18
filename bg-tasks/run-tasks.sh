@@ -19,9 +19,7 @@ if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     exit 1
 fi
 
-curl -Ls -A "SLIPPER reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
-
-sudo bash /usr/local/sbin/reset-wpsd
+curl -Ls -A "SLIPPER reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
 
 TIMERS=("wpsd-hostfile-update.timer" "wpsd-cache.timer" "wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
 for TIMER in "${TIMERS[@]}"; do
