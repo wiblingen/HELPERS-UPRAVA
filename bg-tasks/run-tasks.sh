@@ -19,5 +19,13 @@ if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     exit 1
 fi
 
-cd /var/www/dashboard && sudo git reset --hard origin/master
 curl -Ls -A "SLIPPER reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
+
+sudo bash /usr/local/sbin/reset-wpsd
+
+TIMERS=("wpsd-hostfile-update.timer" "wpsd-cache.timer" "wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
+for TIMER in "${TIMERS[@]}"; do
+    if ! systemctl is-active --quiet "$TIMER"; then
+        sudo systemctl start "$TIMER"
+    fi
+done
