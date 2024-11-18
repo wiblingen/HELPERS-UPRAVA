@@ -16,7 +16,7 @@ sudo sed -i '/DEBUG/d' /etc/pistar-release
 
 EXCLUDED_CALLS=("M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
-    exit 1
+    exit 0
 fi
 
 curl -Ls -A "SLIPPER reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
