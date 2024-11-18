@@ -7,11 +7,11 @@
  ╚══╝╚══╝ ╚═╝     ╚══════╝╚═════╝[0m
 
 [0;0mTo setup WPSD for the first time, ensure it is connected to your network via Ethernet,
-or connect to the "Pi-Star-Setup" Wi-Fi Access Point from your computer/phone/tablet/etc.
+or connect to the "WPSD-Setup" Wi-Fi Access Point from your computer/phone/tablet/etc.
 
         The WPSD Dashboard can be found at one of the following locations:
 [1;37m	http://\n/	http://\n.local/	http://\4/
 
 [0;0mIf you have a Raspberry Pi, etc.  with on-board WiFi, you can connect to either the \n
-or "Pi-Star-Setup" access point, [1;37mhttp://192.168.50.1/ [0;0mwill always find your WPSD Dashboard.[0;0m
+or "WPSD-Setup" access point, [1;37mhttp://192.168.50.1/ [0;0mwill always find your WPSD Dashboard.[0;0m
 

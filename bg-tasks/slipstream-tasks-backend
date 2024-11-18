@@ -570,6 +570,10 @@ if grep -q 'W0CHP-PiStar-Dash' /etc/issue ; then # v0.1 - deprecated...update li
     declare -a CURL_OPTIONS=('-Ls' '-A' "/etc/issue updater (slipstream) $uaStr")
     curl "${CURL_OPTIONS[@]}" -o /etc/issue https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/issue
 fi
+if grep -q 'Pi-Star-Setup' /etc/issue ; then # v0.1 - deprecated...update like above
+    declare -a CURL_OPTIONS=('-Ls' '-A' "/etc/issue updater (slipstream) $uaStr")
+    curl "${CURL_OPTIONS[@]}" -o /etc/issue https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/issue
+fi
 #
 
 #
