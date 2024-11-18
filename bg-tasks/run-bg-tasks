@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /usr/local/sbin/.wpsd-common-funcs
+sudo source /usr/local/sbin/.wpsd-common-funcs
 
 # vars
 if [ ! -f '/etc/WPSD-release' ] ; then

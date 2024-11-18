@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo source /usr/local/sbin/.wpsd-common-funcs
+
 # vars
 if [ ! -f '/etc/WPSD-release' ] ; then
     release_file="/etc/pistar-release"
