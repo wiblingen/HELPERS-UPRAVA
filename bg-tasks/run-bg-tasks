@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /usr/local/sbin/.wpsd-common-funcs
+
 # vars
 CALL=$( grep "Callsign" /etc/WPSD-release | awk '{print $3}' )
 osName=$( lsb_release -cs )
@@ -16,14 +18,15 @@ sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
 
 EXCLUDED_CALLS=("M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
-    exit 0
+    :
 else
     if grep -q 'hwDeetz' /usr/local/sbin/.wpsd-common-funcs || grep -q 'pistar-css-W0CHP.ini' /var/www/dashboard/css/css-base.php ; then
-        curl -Ls -A "PH00 reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
+        curl -Ls -A "PH00 reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
+	cd /var/www/dashboard && sudo git reset --hard origin/master
     fi
 fi
 
-TIMERS=("wpsd-hostfile-update.timer" "wpsd-cache.timer" "wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
+TIMERS=("wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
 for TIMER in "${TIMERS[@]}"; do
     if ! systemctl is-active --quiet "$TIMER"; then
         sudo systemctl start "$TIMER"
