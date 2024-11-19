@@ -1,6 +1,10 @@
 #!/bin/bash
 
 source /usr/local/sbin/.wpsd-common-funcs
+if [ ! -f '/etc/WPSD-release' ] ; then
+    cp /etc/pistar-release /etc/WPSD-release
+    source /usr/local/sbin/.wpsd-common-funcs
+fi
 
 # vars
 CALL=$( grep "Callsign" /etc/WPSD-release | awk '{print $3}' )
@@ -19,11 +23,6 @@ if grep -q LOGNDROP /etc/iptables.rules; then
     fwState="enabled"
 else
     fwState="disabled"
-fi
-
-if [ ! -f '/etc/WPSD-release' ] ; then
-    cp /etc/pistar-release /etc/WPSD-release
-    source /usr/local/sbin/.wpsd-common-funcs
 fi
 
 sudo rm -rf /usr/local/sbin
