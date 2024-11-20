@@ -1083,5 +1083,9 @@ if grep -q 'error_log /var/log/nginx/error.log;' /etc/nginx/nginx.conf ; then
     rm -rf /var/log/nginx/error.*
 fi
 
+if [ -f '/home/pi-star/sudo' ] ; then 
+    rm -rf /home/pi-star/sudo
+fi
+
 exit 0
 
