@@ -1088,12 +1088,12 @@ fi
 
 # modem reset unit file migration
 if [ ! -f /etc/systemd/system/wpsd-modemreset.service ] ; then
-    sed -i '/\/usr\/local\/sbin\/wpsd-modemreset/d' /etc/rc.local
+    sed -i '/\/usr\/local\/sbin\/wpsd-modemreset boot/d' /etc/rc.local
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service
     systemctl daemon-reload
     systemctl enable wpsd-modemreset.service
 fi
-sed -i '/\/usr\/local\/sbin\/wpsd-modemreset\/d' /etc/rc.local
+sed -i '/\/usr\/local\/sbin\/wpsd-modemreset boot/d' /etc/rc.local
 
 chmod +x /etc/rc.local
 
