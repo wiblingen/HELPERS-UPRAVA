@@ -1093,6 +1093,7 @@ if [ ! -f /etc/systemd/system/wpsd-modemreset.service ] ; then
     systemctl daemon-reload
     systemctl enable wpsd-modemreset.service
 fi
+sed -i '|/usr/local/sbin/wpsd-modemreset|d' /etc/rc.local
 
 chmod +x /etc/rc.local
 
