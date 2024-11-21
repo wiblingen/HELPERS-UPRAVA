@@ -794,7 +794,7 @@ fi
 # DVMega sun8i stuff
 if [[ -f "$armbian_env_file" ]] && grep -q "dvmpi" /etc/dstar-radio.mmdvmhost; then
     # ensure wiringpi is installed
-    if ls /usr/local/lib/libwiringPi.so* >/dev/null 2>&1; then
+    if ls /usr/local/lib/libwiringPi.so* >/dev/null 2>&1 && [ -f '/usr/local/bin/gpio' ] ; then
         :
     else
         cd /root
