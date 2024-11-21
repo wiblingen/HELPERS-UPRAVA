@@ -370,12 +370,6 @@ if ! `systemctl status gpsd.socket | grep -q masked` && [ `sed -n '/^\[GPSD\]/,/
     systemctl mask gpsd.socket > /dev/null 2>&1
 fi
 
-# more rc.local updates...
-if grep -q 'pistar-mmdvmhshatreset' $rc_local_file ; then
-    sed -i 's/pistar-mmdvmhshatreset/wpsd-modemreset/g' $rc_local_file
-    sed -i 's/GPIO Pins on Pi4 Only/GPIO Pins on Pi4, Pi5 etc. only/g' $rc_local_file
-fi
-
 # NanoPi/OPi/Armbian vnstat & late-init wlan handling:
 if [ -f "$armbian_env_file" ] ; then
     if ip link show eth0 | grep -q "state UP" ; then
@@ -835,8 +829,6 @@ fi
 if grep -q 'Display=0' /etc/mmdvmhost ; then
     sed -i 's/Display=NEXTION/Display=Nextion/g' /etc/mmdvmhost
 fi
-
-grep -q "wpsd-modemreset" /etc/rc.local || sed -i '/# Generate \/etc\/motd/i \/usr\/local\/sbin\/wpsd-modemreset boot' /etc/rc.local
 
 # legacy config migration
 legacy_config_php="/var/www/dashboard/config/config.php"
