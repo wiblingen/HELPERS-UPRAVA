@@ -17,8 +17,6 @@ modem=$(grep '^ModemFW\s*=\s*.*' "$release_file" | sed 's/ModemFW = //g')
 modemType=$(grep '^ModemType\s*=\s*.*' "$release_file" | sed 's/ModemType = //g')
 uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
 
-sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
-
 EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     :
@@ -36,4 +34,4 @@ for TIMER in "${TIMERS[@]}"; do
     fi
 done
 
-sudo /usr/local/sbin/.wpsd-slipstream-tasks
+sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
