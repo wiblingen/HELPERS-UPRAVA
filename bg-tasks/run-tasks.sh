@@ -19,7 +19,7 @@ uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UU
 
 sudo sed -i '/DEBUG/d' "$release_file"
 
-EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC")
+EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     exit 1
 fi
