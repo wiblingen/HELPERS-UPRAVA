@@ -1,0 +1,16 @@
+[Unit]
+Description=Stop NextionDriver during shutdown/reboot - Bullseye version
+DefaultDependencies=no
+Before=shutdown.target reboot.target halt.target
+Conflicts=shutdown.target reboot.target halt.target
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+ExecStop=/bin/bash -c "/usr/bin/pkill -f /usr/local/bin/NextionDriver"
+ExecStopPost=/bin/sleep 5
+RemainAfterExit=yes
+
+[Install]
+WantedBy=shutdown.target halt.target reboot.target

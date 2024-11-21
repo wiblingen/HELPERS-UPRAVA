@@ -890,11 +890,22 @@ if grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
     systemctl daemon-reload
 fi
 # install new nx driver shutdown service
-if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.service' ] || ! grep -q 'multi-user.target' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
-    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service
-    systemctl daemon-reload
-    systemctl enable nextiondriver-shutdown.service
-    systemctl restart nextiondriver-shutdown.service
+if [ "${osName}" = "bookworm" ] ; then 
+    if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.service' ] || ! grep -q 'Bookworm' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bookworm
+	systemctl daemon-reload
+	systemctl enable nextiondriver-shutdown.service
+	systemctl restart nextiondriver-shutdown.service
+	systemctl restart mmdvmhost.service
+    fi
+else
+    if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.service' ] || ! grep -q 'Bullseye' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bullseye
+	systemctl daemon-reload
+	systemctl enable nextiondriver-shutdown.service
+	systemctl restart nextiondriver-shutdown.service
+	systemctl restart mmdvmhost.service
+    fi
 fi
 
 # dash prefs migrator
