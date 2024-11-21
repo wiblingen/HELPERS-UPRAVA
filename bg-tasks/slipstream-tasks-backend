@@ -1087,13 +1087,23 @@ if [ -f '/home/pi-star/sudo' ] ; then
 fi
 
 # modem reset unit file migration
-if [ ! -f /etc/systemd/system/wpsd-modemreset.service ] ; then
+if [ ! -f "$armbian_env_file" ] ; then
+    if [ ! -f /etc/systemd/system/wpsd-modemreset.service ] ; then
+	sed -i '/\/usr\/local\/sbin\/wpsd-modemreset boot/d' /etc/rc.local
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service
+	systemctl daemon-reload
+	systemctl enable wpsd-modemreset.service
+    fi
     sed -i '/\/usr\/local\/sbin\/wpsd-modemreset boot/d' /etc/rc.local
-    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service
-    systemctl daemon-reload
-    systemctl enable wpsd-modemreset.service
 fi
-sed -i '/\/usr\/local\/sbin\/wpsd-modemreset boot/d' /etc/rc.local
+if [ -f "$armbian_env_file" ] ; then
+    if [ -f /etc/systemd/system/wpsd-modemreset.service ] ; then
+	rm -rf /etc/systemd/system/wpsd-modemreset.service
+	systemctl disable wpsd-modemreset.service
+	systemctl daemon-reload
+	sed -i '/\/usr\/local\/sbin\/wpsd-modemreset boot/d' /etc/rc.local
+    fi
+fi
 
 chmod +x /etc/rc.local
 
