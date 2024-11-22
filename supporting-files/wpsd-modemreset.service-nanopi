@@ -1,7 +1,7 @@
 [Unit]
 Description=Run WPSD Modem Reset at Boot
 DefaultDependencies=no
-Before=nextiondriver.timer mmdvmhost.timer
+Before=nextiondriver.service mmdvmhost.timer
 After=network.target
 
 [Service]
