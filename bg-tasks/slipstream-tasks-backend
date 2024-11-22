@@ -1104,7 +1104,16 @@ else # nano pis and euronodes
 		sed -i '/\/usr\/local\/sbin\/wpsd-modemreset boot/d' /etc/rc.local
 	    fi
 	    sed -i '/# fix the gpio'"'"'s to avoid unwanted programming of the radio/{N;N;N;N;N;N;d;}' /etc/rc.local
-	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service
+	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service-nanopi
+	    systemctl daemon-reload
+	    systemctl enable wpsd-modemreset.service
+	fi
+    fi
+    if [ -f /etc/systemd/system/wpsd-modemreset.service ] ; then #  migrate to nanopi-only version
+	castResult=$(isDVmegaCast)
+	if [ "$castResult" == "false" ]; then # ignore cast devices
+	    if ! grep -q 'nanopi' /etc/rc.local ; then 
+	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service-nanopi
 	    systemctl daemon-reload
 	    systemctl enable wpsd-modemreset.service
 	fi
