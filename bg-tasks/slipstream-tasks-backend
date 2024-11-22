@@ -1096,6 +1096,13 @@ if [ ! -f "$armbian_env_file" ] ; then #rpis
 	systemctl daemon-reload
 	systemctl enable wpsd-modemreset.service
     fi
+    if [ -f /etc/systemd/system/wpsd-modemreset.service ] ; then #  oops
+	if grep -q 'nextiondriver.timer' /etc/systemd/system/wpsd-modemreset.service ; then
+	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service
+            systemctl daemon-reload
+            systemctl enable wpsd-modemreset.service
+        fi
+    fi
 else # nano pis and euronodes
     if [ ! -f /etc/systemd/system/wpsd-modemreset.service ] ; then
 	castResult=$(isDVmegaCast)
@@ -1117,6 +1124,11 @@ else # nano pis and euronodes
 		systemctl daemon-reload
 		systemctl enable wpsd-modemreset.service
 	    fi
+	    if grep -q 'nextiondriver.timer' /etc/systemd/system/wpsd-modemreset.service ; then
+		curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service
+		systemctl daemon-reload
+		systemctl enable wpsd-modemreset.service
+	   fi
 	fi
     fi
 fi
