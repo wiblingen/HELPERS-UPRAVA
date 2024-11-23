@@ -794,7 +794,7 @@ fi
 # DVMega sun8i stuff
 if [[ -f "$armbian_env_file" ]]; then
     # ensure wiringpi is installed
-    if ls /usr/local/lib/libwiringPi.so* >/dev/null 2>&1 && [ -f '/usr/local/bin/gpio' ] ; then
+    if ls /usr/local/lib/libwiringPi.so* >/dev/null 2>&1 || [ -f '/usr/local/bin/gpio' ] ; then
         :
     else
         cd /root
@@ -804,7 +804,8 @@ if [[ -f "$armbian_env_file" ]]; then
         cd .. && rm -rf WiringPi
     fi
     # ensure we reset the dvmega modems:
-    if [[ $(/usr/local/sbin/.wpsd-platform-detect) == *"sun8i"* ]]; then
+    castResult=$(isDVmegaCast)
+    if [[ $(/usr/local/sbin/.wpsd-platform-detect) == *"sun8i"* ]] && [ "$castResult" == "true" ]; then
 new_block=$(cat <<'EOF'
 # fix the gpio's to avoid unwanted programming of the radio
 sudo gpio mode 3 out
