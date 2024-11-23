@@ -5,6 +5,7 @@ Before=mmdvmhost.timer
 
 [Service]
 Type=oneshot
+ExecStartPre=/bin/sh -c 'if [ ! -e /dev/ttyAMA0 ]; then mknod /dev/ttyAMA0 c 4 65 && chown .dialout /dev/ttyAMA0 && chmod 660 /dev/ttyAMA0; fi'
 ExecStart=/usr/local/sbin/.wpsd-nanopi-modemreset
 
 [Install]
