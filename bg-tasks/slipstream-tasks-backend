@@ -15,6 +15,9 @@ source /usr/local/sbin/.wpsd-common-funcs
 
 gitUaStr="Slipstream Task - Server-Side $uaStr"
 
+# set global DVM cast var
+castResult=$(isDVmegaCast)
+
 # 6/4/23 Ensure we can update successfully:
 find /usr/local/sbin -type f -exec chattr -i {} +
 find /usr/local/sbin -type d -exec chattr -i {} +
@@ -49,7 +52,6 @@ if ! grep -q 'safe' /root/.gitconfig > /dev/null 2>&1 ; then
 fi
 
 # dvmega cast-specific stuff
-castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
     if ! grep -q 'cast' /root/.gitconfig > /dev/null 2>&1 ; then
 	git config --global --add safe.directory /opt/cast > /dev/null 2>&1
@@ -185,7 +187,6 @@ function gitURIupdate () {
 gitURIupdate "/var/www/dashboard"
 gitURIupdate "/usr/local/bin"
 gitURIupdate "/usr/local/sbin"
-castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
     gitURIupdate "/opt/cast"
 fi
@@ -480,7 +481,6 @@ if grep -q "genesys" "$modemfile"; then
 fi
 
 # dvmega cast-specific stuff
-castResult=$(isDVmegaCast)
 if [ "$castResult" == "true" ]; then
     # ensure avrdude conf. is installed for radio/hotspot mgmt.
     if [ ! -f '/etc/avrdude.conf' ] ; then
@@ -804,7 +804,6 @@ if [[ -f "$armbian_env_file" ]]; then
         cd .. && rm -rf WiringPi
     fi
     # ensure we reset the dvmega modems:
-    castResult=$(isDVmegaCast)
     if [[ $(/usr/local/sbin/.wpsd-platform-detect) == *"sun8i"* ]] && [ "$castResult" == "true" ]; then
 new_block=$(cat <<'EOF'
 # fix the gpio's to avoid unwanted programming of the radio
@@ -1105,7 +1104,6 @@ if [ ! -f "$armbian_env_file" ] ; then #rpis
     fi
 else # nano pis and euronodes
     if [ ! -f /etc/systemd/system/wpsd-modemreset.service ] ; then
-	castResult=$(isDVmegaCast)
 	if [ "$castResult" == "false" ]; then # ignore cast devices
 	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service-nanopi
 	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/rc.local https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/rc.local-nanopi
@@ -1115,7 +1113,6 @@ else # nano pis and euronodes
 	fi
     fi
     if [ -f /etc/systemd/system/wpsd-modemreset.service ] ; then #  migrate to nanopi-only version
-	castResult=$(isDVmegaCast)
 	if [ "$castResult" == "false" ]; then # ignore cast devices
 	    if ! grep -q 'ExecStartPre' /etc/systemd/system/wpsd-modemreset.service ; then
 		curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-modemreset.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-modemreset.service-nanopi
@@ -1130,6 +1127,16 @@ else # nano pis and euronodes
     fi
 fi
 
+# new dvmega cast init-on-boot framework
+if [ "$castResult" == "true" ]; then
+    if [ ! -f /etc/systemd/system/wpsd-cast-init.service ] ; then
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-cast-init.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-cast-init.service
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/rc.local https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/rc.local-CAST
+	systemctl daemon-reload
+	systemctl enable wpsd-cast-init.service
+	chmod +x /etc/rc.local
+    fi
+fi
 # always +x!
 chmod +x /etc/rc.local
 
