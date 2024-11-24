@@ -214,57 +214,36 @@ fi
 FILE="/etc/mmdvmhost"
 NEW_LAT="44.127692"
 NEW_LONG="-91.762659"
-TMP_FILE=$(mktemp)
-sed -E '
+sed -i -E '
   # Match Latitude= lines and validate the value
   /Latitude=/ {
-    # If Latitude contains multiple decimals or commas, replace it
+    # If Latitude does not contain exactly one decimal point, or contains commas, replace it
     /Latitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {
       s|Latitude=.*|Latitude='"$NEW_LAT"'|
     }
-    # If Latitude contains no decimal point (e.g., Latitude=0), replace it
+    # If Latitude contains no decimal point, replace it
     /Latitude=[^0-9]*[0-9]+$/ {
       s|Latitude=.*|Latitude='"$NEW_LAT"'|
-    }
-    # If Latitude contains exactly one decimal point, keep it
-    /Latitude=[^0-9]*[0-9]+\.[0-9]+/ {
-      # No replacement needed
     }
   }
   # Match Longitude= lines and validate the value
   /Longitude=/ {
-    # If Longitude contains multiple decimals or commas, replace it
+    # If Longitude does not contain exactly one decimal point, or contains commas, replace it
     /Longitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {
       s|Longitude=.*|Longitude='"$NEW_LONG"'|
     }
-    # If Longitude contains no decimal point (e.g., Longitude=-91), replace it
+    # If Longitude contains no decimal point, replace it
     /Longitude=[^0-9]*[0-9]+$/ {
       s|Longitude=.*|Longitude='"$NEW_LONG"'|
     }
-    # If Longitude contains exactly one decimal point, keep it
-    /Longitude=[^0-9]*[0-9]+\.[0-9]+/ {
-      # No replacement needed
-    }
   }
-' "$FILE" > "$TMP_FILE"
-if ! cmp -s "$TMP_FILE" "$FILE"; then
-  mv "$TMP_FILE" "$FILE"
-  chmod 644 "$FILE"
-fi
+' "$FILE"
 # default loc.
-TMP_FILE=$(mktemp)
-sed -E '
-  s/(Latitude=)50\.01/\144.127691/
-  s/(Longitude=)-3\.00/\1-91.762659/
-  s/(Longitude=)--91.762660/\1-91.762659/
-  s/(Latitude=)50\.0/\144.127692/
-  s/(Longitude=)0.0/\1-91.762659/
-' "$FILE" > "$TMP_FILE"
-if ! cmp -s "$TMP_FILE" "$FILE"; then
-  mv "$TMP_FILE" "$FILE"
-  chmod 644 "$FILE"
-fi
-rm -f "$TMP_FILE"
+sed -i -E 's/(Latitude=)50\.01/\144.127691/' /etc/mmdvmhost
+sed -i -E 's/(Longitude=)-3\.00/\1-91.762659/' /etc/mmdvmhost
+sed -i -E 's/(Longitude=)--91.762660/\1-91.762659/' /etc/mmdvmhost
+sed -i -E 's/(Latitude=)50\.0/\144.127692/' /etc/mmdvmhost
+sed -i -E 's/(Longitude=)0.0/\1-91.762659/' /etc/mmdvmhost
 
 # 5/2023 W0CHP
 #
