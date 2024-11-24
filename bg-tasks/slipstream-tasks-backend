@@ -1195,6 +1195,12 @@ if [ "$castResult" == "true" ]; then
 	fi
     fi
 fi
+
+# no more fake-hwclock crap
+if grep -q 'clock' /etc/bash.bash_logout ; then
+    echo "history -a" > /etc/bash.bash_logout
+fi
+
 # always +x!
 chmod +x /etc/rc.local
 
