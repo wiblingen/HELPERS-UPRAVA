@@ -1136,7 +1136,7 @@ if [ "$castResult" == "true" ]; then
 	systemctl enable wpsd-cast-init.service
 	chmod +x /etc/rc.local
     fi
-    if [ ! -f /etc/systemd/system/wpsd-cast-init.service ] ; then
+    if [ -f /etc/systemd/system/wpsd-cast-init.service ] ; then
 	if ! grep -q 'ExecStop' /etc/systemd/system/wpsd-cast-init.service ; then
 	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-cast-init.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-cast-init.service
 	    systemctl daemon-reload
