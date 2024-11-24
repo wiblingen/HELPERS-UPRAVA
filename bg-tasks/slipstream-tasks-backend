@@ -210,23 +210,8 @@ if [[ "$STATUS" == "enabled" ]]; then
     systemctl disable mmdvmhost.service > /dev/null 2>&1
 fi
 
-
-# default loc.
-FILE="/etc/mmdvmhost"
-TMP_FILE=$(mktemp)
-sed -E '
-  s/(Latitude=)50\.01/\144.127691/
-  s/(Longitude=)-3\.00/\1-91.762659/
-  s/(Longitude=)--91.762660/\1-91.762659/
-  s/(Latitude=)50\.0/\144.127692/
-  s/(Longitude=)0.0/\1-91.762659/
-' "$FILE" > "$TMP_FILE"
-if ! cmp -s "$TMP_FILE" "$FILE"; then
-  mv "$TMP_FILE" "$FILE"
-  chmod 644 "$FILE"
-fi
-rm -f "$TMP_FILE"
 # placeholder for malformed coords (ugh...users :-/)
+FILE="/etc/mmdvmhost"
 NEW_LAT="44.127692"
 NEW_LONG="-91.762659"
 TMP_FILE=$(mktemp)
@@ -266,6 +251,20 @@ if ! cmp -s "$TMP_FILE" "$FILE"; then
   mv "$TMP_FILE" "$FILE"
   chmod 644 "$FILE"
 fi
+# default loc.
+TMP_FILE=$(mktemp)
+sed -E '
+  s/(Latitude=)50\.01/\144.127691/
+  s/(Longitude=)-3\.00/\1-91.762659/
+  s/(Longitude=)--91.762660/\1-91.762659/
+  s/(Latitude=)50\.0/\144.127692/
+  s/(Longitude=)0.0/\1-91.762659/
+' "$FILE" > "$TMP_FILE"
+if ! cmp -s "$TMP_FILE" "$FILE"; then
+  mv "$TMP_FILE" "$FILE"
+  chmod 644 "$FILE"
+fi
+rm -f "$TMP_FILE"
 
 # 5/2023 W0CHP
 #
