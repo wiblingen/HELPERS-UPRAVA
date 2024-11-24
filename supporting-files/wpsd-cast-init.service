@@ -1,0 +1,14 @@
+[Unit]
+Description=Initialize DVMEGA Cast on boot
+After=network.target
+Before=mmdvmhost.timer
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/bash -c "mknod /dev/ttyAMA0 c 4 65; chown .dialout /dev/ttyAMA0; chmod 660 /dev/ttyAMA0"
+ExecStart=/bin/bash -c "sudo gpio mode 3 out; sudo gpio mode 4 out; sudo gpio write 4 0; sudo gpio write 3 0; sleep 1; sudo gpio write 3 1; /usr/local/cast/sbin/RMBS.sh"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+

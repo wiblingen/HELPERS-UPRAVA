@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Ver. 20241124
+# W0CHP
+
+# rtl adaps:
+modprobe rtl8xxxu
+modprobe rtl8192cu
+
+# led controller
+modprobe leds_dac124s085 
+
+# AutoGenerate SSH keys if they are missing
+if [ ! -f /etc/ssh/ssh_host_rsa_key ] || [ ! -f /etc/ssh/ssh_host_dsa_key ]; then
+	dpkg-reconfigure openssh-server
+fi
+
+# If this is a new image, expand the filesystem
+if [ ! -f /boot/.expanded ]; then
+	gpio mode 10 in
+	touch /boot/.expanded
+	/usr/local/sbin/.wpsd-expand
+	sync
+	sync
+	sync
+	reboot
+	exit 0
+fi
+
+# Pull in the Config settings from /boot if they exist there
+if [ -f /boot/WPSD_Config_*.zip ]; then
+	/usr/local/sbin/.wpsd-config-restore
+	exit 0
+fi
+
+# Pull in the WiFi settings from /boot if they exist there
+if [ -f /boot/wpa_supplicant.conf ]; then
+        mv /boot/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+        wpa_cli reconfigure wlan0
+        reboot
+	exit 0
+fi
+
+if [ ! -d /var/log/unattended-upgrades ]; then
+	mkdir -p /var/log/unattended-upgrades
+fi
+
+# Generate /etc/motd
+/usr/local/sbin/motdgen
+
+# start running tasks
+systemctl start wpsd-running-tasks.service
+
