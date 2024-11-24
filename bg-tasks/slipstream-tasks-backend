@@ -145,27 +145,39 @@ files=(
   /etc/ysf2p25
   /etc/WPSD_config_mgr/*/*
 )
+
 old_url="http://www.mw0mwz.co.uk/pi-star/"
 new_url="https://wpsd.radio"
+
 for file in "${files[@]}"; do
   if [[ -f "$file" ]]; then
     if grep -qi "$old_url" "$file"; then
       file_content=$(<"$file")
-      if [[ $file_content == *'URL='* ]]; then
-        file_content="${file_content//URL=/URL=}"
-        file_content="${file_content//$old_url/$new_url}"
-        echo -n "$file_content" > "$file"
-      elif [[ $file_content == *'url='* ]]; then # ircddbgw etc. uses lowercase keys
-        file_content="${file_content//url=/url=}"
-        file_content="${file_content//$old_url/$new_url}"
-        echo -n "$file_content" > "$file"
+      
+      if [[ $file_content == *'URL='* || $file_content == *'url='* ]]; then
+        new_content="${file_content//URL=/URL=}"
+        new_content="${new_content//url=/url=}"
+        new_content="${new_content//$old_url/$new_url}"
+
+        # Only write back if content changed
+        if [[ "$file_content" != "$new_content" ]]; then
+          echo -n "$new_content" > "$file"
+          echo "Updated URL in $file"
+        fi
       fi
     fi
   fi
 done
 for file in "${files[@]}"; do
   if [[ -f "$file" ]]; then
-    sed -i 's/_W0CHP-PiStar-Dash/_WPSD/g' "$file"
+    file_content=$(<"$file")
+    new_content="${file_content//_W0CHP-PiStar-Dash/_WPSD}"
+
+    # Only write back if content changed
+    if [[ "$file_content" != "$new_content" ]]; then
+      echo -n "$new_content" > "$file"
+      echo "Updated _W0CHP-PiStar-Dash in $file"
+    fi
   fi
 done
 #
