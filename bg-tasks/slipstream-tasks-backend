@@ -237,9 +237,13 @@ sed -E '
     /Latitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {
       s|Latitude=.*|Latitude='"$NEW_LAT"'|
     }
-    # If Latitude contains no decimal point, replace it
+    # If Latitude contains no decimal point, replace it (e.g., Latitude=0)
     /Latitude=[^0-9]*[0-9]+$/ {
       s|Latitude=.*|Latitude='"$NEW_LAT"'|
+    }
+    # If Latitude contains exactly one decimal point, keep it
+    /Latitude=[^0-9]*[0-9]+\.[0-9]+/ {
+      # No replacement needed
     }
   }
   # Match Longitude= lines and validate the value
@@ -248,9 +252,13 @@ sed -E '
     /Longitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {
       s|Longitude=.*|Longitude='"$NEW_LONG"'|
     }
-    # If Longitude contains no decimal point, replace it
+    # If Longitude contains no decimal point, replace it (e.g., Longitude=-91)
     /Longitude=[^0-9]*[0-9]+$/ {
       s|Longitude=.*|Longitude='"$NEW_LONG"'|
+    }
+    # If Longitude contains exactly one decimal point, keep it
+    /Longitude=[^0-9]*[0-9]+\.[0-9]+/ {
+      # No replacement needed
     }
   }
 ' "$FILE" > "$TMP_FILE"
