@@ -218,11 +218,11 @@ TMP_FILE=$(mktemp)
 sed -E '
   # Match Latitude= lines and validate the value
   /Latitude=/ {
-    # If Latitude does not contain exactly one decimal point, or contains commas, replace it
+    # If Latitude contains multiple decimals or commas, replace it
     /Latitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {
       s|Latitude=.*|Latitude='"$NEW_LAT"'|
     }
-    # If Latitude contains no decimal point, replace it (e.g., Latitude=0)
+    # If Latitude contains no decimal point (e.g., Latitude=0), replace it
     /Latitude=[^0-9]*[0-9]+$/ {
       s|Latitude=.*|Latitude='"$NEW_LAT"'|
     }
@@ -233,11 +233,11 @@ sed -E '
   }
   # Match Longitude= lines and validate the value
   /Longitude=/ {
-    # If Longitude does not contain exactly one decimal point, or contains commas, replace it
+    # If Longitude contains multiple decimals or commas, replace it
     /Longitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {
       s|Longitude=.*|Longitude='"$NEW_LONG"'|
     }
-    # If Longitude contains no decimal point, replace it (e.g., Longitude=-91)
+    # If Longitude contains no decimal point (e.g., Longitude=-91), replace it
     /Longitude=[^0-9]*[0-9]+$/ {
       s|Longitude=.*|Longitude='"$NEW_LONG"'|
     }
