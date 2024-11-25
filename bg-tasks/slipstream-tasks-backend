@@ -739,10 +739,12 @@ git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy i
 git reset --hard origin/master
 env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master
 git reset --hard origin/master
-if ! grep -q LOGNDROP /etc/iptables.rules ; then
-    /usr/local/sbin/wpsd-system-manager -dfw > /dev/null 2>&1
+
+# check if user already has firewall disabled, and if so, ensure it's kept that way.
+if [ "$fwState" == "enabled" ]; then
+    sudo /usr/local/sbin/wpsd-system-manager -efw
 else
-    /usr/local/sbin/wpsd-system-manager -efw > /dev/null 2>&1
+    sudo /usr/local/sbin/wpsd-system-manager -dfw
 fi
 
 # new auto task framweork: 10/24 W0CHP
