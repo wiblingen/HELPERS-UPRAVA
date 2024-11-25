@@ -1,11 +1,12 @@
 [Unit]
 Description=Run WPSD Modem Reset at Boot
 DefaultDependencies=no
-Before=mmdvmhost.timer
+Before=mmdvmhost.timer wpsd-cache.timer
+After=udev.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/wpsd-modemreset boot
+ExecStart=/bin/bash -c '/usr/local/sbin.wpsd-modemdetect-on-boot'
 
 [Install]
 WantedBy=multi-user.target

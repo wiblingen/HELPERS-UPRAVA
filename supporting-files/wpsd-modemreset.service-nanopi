@@ -1,13 +1,13 @@
 [Unit]
 Description=Run WPSD Modem Reset at Boot
 DefaultDependencies=no
-Before=mmdvmhost.timer
+Before=mmdvmhost.timer wpsd-cache.timer
+After=udev.service
 
 [Service]
 Type=oneshot
 ExecStartPre=/bin/sh -c 'if [ ! -e /dev/ttyAMA0 ]; then mknod /dev/ttyAMA0 c 4 65 && chown .dialout /dev/ttyAMA0 && chmod 660 /dev/ttyAMA0; fi'
-ExecStart=/usr/local/sbin/.wpsd-nanopi-modemreset
+ExecStart=/bin/bash -c '/usr/local/sbin.wpsd-modemdetect-on-boot'
 
 [Install]
 WantedBy=multi-user.target
-
