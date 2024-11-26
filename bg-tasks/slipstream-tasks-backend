@@ -1205,6 +1205,12 @@ if grep -q 'clock' /etc/bash.bash_logout ; then
     echo "history -a" > /etc/bash.bash_logout
 fi
 
+# fix empty display values
+FILE="/etc/mmdvmhost"
+if grep -q "^Display=$" "$FILE"; then
+    sed -i 's/^Display=$/Display=None/' "$FILE"
+fi
+
 # always +x!
 chmod +x /etc/rc.local
 # always +r!
