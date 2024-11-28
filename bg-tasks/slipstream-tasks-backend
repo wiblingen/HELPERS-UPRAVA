@@ -737,7 +737,7 @@ repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
 git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index now that upnp rules are in /etc/wpsd-upnp-rules
 git reset --hard origin/master
-env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin update bootstrap ${gitUaStr}" git pull origin master
+env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="sbin Update Server-Side bootstrap ${gitUaStr}" git pull origin master
 git reset --hard origin/master
 
 # check if user already has firewall disabled, and if so, ensure it's kept that way.
