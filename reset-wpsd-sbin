@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source /usr/local/sbin/.wpsd-common-funcs
+
 if [ ! -f '/etc/WPSD-release' ] ; then
     cp /etc/pistar-release /etc/WPSD-release
     source /usr/local/sbin/.wpsd-common-funcs
