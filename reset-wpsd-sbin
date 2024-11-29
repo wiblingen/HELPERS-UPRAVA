@@ -19,7 +19,7 @@ modemType=$(grep '^ModemType\s*=\s*.*' /etc/WPSD-release | sed 's/ModemType = //
 uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
 
 sudo rm -rf /usr/local/sbin
-sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD sbin reset (server-side) Ver.# ${dashVer} (${gitBranch}) Call:${CALL} UUID:${uuidStr}" git clone --depth 1 https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git /usr/local/sbin
+sudo env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD sbin reset (server-side) Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr}" git clone --depth 1 https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git /usr/local/sbin
 
 # check if user already has firewall disabled, and if so, ensure it's kept that way.
 if [ "$fwState" == "enabled" ]; then
