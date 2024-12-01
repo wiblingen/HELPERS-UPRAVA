@@ -47,7 +47,7 @@ if [ ! -d /var/log/unattended-upgrades ]; then
 fi
 
 # Generate /etc/motd
-/usr/local/sbin/motdgen
+/usr/local/sbin/.wpsd-motdgen
 
 # start running tasks
 systemctl start wpsd-running-tasks.service

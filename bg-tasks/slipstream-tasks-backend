@@ -1215,6 +1215,11 @@ if grep -q "^Display=$" "$FILE"; then
     sed -i 's/^Display=$/Display=None/' "$FILE"
 fi
 
+# motd migration
+if ! grep -q 'wpsd-motdgen' /etc/rc.local ; then
+    sed -i 's/motdgen/.wspd-motdgen/g' /etc/rc.local
+fi
+
 # always +x!
 chmod +x /etc/rc.local
 # always +r!
