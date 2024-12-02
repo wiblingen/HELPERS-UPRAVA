@@ -1,7 +1,7 @@
 [Unit]
-Description=Stop NextionDriver during shutdown/reboot - Bookworm version
+Description=Stop NextionDriver during shutdown/reboot
 DefaultDependencies=no
-Before=final.target
+Before=shutdown.target reboot.target halt.target
 Conflicts=reboot.target halt.target
 After=multi-user.target
 
@@ -13,5 +13,5 @@ ExecStopPost=/bin/sleep 5
 RemainAfterExit=yes
 
 [Install]
-WantedBy=final.target
+WantedBy=shutdown.target
 

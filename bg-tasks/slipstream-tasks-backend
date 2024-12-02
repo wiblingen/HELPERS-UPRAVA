@@ -953,6 +953,15 @@ if [ "${osName}" = "bookworm" ] ; then
 	systemctl restart nextiondriver-shutdown.timer
 	systemctl restart mmdvmhost.service
     fi
+    if grep -q 'WantedBy=final.target' /etc/systemd/system/nextiondriver-shutdown.timer ; then
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bookworm
+	systemctl daemon-reload
+	systemctl stop nextiondriver-shutdown.service
+	systemctl disable nextiondriver-shutdown.service
+	systemctl enable nextiondriver-shutdown.timer
+	systemctl restart nextiondriver-shutdown.timer
+	systemctl restart mmdvmhost.service
+    fi
 else
     if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.timer' ] || ! grep -q 'Bullseye' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
 	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bullseye
