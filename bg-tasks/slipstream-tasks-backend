@@ -1214,8 +1214,10 @@ if [ "$castResult" == "true" ]; then
 fi
 
 # no more fake-hwclock crap
-if grep -q 'clock' /etc/bash.bash_logout ; then
-    echo "history -a" > /etc/bash.bash_logout
+if [ -f '/etc/bash.bash_logout' ] ; then
+    if grep -q 'clock' /etc/bash.bash_logout ; then
+	echo "history -a" > /etc/bash.bash_logout
+    fi
 fi
 
 # fix empty display values
