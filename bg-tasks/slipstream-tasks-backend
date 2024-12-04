@@ -1240,6 +1240,11 @@ if ! grep -q 'wpsd-motdgen' /etc/rc.local ; then
     sed -i 's/motdgen/.wspd-motdgen/g' /etc/rc.local
 fi
 
+# only our motd;
+if [ -f '/etc/update-motd.d/92-unattended-upgrades' ] ; then
+    rm -f /etc/update-motd.d/92-unattended-upgrades
+fi
+
 # always +x!
 chmod +x /etc/rc.local
 # always +r!
