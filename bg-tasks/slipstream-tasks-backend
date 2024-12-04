@@ -1243,6 +1243,14 @@ fi
 # only our motd;
 rm -f /etc/update-motd.d/*
 
+# fix bookworm + pi0 w2 wifi issue (RPi BRCM firmware is fuccked, so we reduce GPU cycles...wtf?)
+if [ "${osName}" = "bookworm" ] &&  [[ $(/usr/local/sbin/.wpsd-platform-detect) == *"Pi Zero 2 W"* ]] ; then
+    if ! grep -q 'gpu_freq=100' /boot/firmware/config.txt ; then
+	echo "gpu_freq=100" >> /boot/firmware/config.txt
+	reboot
+    fi
+fi
+
 # always +x!
 chmod +x /etc/rc.local
 # always +r!
