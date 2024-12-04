@@ -546,7 +546,7 @@ if [ "$castResult" == "true" ]; then
     fi
 
     cd /opt/cast
-    env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Server-Side DVMega Cast update bootstrap ${gitUaStr}" git pull origin master
+    GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side DVMega Cast update bootstrap ${gitUaStr}" git pull origin master
     git reset --hard origin/master
 
     # ensure configs always have proper perms
@@ -640,7 +640,7 @@ fi
 gitFolder="/var/www/dashboard"
 gitRemoteURL=$(git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git config --get remote.origin.url)
 gitBranch="$( git --git-dir=${gitFolder}/.git symbolic-ref --short HEAD )"
-gitStatusRemote=$(env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="WPSD-UpdateCheck Version Cacher (Slipstream-Task) Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName}]" git ls-remote --heads ${gitRemoteURL} | grep ${gitBranch} | awk {'print $1'} | awk '{ print substr($1,1,10) }') # last pipe to awk: converts long hash to 10 chars.
+gitStatusRemote=$(GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="WPSD-UpdateCheck Version Cacher (Slipstream-Task) Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName}]" git ls-remote --heads ${gitRemoteURL} | grep ${gitBranch} | awk {'print $1'} | awk '{ print substr($1,1,10) }') # last pipe to awk: converts long hash to 10 chars.
 echo ${gitStatusRemote} > /etc/.WPSD_remote_version
 
 # 
@@ -737,7 +737,7 @@ repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
 git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index now that upnp rules are in /etc/wpsd-upnp-rules
 git reset --hard origin/master
-env GIT_HTTP_CONNECT_TIMEOUT="10" env GIT_HTTP_USER_AGENT="Server-Side sbin Update bootstrap ${gitUaStr}" git pull origin master
+GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side sbin Update bootstrap ${gitUaStr}" git pull origin master
 git reset --hard origin/master
 
 # check if user already has firewall disabled, and if so, ensure it's kept that way.
