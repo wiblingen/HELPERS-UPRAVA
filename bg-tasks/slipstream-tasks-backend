@@ -736,6 +736,7 @@ fi
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
 #git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index now that upnp rules are in /etc/wpsd-upnp-rules
+git update-index --assume-unchanged pistar-firewall
 #git reset --hard origin/master
 GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side sbin Update bootstrap ${gitUaStr}" git pull origin master
 #git reset --hard origin/master
