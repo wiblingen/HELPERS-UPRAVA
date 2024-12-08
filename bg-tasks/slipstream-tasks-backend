@@ -636,12 +636,31 @@ if ! grep -q 'wpsd' /etc/dnsmasq.conf ; then
 fi
 #
 
-# grab and cache latest WPSD hash
-gitFolder="/var/www/dashboard"
-gitRemoteURL=$(git --work-tree=${gitFolder} --git-dir=${gitFolder}/.git config --get remote.origin.url)
-gitBranch="$( git --git-dir=${gitFolder}/.git symbolic-ref --short HEAD )"
-gitStatusRemote=$(GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="WPSD-UpdateCheck Version Cacher (Slipstream-Task) Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName}]" git ls-remote --heads ${gitRemoteURL} | grep ${gitBranch} | awk {'print $1'} | awk '{ print substr($1,1,10) }') # last pipe to awk: converts long hash to 10 chars.
-echo ${gitStatusRemote} > /etc/.WPSD_remote_version
+# grab and cache latest WPSD hashes
+gitRemoteVer=/etc/.WPSD_remote_version
+get_remote_version() {
+    local repo_key="$1"
+    local gitFolder="$2"
+    local gitRemoteURL
+    local gitBranch
+    local gitStatusRemote
+    gitRemoteURL=$(git --work-tree="${gitFolder}" --git-dir="${gitFolder}/.git" config --get remote.origin.url)
+    gitBranch=$(git --git-dir="${gitFolder}/.git" symbolic-ref --short HEAD)
+    gitStatusRemote=$(GIT_HTTP_CONNECT_TIMEOUT="10" \
+        GIT_HTTP_USER_AGENT="WPSD-UpdateCheck Version Cacher (Slipstream-Task) Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName}]" \
+        git ls-remote --heads "${gitRemoteURL}" | grep "${gitBranch}" | awk '{print $1}' | awk '{print substr($1,1,10)}')
+    echo "$repo_key=$gitStatusRemote"
+}
+declare -A repos
+repos=( ["dash"]="/var/www/dashboard" ["bin"]="/usr/local/bin" ["sbin"]="/usr/local/sbin" )
+if [[ $castResult == "true" ]]; then
+    repos["cast"]="/opt/cast"
+fi
+: > "$gitRemoteVer"
+for repo_key in "${!repos[@]}"; do
+    remote_version_entry=$(get_remote_version "$repo_key" "${repos[$repo_key]}")
+    echo "$remote_version_entry" >> "$gitRemoteVer"
+done
 
 # 
 # 7/2024 W0CHP: terrible bug in Debian bullseye TZdata 2024; missing/corrupted zones...force working version
