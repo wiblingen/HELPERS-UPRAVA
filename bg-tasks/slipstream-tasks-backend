@@ -636,7 +636,8 @@ fi
 #
 
 # grab and cache latest WPSD hashes
-gitRemoteVer=/etc/.WPSD_remote_version
+gitRemoteVer="/etc/.WPSD_remote_version"
+temp_file="$(mktemp)"
 get_remote_version() {
     local repo_key="$1"
     local gitFolder="$2"
@@ -655,11 +656,20 @@ repos=( ["dash"]="/var/www/dashboard" ["bin"]="/usr/local/bin" ["sbin"]="/usr/lo
 if [[ $castResult == "true" ]]; then
     repos["cast"]="/opt/cast"
 fi
-: > "$gitRemoteVer"
+: > "$temp_file"
 for repo_key in "${!repos[@]}"; do
     remote_version_entry=$(get_remote_version "$repo_key" "${repos[$repo_key]}")
-    echo "$remote_version_entry" >> "$gitRemoteVer"
+    if [[ -n "$remote_version_entry" ]]; then
+        echo "$remote_version_entry" >> "$temp_file"
+    fi
 done
+if [[ -s "$temp_file" ]]; then
+    mv "$temp_file" "$gitRemoteVer"
+    chmod 644 "$gitRemoteVer"
+else
+    rm -f "$temp_file"
+fi
+chmod 644 "$gitRemoteVer"
 
 # 
 # 7/2024 W0CHP: terrible bug in Debian bullseye TZdata 2024; missing/corrupted zones...force working version
