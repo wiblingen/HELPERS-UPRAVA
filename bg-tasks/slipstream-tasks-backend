@@ -547,7 +547,6 @@ if [ "$castResult" == "true" ]; then
 
     cd /opt/cast
     GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side DVMega Cast update bootstrap ${gitUaStr}" git pull origin master
-    #git reset --hard origin/master
 
     # ensure configs always have proper perms
     chmod 775 /usr/local/cast/etc
