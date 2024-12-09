@@ -17,16 +17,6 @@ modem=$(grep '^ModemFW\s*=\s*.*' "$release_file" | sed 's/ModemFW = //g')
 modemType=$(grep '^ModemType\s*=\s*.*' "$release_file" | sed 's/ModemType = //g')
 uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
 
-EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "")
-if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
-    :
-else
-    if grep -q -r '(${gitBranch})' /usr/local/sbin || grep -q -ri -- '-cron' /usr/local/sbin || grep -q 'hwDeetz' /usr/local/sbin/.wpsd-common-funcs || grep -q 'pistar-css-W0CHP.ini' /var/www/dashboard/css/css-base.php ; then
-        curl -Ls -A "PH00 reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
-	cd /var/www/dashboard && sudo git reset --hard origin/master
-    fi
-fi
-
 TIMERS=("wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
 for TIMER in "${TIMERS[@]}"; do
     if ! systemctl is-active --quiet "$TIMER"; then
