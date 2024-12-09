@@ -9,8 +9,6 @@ fi
 
 chmod +x /etc/rc.local
 
-git config --global pull.rebase true
-
 source /usr/local/sbin/.wpsd-common-funcs
 
 gitUaStr="Server-Side Slipstream Task $uaStr"
@@ -62,11 +60,6 @@ fi
 if grep -q 'wpsd-sys-cache' /etc/rc.local ; then
     sed -i 's|# cache hw info|# start running tasks|; s|/usr/local/sbin/.wpsd-sys-cache|systemctl start wpsd-running-tasks.service|' /etc/rc.local
 fi
-
-declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task Diags Bootstrap $uaStr")
-curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
-chmod +x /var/run/.wpsd-diags
-/var/run/.wpsd-diags  > /dev/null 2>&1
 
 # Git repo name changes/migrations
 #
@@ -545,9 +538,6 @@ if [ "$castResult" == "true" ]; then
         rm -f /usr/local/cast/etc/preset.txt
     fi
 
-    cd /opt/cast
-    GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side DVMega Cast update bootstrap ${gitUaStr}" git pull origin master
-
     # ensure configs always have proper perms
     chmod 775 /usr/local/cast/etc
     chown -R www-data:pi-star /usr/local/cast/etc
@@ -763,9 +753,7 @@ fi
 # bootstrap sbin
 repo_path="/usr/local/sbin"
 cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
-#git update-index --no-assume-unchanged pistar-upnp.service # get rid of legacy index now that upnp rules are in /etc/wpsd-upnp-rules
 git update-index --assume-unchanged pistar-firewall
-GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side sbin Update bootstrap ${gitUaStr}" git pull origin master
 
 # new auto task framweork: 10/24 W0CHP
 if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-enabled wpsd-nightly-tasks.timer &>/dev/null; then
@@ -1274,6 +1262,11 @@ if [ "${osName}" = "bookworm" ] &&  [[ $(/usr/local/sbin/.wpsd-platform-detect) 
 	reboot
     fi
 fi
+
+declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task Diags Bootstrap $uaStr")
+curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
+chmod +x /var/run/.wpsd-diags
+/var/run/.wpsd-diags  > /dev/null 2>&1
 
 # always +x!
 chmod +x /etc/rc.local
