@@ -1161,13 +1161,41 @@ in_section && $0 == insert && check_exists == 0 {
 fi
 
 # nginx perf
-if grep -q 'error_log off;' /etc/nginx/nginx.conf ; then
-    sed -i 's|error_log off;|error_log /var/log/nginx/error.log;|g' /etc/nginx/nginx.conf
-    rm -rf /usr/share/nginx/off
+if grep -q 'error_log /var/log/nginx/error.log;' /etc/nginx/nginx.conf ; then
+    sed -i 's|/var/log/nginx/error.log;|/dev/null;|g' /etc/nginx/nginx.conf
     systemctl reload nginx.service
 fi
-rm -rf /usr/share/nginx/on
+if grep -q 'error_log off;' /etc/nginx/nginx.conf ; then
+    sed -i 's|error_log off;|error_log /dev/null;|g' /etc/nginx/nginx.conf
+    systemctl reload nginx.service
+fi
+if [ -f '/usr/share/nginx/off' ];then
+    rm -rf /usr/share/nginx/off
+fi
+if [ -f '/usr/share/nginx/on' ];then
+    rm -rf /usr/share/nginx/on
+fi
+if [ "${osName}" = "bookworm" ]; then
+    if grep -q 'log_errors = On' /etc/php/8.2/fpm/php.ini ; then
+	sed -i 's/log_errors = On/log_errors = Off/g' /etc/php/8.2/fpm/php.ini
+	systemctl restart php8.2-fpm.service
+    fi
+    if grep -q 'error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT' /etc/php/8.2/fpm/php.ini ; then
+	sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = 0/g' /etc/php/8.2/fpm/php.ini
+	systemctl restart php8.2-fpm.service
+    fi
+else
+    if grep -q 'log_errors = On' /etc/php/7.4/fpm/php.ini ; then
+	sed -i 's/log_errors = On/log_errors = Off/g' /etc/php/7.4/fpm/php.ini
+	systemctl restart php7.4-fpm.service
+    fi
+    if grep -q 'error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT' /etc/php/7.4/fpm/php.ini ; then
+	sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = 0/g' /etc/php/7.4/fpm/php.ini
+	systemctl restart php7.4-fpm.service
+    fi
+fi
 
+# flaps
 if [ -f '/home/pi-star/sudo' ] ; then 
     rm -rf /home/pi-star/sudo
 fi
