@@ -1302,6 +1302,10 @@ if [ "${osName}" = "bookworm" ] &&  [[ $(/usr/local/sbin/.wpsd-platform-detect) 
 	echo "gpu_freq=100" >> /boot/firmware/config.txt
 	reboot
     fi
+    if [ ! -f '/etc/modprode.d/brcmfmac.conf' ]; then
+	echo "options brcmfmac roamoff=1 feature_disable=0x82000" > /etc/modprode.d/brcmfmac.conf
+	reboot
+    fi
 fi
 
 declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task Diags Bootstrap $uaStr")
