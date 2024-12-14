@@ -1304,7 +1304,7 @@ if [ "${osName}" = "bookworm" ] &&  [[ $(/usr/local/sbin/.wpsd-platform-detect) 
     fi
     if [ ! -f '/etc/modprode.d/brcmfmac.conf' ]; then
 	echo "options brcmfmac roamoff=1 feature_disable=0x82000" > /etc/modprode.d/brcmfmac.conf
-	reboot
+	#reboot
     fi
 fi
 
