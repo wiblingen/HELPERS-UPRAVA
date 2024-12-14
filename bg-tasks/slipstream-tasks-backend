@@ -908,36 +908,69 @@ if [[ ! -f "$new_config" || ! -s "$new_config" ]]; then
     echo "DashLanguage = " >> "$new_config"
     echo "TimeFormat = " >> "$new_config"
     echo "UpdateNotifier = " >> "$new_config"
+    echo "CallLookupProvider = QRZ" >> "$new_config"
 fi
+nc_timezone=$(grep -oP 'Timezone\s*=\s*\K\S+' "$new_config")
+nc_lang=$(grep -oP 'DashLanguage\s*=\s*\K\S+' "$new_config")
+nc_timeformat=$(grep -oP 'TimeFormat\s*=\s*\K\S+' "$new_config")
+nc_updatenotify=$(grep -oP 'UpdateNotifier\s*=\s*\K\S+' "$new_config")
+nc_calllookup=$(grep -oP 'CallLookupProvider\s*=\s*\K\S+' "$new_config")
 time_format=$(grep -oP "define\('TIME_FORMAT', '\K[0-9]+" "$legacy_config_php")
 auto_update_check=$(grep -oP "define\('AUTO_UPDATE_CHECK', '\K\w+" "$legacy_config_php")
 timezone=$(grep -oP "date_default_timezone_set\('\K[^']+" "$legacy_config_php")
 pistar_language=$(grep -oP "pistarLanguage='\K[^']+" "$legacy_language_php")
 callsign=$(grep -oP "callsign='\K[^']+" "$legacy_ircddblocal_php")
-if [[ -z "$callsign" ]]; then
-    :
-else
+if [[ ! -z "$callsign" ]] || [[ ! -z "$time_format" ]] || [[ ! -z "$auto_update_check" ]] || [[ ! -z "$timezone" ]] || [[ ! -z "$pistar_language" ]]; then
     # Update the new config file with the extracted values
-    if [[ -n "$callsign" ]]; then
+    if [[ -n "$callsign" ]] && ! grep -q 'Callsign' "$new_config"; then
         sed -i "s|^Callsign = .*|Callsign = $callsign|" "$new_config"
     fi
-    if [[ -n "$time_format" ]]; then
+    if [[ -n "$time_format" ]] && [[ ! -n "$nc_timeformat" ]] ; then
         sed -i "s|^TimeFormat = .*|TimeFormat = $time_format|" "$new_config"
     fi
-    if [[ -n "$auto_update_check" ]]; then
+    if [[ -n "$auto_update_check" ]] && [[ ! -n "$nc_updatenotify" ]] ; then
         sed -i "s|^UpdateNotifier = .*|UpdateNotifier = $auto_update_check|" "$new_config"
     fi
-    if [[ -n "$timezone" ]]; then
+    if [[ -n "$timezone" ]] && [[ ! -n "$nc_timezone" ]] ; then
         sed -i "s|^Timezone = .*|Timezone = $timezone|" "$new_config"
     fi
-    if [[ -n "$pistar_language" ]]; then
+    if [[ -n "$pistar_language" ]] && [[ ! -n "$nc_lang" ]] ; then
         sed -i "s|^DashLanguage = .*|DashLanguage = $pistar_language|" "$new_config"
+    elif [[ ! -n "$pistar_language" ]] ; then
+	sed -i "s|^DashLanguage = .*|DashLanguage = english_us|" "$new_config"
     fi
 fi
 MMDVMCALL=$( grep -oP '^Callsign=\K.*' /etc/mmdvmhost | head -n 1 )
 CONFIGCALL=$( grep -oP '^Callsign=\K.*' $new_config)
 if [[ "$CONFIGCALL" != "$MMDVMCALL" ]] ; then
     sed -i "s|^Callsign = .*|Callsign = $MMDVMCALL|" "$new_config"
+fi
+# dash prefs migrator
+PISTAR_FILE="/etc/pistar-release"
+DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
+if [ -f "/etc/pistar-release" ]; then
+    call_provider_line=$(grep '^CallLookupProvider =' "$PISTAR_FILE")
+    phonetic_line=$(grep '^PhoneticCallsigns =' "$PISTAR_FILE")
+    if [ -n "$phonetic_line" ]; then
+        phonetic_value="$phonetic_line"
+        sed -i '/^PhoneticCallsigns =/d' "$PISTAR_FILE"
+        if ! grep -q '^PhoneticCallsigns =' "$DASHBOARD_CONFIG"; then
+            echo "$phonetic_value" >> "$DASHBOARD_CONFIG"
+        fi
+    fi
+    if [ -n "$call_provider_line" ]; then
+        lookup_value="$call_provider_line"
+        sed -i '/^CallLookupProvider =/d' "$PISTAR_FILE"
+        if ! grep -q '^CallLookupProvider =' "$DASHBOARD_CONFIG"; then
+            echo "$call_provider_line" >> "$DASHBOARD_CONFIG"
+        fi
+    fi
+fi
+if ! grep -q "PhoneticCallsigns" "$DASHBOARD_CONFIG" ; then
+    echo "PhoneticCallsigns = 0" >> "$DASHBOARD_CONFIG"
+fi
+if ! grep -q "CallLookupProvider" "$DASHBOARD_CONFIG" ; then
+    echo "CallLookupProvider = QRZ" >> "$DASHBOARD_CONFIG"
 fi
 
 # ensure avahi loads BEFORE NextionDriver, as Lucas, AE0LI, found that avahi likes to bind to any random port, which can cause a Transparent Data port conflict
@@ -990,28 +1023,6 @@ else
 	systemctl enable nextiondriver-shutdown.timer
 	systemctl restart nextiondriver-shutdown.timer
 	systemctl restart mmdvmhost.service
-    fi
-fi
-
-# dash prefs migrator
-if [ -f "/etc/pistar-release" ]; then
-    PISTAR_FILE="/etc/pistar-release"
-    DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
-    phonetic_line=$(grep '^PhoneticCallsigns =' "$PISTAR_FILE")
-    call_provider_line=$(grep '^CallLookupProvider =' "$PISTAR_FILE")
-    if [ -n "$phonetic_line" ]; then
-        phonetic_value="$phonetic_line"
-        sed -i '/^PhoneticCallsigns =/d' "$PISTAR_FILE"
-        if ! grep -q '^PhoneticCallsigns =' "$DASHBOARD_CONFIG"; then
-            echo "$phonetic_value" >> "$DASHBOARD_CONFIG"
-        fi
-    fi
-    if [ -n "$call_provider_line" ]; then
-        lookup_value="$call_provider_line"
-        sed -i '/^CallLookupProvider =/d' "$PISTAR_FILE"
-        if ! grep -q '^CallLookupProvider =' "$DASHBOARD_CONFIG"; then
-            echo "$call_provider_line" >> "$DASHBOARD_CONFIG"
-        fi
     fi
 fi
 
