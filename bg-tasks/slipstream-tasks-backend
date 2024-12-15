@@ -896,83 +896,6 @@ if grep -q 'Display=0' /etc/mmdvmhost ; then
     sed -i 's/Display=NEXTION/Display=Nextion/g' /etc/mmdvmhost
 fi
 
-# legacy config migration
-legacy_config_php="/var/www/dashboard/config/config.php"
-legacy_language_php="/var/www/dashboard/config/language.php"
-legacy_ircddblocal_php="/var/www/dashboard/config/ircddblocal.php"
-new_config="/etc/WPSD-Dashboard-Config.ini"
-if [[ ! -f "$new_config" || ! -s "$new_config" ]]; then
-    echo "[WPSD]" > "$new_config"
-    echo "Callsign = " >> "$new_config"
-    echo "Timezone = " >> "$new_config"
-    echo "DashLanguage = " >> "$new_config"
-    echo "TimeFormat = " >> "$new_config"
-    echo "UpdateNotifier = " >> "$new_config"
-    echo "CallLookupProvider = QRZ" >> "$new_config"
-fi
-nc_timezone=$(grep -oP 'Timezone\s*=\s*\K\S+' "$new_config")
-nc_lang=$(grep -oP 'DashLanguage\s*=\s*\K\S+' "$new_config")
-nc_timeformat=$(grep -oP 'TimeFormat\s*=\s*\K\S+' "$new_config")
-nc_updatenotify=$(grep -oP 'UpdateNotifier\s*=\s*\K\S+' "$new_config")
-nc_calllookup=$(grep -oP 'CallLookupProvider\s*=\s*\K\S+' "$new_config")
-time_format=$(grep -oP "define\('TIME_FORMAT', '\K[0-9]+" "$legacy_config_php")
-auto_update_check=$(grep -oP "define\('AUTO_UPDATE_CHECK', '\K\w+" "$legacy_config_php")
-timezone=$(grep -oP "date_default_timezone_set\('\K[^']+" "$legacy_config_php")
-pistar_language=$(grep -oP "pistarLanguage='\K[^']+" "$legacy_language_php")
-callsign=$(grep -oP "callsign='\K[^']+" "$legacy_ircddblocal_php")
-if [[ ! -z "$callsign" ]] || [[ ! -z "$time_format" ]] || [[ ! -z "$auto_update_check" ]] || [[ ! -z "$timezone" ]] || [[ ! -z "$pistar_language" ]]; then
-    # Update the new config file with the extracted values
-    if [[ -n "$callsign" ]] && ! grep -q 'Callsign' "$new_config"; then
-        sed -i "s|^Callsign = .*|Callsign = $callsign|" "$new_config"
-    fi
-    if [[ -n "$time_format" ]] && [[ ! -n "$nc_timeformat" ]] ; then
-        sed -i "s|^TimeFormat = .*|TimeFormat = $time_format|" "$new_config"
-    fi
-    if [[ -n "$auto_update_check" ]] && [[ ! -n "$nc_updatenotify" ]] ; then
-        sed -i "s|^UpdateNotifier = .*|UpdateNotifier = $auto_update_check|" "$new_config"
-    fi
-    if [[ -n "$timezone" ]] && [[ ! -n "$nc_timezone" ]] ; then
-        sed -i "s|^Timezone = .*|Timezone = $timezone|" "$new_config"
-    fi
-    if [[ -n "$pistar_language" ]] && [[ ! -n "$nc_lang" ]] ; then
-        sed -i "s|^DashLanguage = .*|DashLanguage = $pistar_language|" "$new_config"
-    elif [[ ! -n "$pistar_language" ]] ; then
-	sed -i "s|^DashLanguage = .*|DashLanguage = english_us|" "$new_config"
-    fi
-fi
-MMDVMCALL=$( grep -oP '^Callsign=\K.*' /etc/mmdvmhost | head -n 1 )
-CONFIGCALL=$( grep -oP '^Callsign=\K.*' $new_config)
-if [[ "$CONFIGCALL" != "$MMDVMCALL" ]] ; then
-    sed -i "s|^Callsign = .*|Callsign = $MMDVMCALL|" "$new_config"
-fi
-# dash prefs migrator
-PISTAR_FILE="/etc/pistar-release"
-DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
-if [ -f "/etc/pistar-release" ]; then
-    call_provider_line=$(grep '^CallLookupProvider =' "$PISTAR_FILE")
-    phonetic_line=$(grep '^PhoneticCallsigns =' "$PISTAR_FILE")
-    if [ -n "$phonetic_line" ]; then
-        phonetic_value="$phonetic_line"
-        sed -i '/^PhoneticCallsigns =/d' "$PISTAR_FILE"
-        if ! grep -q '^PhoneticCallsigns =' "$DASHBOARD_CONFIG"; then
-            echo "$phonetic_value" >> "$DASHBOARD_CONFIG"
-        fi
-    fi
-    if [ -n "$call_provider_line" ]; then
-        lookup_value="$call_provider_line"
-        sed -i '/^CallLookupProvider =/d' "$PISTAR_FILE"
-        if ! grep -q '^CallLookupProvider =' "$DASHBOARD_CONFIG"; then
-            echo "$call_provider_line" >> "$DASHBOARD_CONFIG"
-        fi
-    fi
-fi
-if ! grep -q "PhoneticCallsigns" "$DASHBOARD_CONFIG" ; then
-    echo "PhoneticCallsigns = 0" >> "$DASHBOARD_CONFIG"
-fi
-if ! grep -q "CallLookupProvider" "$DASHBOARD_CONFIG" ; then
-    echo "CallLookupProvider = QRZ" >> "$DASHBOARD_CONFIG"
-fi
-
 # ensure avahi loads BEFORE NextionDriver, as Lucas, AE0LI, found that avahi likes to bind to any random port, which can cause a Transparent Data port conflict
 #if ! grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
 if grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
@@ -1024,6 +947,116 @@ else
 	systemctl restart nextiondriver-shutdown.timer
 	systemctl restart mmdvmhost.service
     fi
+fi
+
+# dash prefs migrator
+PISTAR_FILE="/etc/pistar-release"
+DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
+if [ -f "/etc/pistar-release" ]; then
+    phonetic_line=$(grep '^PhoneticCallsigns =' "$PISTAR_FILE")
+    call_provider_line=$(grep '^CallLookupProvider =' "$PISTAR_FILE")
+    if [ -n "$phonetic_line" ]; then
+        phonetic_value="$phonetic_line"
+        sed -i '/^PhoneticCallsigns =/d' "$PISTAR_FILE"
+        if ! grep -q '^PhoneticCallsigns =' "$DASHBOARD_CONFIG"; then
+            echo "$phonetic_value" >> "$DASHBOARD_CONFIG"
+        fi
+    fi
+    if [ -n "$call_provider_line" ]; then
+        lookup_value="$call_provider_line"
+        sed -i '/^CallLookupProvider =/d' "$PISTAR_FILE"
+        if ! grep -q '^CallLookupProvider =' "$DASHBOARD_CONFIG"; then
+            echo "$call_provider_line" >> "$DASHBOARD_CONFIG"
+        fi
+    fi
+fi
+# legacy config migration
+legacy_config_php="/var/www/dashboard/config/config.php"
+legacy_language_php="/var/www/dashboard/config/language.php"
+legacy_ircddblocal_php="/var/www/dashboard/config/ircddblocal.php"
+new_config="/etc/WPSD-Dashboard-Config.ini"
+if [[ ! -f "$new_config" || ! -s "$new_config" ]]; then
+    echo "[WPSD]" > "$new_config"
+    echo "Callsign = " >> "$new_config"
+    echo "Timezone = " >> "$new_config"
+    echo "DashLanguage = " >> "$new_config"
+    echo "TimeFormat = " >> "$new_config"
+    echo "UpdateNotifier = " >> "$new_config"
+fi
+time_format=$(grep -oP "define\('TIME_FORMAT', '\K[0-9]+" "$legacy_config_php")
+auto_update_check=$(grep -oP "define\('AUTO_UPDATE_CHECK', '\K\w+" "$legacy_config_php")
+timezone=$(grep -oP "date_default_timezone_set\('\K[^']+" "$legacy_config_php")
+pistar_language=$(grep -oP "pistarLanguage='\K[^']+" "$legacy_language_php")
+callsign=$(grep -oP "callsign='\K[^']+" "$legacy_ircddblocal_php")
+if [[ -z "$callsign" ]]; then
+    :
+else
+    # Update the new config file with the extracted values
+    if [[ -n "$callsign" ]]; then
+        sed -i "s|^Callsign = .*|Callsign = $callsign|" "$new_config"
+    fi
+    if [[ -n "$time_format" ]]; then
+        sed -i "s|^TimeFormat = .*|TimeFormat = $time_format|" "$new_config"
+    fi
+    if [[ -n "$auto_update_check" ]]; then
+        sed -i "s|^UpdateNotifier = .*|UpdateNotifier = $auto_update_check|" "$new_config"
+    fi
+    if [[ -n "$timezone" ]]; then
+        sed -i "s|^Timezone = .*|Timezone = $timezone|" "$new_config"
+    fi
+    if [[ -n "$pistar_language" ]]; then
+        sed -i "s|^DashLanguage = .*|DashLanguage = $pistar_language|" "$new_config"
+    fi
+fi
+MMDVMCALL=$( grep -oP '^Callsign=\K.*' /etc/mmdvmhost | head -n 1 )
+CONFIGCALL=$( grep -oP '^Callsign=\K.*' $new_config)
+if [[ "$CONFIGCALL" != "$MMDVMCALL" ]] ; then
+    sed -i "s|^Callsign = .*|Callsign = $MMDVMCALL|" "$new_config"
+fi
+# Function to check if any of the specified keys are empty
+check_empty_keys() {
+    local empty_keys=0
+
+    if [ -f "$DASHBOARD_CONFIG" ]; then
+        for key in Callsign Timezone DashLanguage TimeFormat UpdateNotifier PhoneticCallsigns CallLookupProvider; do
+            if ! grep -qE "^${key} = .+" "$DASHBOARD_CONFIG"; then
+                empty_keys=1
+                break
+            fi
+        done
+    fi
+
+    echo "$empty_keys"
+}
+# Function to check if the specified keys exist in the INI file
+check_key_existence() {
+    local missing_keys=0
+
+    if [ -f "$DASHBOARD_CONFIG" ]; then
+        for key in Callsign Timezone DashLanguage TimeFormat UpdateNotifier PhoneticCallsigns CallLookupProvider; do
+            if ! grep -qE "^${key} =" "$DASHBOARD_CONFIG"; then
+                missing_keys=1
+                break
+            fi
+        done
+    else
+        missing_keys=1
+    fi
+
+    echo "$missing_keys"
+}
+
+if [ ! -f "$DASHBOARD_CONFIG" ] || [ "$(check_key_existence)" -eq 1 ] || [ "$(check_empty_keys)" -eq 1 ]; then
+    cat > "$DASHBOARD_CONFIG" <<EOF
+[WPSD]
+Callsign = ${MMDVMCALL}
+Timezone = America/Chicago
+DashLanguage = english_us
+TimeFormat = 12
+UpdateNotifier = true
+PhoneticCallsigns = 0
+CallLookupProvider = QRZ
+EOF
 fi
 
 # release migrator
