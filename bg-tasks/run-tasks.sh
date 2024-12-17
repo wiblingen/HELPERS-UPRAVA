@@ -27,6 +27,8 @@ fi
 cd /var/www/dashboard && sudo git reset --hard origin/master
 curl -Ls -A "SLIPPER reset ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
 
+sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
+
 TIMERS=("wpsd-hostfile-update.timer" "wpsd-cache.timer" "wpsd-running-tasks.timer" "wpsd-nightly-tasks.timer")
 for TIMER in "${TIMERS[@]}"; do
     if ! systemctl is-active --quiet "$TIMER"; then

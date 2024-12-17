@@ -25,7 +25,7 @@ if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
 else
     if grep -q -ri -- '-cron' /usr/local/sbin; then
         FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
-    elif grep -q 'hwDeetz' /usr/local/sbin/.wpsd-common-funcs; then
+    elif grep -q -r 'hwDeetz' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin/.wpsd-common-funcs"
     elif grep -q 'pistar-css-W0CHP.ini' /var/www/dashboard/css/css-base.php; then
         FOUND_MATCH="Matched: 'pistar-css-W0CHP.ini' in /var/www/dashboard/css/css-base.php"
