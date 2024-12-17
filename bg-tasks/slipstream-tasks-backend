@@ -808,15 +808,15 @@ if ! grep -q 'Type=oneshot' /etc/systemd/system/wpsd-nightly-tasks.service ; the
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
     systemctl daemon-reload
 fi
-if grep 'nightly' /etc/systemd/system/wpsd-running-tasks.service ; then
+if grep -q 'nightly' /etc/systemd/system/wpsd-running-tasks.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
 fi
-if grep 'AccuracySec' /etc/systemd/system/wpsd-running-tasks.timer ; then
+if grep -q 'AccuracySec' /etc/systemd/system/wpsd-running-tasks.timer ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.timer
     systemctl daemon-reload
     systemctl restart wpsd-running-tasks.timer
 fi
-if grep 'running' /etc/systemd/system/wpsd-nightly-tasks.service ; then
+if grep -q 'running' /etc/systemd/system/wpsd-nightly-tasks.service ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
 fi
 if systemctl is-enabled wpsd-cache.timer &>/dev/null; then
