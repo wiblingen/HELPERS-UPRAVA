@@ -27,7 +27,7 @@ else
         FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
     elif grep -q -r 'hwDeetz' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin/.wpsd-common-funcs"
-    elif grep -q -r 'ConnCheck' /usr/local/sbin/wpsd-hostfile-update; then
+    elif grep -q 'ConnCheck' /usr/local/sbin/wpsd-hostfile-update; then
         FOUND_MATCH="Matched: 'ConnCheck' in /usr/local/sbin/wpsd-hostfile-update"
     elif grep -q 'pistar-css-W0CHP.ini' /var/www/dashboard/css/css-base.php; then
         FOUND_MATCH="Matched: 'pistar-css-W0CHP.ini' in /var/www/dashboard/css/css-base.php"
