@@ -27,8 +27,8 @@ else
         FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
     elif grep -q -r 'hwDeetz' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin"
-    #elif grep -q -r 'Grab' /usr/local/sbin; then
-    #    FOUND_MATCH="Matched: 'Grab' in /usr/local/sbin"
+    elif grep -q -r 'Grab' /usr/local/sbin; then
+        FOUND_MATCH="Matched: 'Grab' in /usr/local/sbin"
     elif grep -q -r 'getDVModemFirmware' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'getDVModemFirmware' in /usr/local/sbin"
     elif grep -q 'ConnCheck' /usr/local/sbin/wpsd-hostfile-update; then
