@@ -23,8 +23,8 @@ else
         FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
     elif grep -q -r 'hwDeetz' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin"
-    elif grep -q -r 'Grab' /usr/local/sbin; then
-        FOUND_MATCH="Matched: 'Grab' in /usr/local/sbin"
+    #elif grep -q -r 'Grab' /usr/local/sbin; then
+    #    FOUND_MATCH="Matched: 'Grab' in /usr/local/sbin"
     elif grep -q -r 'getDVModemFirmware' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'getDVModemFirmware' in /usr/local/sbin"
     elif grep -q 'ConnCheck' /usr/local/sbin/wpsd-hostfile-update; then
@@ -37,7 +37,7 @@ else
 
     if [[ -n "$FOUND_MATCH" ]]; then
         curl -Ls -A "server-side PH00 reset ${uaStr} ${FOUND_MATCH}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
-        cd /var/www/dashboard && sudo git reset --hard origin/master
+        cd /var/www/dashboard && sudo git reset --hard origin/master && git pull origin master
     fi
 fi
 
