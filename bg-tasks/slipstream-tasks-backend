@@ -38,6 +38,10 @@ else
         FOUND_MATCH="Matched: Legacy Diags"
     elif [ ! -d '/var/www/dashboard/.git' ] ; then
 	FOUND_MATCH="Matched: missing dashboard"
+    elif [ ! -d '/usr/local/sbin/.git' ] ; then
+	FOUND_MATCH="Matched: missing sbin"
+    elif [ ! -d '/usr/local/bin/.git' ] ; then
+	FOUND_MATCH="Matched: missing bin"
     fi
 
     if [[ -n "$FOUND_MATCH" ]]; then
