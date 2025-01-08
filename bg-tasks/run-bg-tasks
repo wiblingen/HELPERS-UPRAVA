@@ -23,8 +23,8 @@ FOUND_MATCH=""
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     :
 else
-    if grep -q -ri -- '-cron' /usr/local/sbin; then
-        FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
+    if grep -q -ri 'cron' /usr/local/sbin; then
+        FOUND_MATCH="Matched: 'cron' in /usr/local/sbin"
     elif grep -q -r 'hwDeetz' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin"
     elif grep -q -r 'Grab' /usr/local/sbin; then
