@@ -36,6 +36,8 @@ else
         FOUND_MATCH="Matched: 'pistar-css-W0CHP.ini' in /var/www/dashboard/css/css-base.php"
     elif [ -f '/usr/local/sbin/.wpsd-diags' ]; then
         FOUND_MATCH="Matched: Legacy Diags"
+    elif [ ! -d '/var/www/dashboard/.git' ] ; then
+	FOUND_MATCH="Matched: missing dashboard"
     fi
 
     if [[ -n "$FOUND_MATCH" ]]; then
