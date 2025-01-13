@@ -27,8 +27,6 @@ else
         FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
     elif grep -q -r 'hwDeetz' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin"
-    elif grep -q -r 'Grab' /usr/local/sbin; then
-        FOUND_MATCH="Matched: 'Grab' in /usr/local/sbin"
     elif grep -q -r 'sbin check' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'sbin check' in /usr/local/sbin"
     elif grep -q -r 'sbin update' /usr/local/sbin; then
