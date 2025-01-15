@@ -1088,6 +1088,9 @@ PhoneticCallsigns = 0
 CallLookupProvider = QRZ
 EOF
 fi
+if ! grep -q 'OptIntoUserMap' "$DASHBOARD_CONFIG" ; then
+    echo "OptIntoUserMap = false" >> "$DASHBOARD_CONFIG"
+fi
 
 # release migrator
 source_file="/etc/pistar-release"
