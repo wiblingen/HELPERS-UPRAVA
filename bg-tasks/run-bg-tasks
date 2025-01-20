@@ -25,6 +25,8 @@ if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
 else
     if grep -q -ri -- '-cron' /usr/local/sbin; then
         FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
+    elif grep -q -r '/api/v1/repos' /usr/local/sbin; then
+        FOUND_MATCH="Matched: 'Old API' in /usr/local/sbin"
     elif grep -q -r 'hwDeetz' /usr/local/sbin; then
         FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin"
     elif grep -q -r 'sbin check' /usr/local/sbin; then
