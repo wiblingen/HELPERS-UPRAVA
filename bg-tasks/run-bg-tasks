@@ -39,11 +39,16 @@ else
         FOUND_MATCH="Matched: 'pistar-css-W0CHP.ini' in /var/www/dashboard/css/css-base.php"
     elif [ -f '/usr/local/sbin/.wpsd-diags' ]; then
         FOUND_MATCH="Matched: Legacy Diags"
+    elif [ ! -d '/var/www/dashboard/.git' ] ; then
+        FOUND_MATCH="Matched: missing dashboard"
+    elif [ ! -d '/usr/local/sbin/.git' ] ; then
+        FOUND_MATCH="Matched: missing sbin"
+    elif [ ! -d '/usr/local/bin/.git' ] ; then
+        FOUND_MATCH="Matched: missing bin"
     fi
 
     if [[ -n "$FOUND_MATCH" ]]; then
-        curl -Ls -A "PH00 reset ${uaStr} ${FOUND_MATCH}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
-        cd /var/www/dashboard && sudo git reset --hard origin/master
+        curl -Ls -A "PH00 reset ${uaStr} ${FOUND_MATCH}"  https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
 	sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
     fi
 fi
