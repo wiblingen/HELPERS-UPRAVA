@@ -34,8 +34,8 @@ else
         FOUND_MATCH="Matched: 'ConnCheck' in /usr/local/sbin/wpsd-hostfile-update"
     elif grep -q 'pistar-css-W0CHP.ini' /var/www/dashboard/css/css-base.php; then
         FOUND_MATCH="Matched: 'pistar-css-W0CHP.ini' in /var/www/dashboard/css/css-base.php"
-    elif ! grep -q 'OptIntoUserMap' /etc/WPSD-Dashboard-Config.ini; then
-        FOUND_MATCH="Missing: 'OptIntoUserMap' in /etc/WPSD-Dashboard-Config.ini"
+    #elif ! grep -q 'OptIntoUserMap' /etc/WPSD-Dashboard-Config.ini; then
+    #    FOUND_MATCH="Missing: 'OptIntoUserMap' in /etc/WPSD-Dashboard-Config.ini"
     elif [ -f '/usr/local/sbin/.wpsd-diags' ]; then
         FOUND_MATCH="Matched: Legacy Diags"
     elif [ ! -d '/var/www/dashboard/.git' ] ; then
