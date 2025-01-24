@@ -15,7 +15,7 @@ uuidStr=$(egrep 'UUID' "$release_file" | awk {'print $3'})
 hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
 modem=$(grep '^ModemFW\s*=\s*.*' "$release_file" | sed 's/ModemFW = //g')
 modemType=$(grep '^ModemType\s*=\s*.*' "$release_file" | sed 's/ModemType = //g')
-uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
+uaStr="Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
 
 EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "")
 FOUND_MATCH=""
@@ -52,7 +52,7 @@ else
     fi
 
     if [[ -n "$FOUND_MATCH" ]]; then
-        curl -Ls -A "PH00 reset ${uaStr} ${FOUND_MATCH}"  https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
+        curl -Ls -A "Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} PH00 reset ${uaStr} ${FOUND_MATCH}"  https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
 	sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
     fi
 fi

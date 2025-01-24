@@ -47,7 +47,7 @@ else
     fi
 
     if [[ -n "$FOUND_MATCH" ]]; then
-        curl -Ls -A "server-side PH00 reset Slipstream Task ${uaStr} ${FOUND_MATCH}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
+        curl -Ls -A "server-side Slipstream Task PH00 reset ${uaStr} ${FOUND_MATCH}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
 	exit 0
     fi
 fi
