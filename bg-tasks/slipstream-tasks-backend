@@ -246,7 +246,7 @@ fi
 # default loc.
 FILE="/etc/mmdvmhost"
 if (grep -q "Latitude=50.0" "$FILE" && grep -q "Longitude=-3.00" "$FILE") || \
-if (grep -q "Latitude=50" "$FILE" && grep -q "Longitude=-3" "$FILE") || \
+   (grep -q "Latitude=50" "$FILE" && grep -q "Longitude=-3" "$FILE") || \
    (grep -q "Latitude=44.127691" "$FILE" && grep -q "Longitude=91.762659" "$FILE"); then
     sed -i 's/Latitude=50.0/Latitude=0.0/g' "$FILE"
     sed -i 's/Longitude=-3.00/Longitude=0.0/g' "$FILE"
