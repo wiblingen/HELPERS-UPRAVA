@@ -245,21 +245,16 @@ fi
 
 # default loc.
 FILE="/etc/mmdvmhost"
-#TMP_FILE=$(mktemp)
-#sed -E '
-#  s/(Latitude=)50\.01/\144.127691/
-#  s/(Longitude=)-3\.00/\1-91.762659/
-#  s/(Longitude=)--91.762660/\1-91.762659/
-#  s/(Latitude=)50\.0/\144.127692/
-#' "$FILE" > "$TMP_FILE"
-#if ! cmp -s "$TMP_FILE" "$FILE"; then
-#  mv "$TMP_FILE" "$FILE"
-#  chmod 644 "$FILE"
-#fi
-#rm -f "$TMP_FILE"
+if (grep -q "Latitude=50.0" "$FILE" && grep -q "Longitude=-3.00" "$FILE") || \
+   (grep -q "Latitude=44.127691" "$FILE" && grep -q "Longitude=91.762659" "$FILE"); then
+    sed -i 's/Latitude=50.0/Latitude=0.0/g' "$FILE"
+    sed -i 's/Longitude=-3.00/Longitude=0.0/g' "$FILE"
+    sed -i 's/Latitude=44.127691/Latitude=0.0/g' "$FILE"
+    sed -i 's/Longitude=91.762659/Longitude=0.0/g' "$FILE"
+fi
 # placeholder for malformed coords (ugh...users :-/)
-NEW_LAT="44.127692"
-NEW_LONG="-91.762659"
+NEW_LAT="0.0"
+NEW_LONG="0.0"
 TMP_FILE=$(mktemp)
 sed -E '
   # Match Latitude= lines and validate the value
