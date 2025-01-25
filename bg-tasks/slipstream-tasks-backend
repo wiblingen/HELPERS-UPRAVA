@@ -247,11 +247,16 @@ fi
 FILE="/etc/mmdvmhost"
 if (grep -q "Latitude=50.0" "$FILE" && grep -q "Longitude=-3.00" "$FILE") || \
    (grep -q "Latitude=50" "$FILE" && grep -q "Longitude=-3" "$FILE") || \
+   (grep -q "Latitude=0.0" "$FILE" && grep -q "Longitude=0.0" "$FILE") || \
    (grep -q "Latitude=44.127691" "$FILE" && grep -q "Longitude=91.762659" "$FILE"); then
-    sed -i 's/Latitude=50.0/Latitude=0.0/g' "$FILE"
-    sed -i 's/Longitude=-3.00/Longitude=0.0/g' "$FILE"
-    sed -i 's/Latitude=44.127691/Latitude=0.0/g' "$FILE"
-    sed -i 's/Longitude=91.762659/Longitude=0.0/g' "$FILE"
+    sed -i 's/Latitude=50.0/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=-3.00/Longitude=0/g' "$FILE"
+    sed -i 's/Latitude=50/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=-3/Longitude=0/g' "$FILE"
+    sed -i 's/Latitude=0.0/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=0.0/Longitude=0/g' "$FILE"
+    sed -i 's/Latitude=44.127691/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=91.762659/Longitude=0/g' "$FILE"
 fi
 # placeholder for malformed coords (ugh...users :-/)
 NEW_LAT="0.0"
