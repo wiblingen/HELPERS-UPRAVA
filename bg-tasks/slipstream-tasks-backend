@@ -665,6 +665,20 @@ if ! grep -q 'wpsd' /etc/dnsmasq.conf ; then
 fi
 #
 
+#
+# new m17 mode for pistar-remote - 1/2025
+if ! grep -q 'M17 destination fields' /etc/pistar-remote ; then
+    echo -e "
+[m17]
+# M17 destination fields
+svckill=SVCKILL
+svcrestart=SVCRSTRT
+reboot=REBOOTPI
+#shutdown=SHUTDOWN
+" >> /etc/pistar-remote
+    systemctl restart pistar-remote.service
+fi
+
 # grab and cache latest WPSD hashes
 conn_check
 
