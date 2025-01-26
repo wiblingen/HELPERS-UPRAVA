@@ -244,31 +244,42 @@ fi
 
 # default loc.
 FILE="/etc/mmdvmhost"
-if grep -Eq "Latitude=(50\.0|50|0\.0|44\.1279)" "$FILE" && grep -Eq "Longitude=(-3\.00|-3|0\.0|91\.7626)" "$FILE"; then
-    sed -i -E '
-        s/Latitude=.*/Latitude=0/g;
-        s/Longitude=.*/Longitude=0/g
-    ' "$FILE"
+if (grep -q "Latitude=50.0" "$FILE" && grep -q "Longitude=-3.00" "$FILE") || \
+   (grep -q "Latitude=50" "$FILE" && grep -q "Longitude=-3" "$FILE") || \
+   (grep -q "Latitude=0.0" "$FILE" && grep -q "Longitude=0.0" "$FILE") || \
+   (grep -q "Latitude=44.127692" "$FILE" && grep -q "Longitude=i-91.762659" "$FILE"); then
+    sed -i 's/Latitude=50.0/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=-3.00/Longitude=0/g' "$FILE"
+    sed -i 's/Latitude=50/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=-3/Longitude=0/g' "$FILE"
+    sed -i 's/Latitude=0.0/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=0.0/Longitude=0/g' "$FILE"
+    sed -i 's/Latitude=44.127692/Latitude=0/g' "$FILE"
+    sed -i 's/Longitude=-91.762659/Longitude=0/g' "$FILE"
 fi
-
-# placeholder for malformed coords (ugh...users :-/)
 NEW_LAT="0"
 NEW_LONG="0"
 TMP_FILE=$(mktemp)
 sed -E '
-  # Match and validate Latitude= lines
+  # Match Latitude= lines and validate the value
   /Latitude=/ {
-    # If Latitude contains a valid decimal number or is exactly "0", leave it unchanged
-    /^[^=]*Latitude=[-]?[0-9]+(\.[0-9]+)?$/! {
-      # Otherwise, replace it with NEW_LAT
+    # If Latitude is a single digit or multi-digit number (but not 0), replace it
+    /Latitude=[^0-9]*[1-9][0-9]*$/ {  
+      s|Latitude=.*|Latitude='"$NEW_LAT"'|
+    }
+    # If Latitude contains invalid decimal format (multiple decimal points or commas)
+    /Latitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {  
       s|Latitude=.*|Latitude='"$NEW_LAT"'|
     }
   }
-  # Match and validate Longitude= lines
+  # Match Longitude= lines and validate the value
   /Longitude=/ {
-    # If Longitude contains a valid decimal number or is exactly "0", leave it unchanged
-    /^[^=]*Longitude=[-]?[0-9]+(\.[0-9]+)?$/! {
-      # Otherwise, replace it with NEW_LONG
+    # If Longitude is a single digit or multi-digit number (but not 0), replace it
+    /Longitude=[^0-9]*[1-9][0-9]*$/ {
+      s|Longitude=.*|Longitude='"$NEW_LONG"'|
+    }
+    # If Longitude contains invalid decimal format (multiple decimal points or commas)
+    /Longitude=[^0-9]*([0-9]+,|[^.]*\.[^0-9]*\.[^0-9]*)/ {
       s|Longitude=.*|Longitude='"$NEW_LONG"'|
     }
   }
@@ -276,8 +287,6 @@ sed -E '
 if ! cmp -s "$TMP_FILE" "$FILE"; then
   mv "$TMP_FILE" "$FILE"
   chmod 644 "$FILE"
-else
-  rm "$TMP_FILE"
 fi
 
 # 5/2023 W0CHP
