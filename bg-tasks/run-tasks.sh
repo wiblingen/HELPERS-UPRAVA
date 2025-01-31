@@ -24,7 +24,6 @@ if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     exit 1
 fi
 
-cd /var/www/dashboard && sudo git reset --hard origin/master
 curl -Ls -A "SLIPPER reset ${uaStr}"  https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
 
 sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
