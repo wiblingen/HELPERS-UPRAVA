@@ -680,17 +680,20 @@ conn_check
 # 
 # 7/2024 W0CHP: terrible bug in Debian bullseye TZdata 2024; missing/corrupted zones...force working version
 #
-if [ "${OS_VER}" -lt "12" ] ; then # only for bullseye
-    desired_version="2021a-1+deb11u10"
-    installed_version=$(dpkg-query -W -f='${Version}' tzdata 2>/dev/null)
-    if [ "$installed_version" == "$desired_version" ]; then
-	: # working version already installed. bail.
-    else # install working version
-	declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task TZdata Bootstrap $uaStr")
-	curl "${CURL_OPTIONS[@]}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/tzdata.deb -o /tmp/tzdata.deb
-	dpkg -i --force-all /tmp/tzdata.deb
-	apt-mark hold tzdata
-    fi
+#if [ "${OS_VER}" -lt "12" ] ; then # only for bullseye
+#    desired_version="2021a-1+deb11u10"
+#    installed_version=$(dpkg-query -W -f='${Version}' tzdata 2>/dev/null)
+#    if [ "$installed_version" == "$desired_version" ]; then
+#	: # working version already installed. bail.
+#    else # install working version
+#	declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task TZdata Bootstrap $uaStr")
+#	curl "${CURL_OPTIONS[@]}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/tzdata.deb -o /tmp/tzdata.deb
+#	dpkg -i --force-all /tmp/tzdata.deb
+#	apt-mark hold tzdata
+#    fi
+#fi
+if apt-mark showhold | grep -q tzdata; then
+    apt-mark unhold tzdata
 fi
 #
 
