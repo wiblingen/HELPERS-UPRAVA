@@ -332,7 +332,7 @@ if [ $( uname -m ) == "armv6l" ] ; then
 fi
 #
 
-# Armbian for NanoPi Neo / OrangePi Zero handling..
+# Armbian for NanoPi Neo handling..
 if [ -f "$armbian_env_file" ] && [[ $(grep "console=serial" $armbian_env_file) ]] ; then
     sed -i '/console=serial/d' $armbian_env_file
     if [ -f '/etc/network/if-pre-up.d/static-mac' ] ; then
@@ -340,7 +340,7 @@ if [ -f "$armbian_env_file" ] && [[ $(grep "console=serial" $armbian_env_file) ]
     fi
 fi
 # ensure serial port exists by creating it during bootup in rc.local...
-ttyama0_line="# OPi/NanoPi serial ports:"
+ttyama0_line="# NanoPi serial ports:"
 ttyama0_line+="\nmknod \"/dev/ttyAMA0\" c 4 65"
 ttyama0_line+="\nchown .dialout /dev/ttyAMA0"
 ttyama0_line+="\nchmod 660 /dev/ttyAMA0\n"
@@ -394,14 +394,12 @@ if [ -f "$armbian_env_file" ]; then
         armbian-bsp-cli-nanopineo-current \
         armbian-bsp-cli-nanopineo \
         linux-u-boot-nanopineo-edge \
-        armbian-bsp-cli-orangepizero \
         linux-dtb-edge-sunxi \
         linux-image-edge-sunxi \
-        linux-u-boot-orangepizero-edge \
         armbian-firmware-full \
         armbian-firmware > /dev/null 2>&1
 fi
-# cleanup NanoPi/OPi modprobing
+# cleanup NanoPi modprobing
 if [ -f "$armbian_env_file" ] && [[ $(grep 'modprobe -r rtl8' $rc_local_file) ]] ; then
     sed -i '/modprobe -r rtl8/d' $rc_local_file
 fi
@@ -414,7 +412,7 @@ if [ -f "$armbian_env_file" ] ; then
 	sed -i 's/beta\.armbian\.com/apt.armbian.com/g' /etc/apt/sources.list.d/armbian.list
     fi
 fi
-# random eth0 mac fix/reversion for new Nano/Orange Pi DTBs: 8/24 W0CHP
+# random eth0 mac fix/reversion for new Nano Pi DTBs: 8/24 W0CHP
 if [ -f "$armbian_env_file" ] ; then
     if grep -q 'ethaddr' $armbian_env_file ; then
 	sed -i '/ethaddr/d' $armbian_env_file
@@ -456,7 +454,7 @@ if ! `systemctl status gpsd.socket | grep -q masked` && [ `sed -n '/^\[GPSD\]/,/
     systemctl mask gpsd.socket > /dev/null 2>&1
 fi
 
-# NanoPi/OPi/Armbian vnstat & late-init wlan handling:
+# NanoPi/Armbian vnstat & late-init wlan handling:
 if [ -f "$armbian_env_file" ] ; then
     if ip link show eth0 | grep -q "state UP" ; then
 	:
