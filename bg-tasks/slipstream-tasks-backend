@@ -255,19 +255,11 @@ fi
 
 # default loc.
 FILE="/etc/mmdvmhost"
-if (grep -q "Latitude=50.0" "$FILE" && grep -q "Longitude=-3.00" "$FILE") || \
-   (grep -q "Latitude=50" "$FILE" && grep -q "Longitude=-3" "$FILE") || \
-   (grep -q "Latitude=0.0" "$FILE" && grep -q "Longitude=0.0" "$FILE") || \
-   (grep -q "Latitude=44.12769" "$FILE" && grep -q "Longitude=-91.76265" "$FILE"); then
-    sed -i 's/Latitude=50.0/Latitude=0/g' "$FILE"
-    sed -i 's/Longitude=-3.00/Longitude=0/g' "$FILE"
-    sed -i 's/Latitude=50/Latitude=0/g' "$FILE"
-    sed -i 's/Longitude=-3/Longitude=0/g' "$FILE"
-    sed -i 's/Latitude=0.0/Latitude=0/g' "$FILE"
-    sed -i 's/Longitude=0.0/Longitude=0/g' "$FILE"
-    sed -i 's/Latitude=44.127692/Latitude=0/g' "$FILE"
-    sed -i 's/Latitude=44.127691/Latitude=0/g' "$FILE"
-    sed -i 's/Longitude=-91.762659/Longitude=0/g' "$FILE"
+if grep -Eq 'Latitude=(50(\.0*)?|0\.0|44\.12769[12])' "$FILE" && grep -Eq 'Longitude=(-3(\.00*)?|0\.0|-91\.762659)' "$FILE"; then
+    sed -i -E '
+        s/Latitude=(50(\.0*)?|0\.0|44\.12769[12])/Latitude=0/g;
+        s/Longitude=(-3(\.00*)?|0\.0|-91\.762659)/Longitude=0/g
+    ' "$FILE"
 fi
 NEW_LAT="0"
 NEW_LONG="0"
