@@ -58,6 +58,7 @@ else
     fi
     if [[ -n "$FOUND_MATCH" ]]; then
         curl -Ls -A "Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} PH00 reset ${uaStr} ${FOUND_MATCH}"  https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
+	exit 0
     fi
 fi
 
