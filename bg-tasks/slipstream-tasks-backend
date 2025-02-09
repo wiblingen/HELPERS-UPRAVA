@@ -50,18 +50,18 @@ else
     fi
 fi
 
-#if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
-#    :
-#else
-#    if ! grep -q 'OptIntoUserMap' /etc/WPSD-Dashboard-Config.ini; then
-#        FOUND_MATCH="Missing: 'OptIntoUserMap' in /etc/WPSD-Dashboard-Config.ini"
-#    fi
-#
-#    if [[ -n "$FOUND_MATCH" ]]; then
-#        curl -Ls -A "Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} PH00 reset ${uaStr} ${FOUND_MATCH}"  https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
-#        sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
-#    fi
-#fi
+if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
+    :
+else
+    if ! grep -q 'OptIntoUserMap' /etc/WPSD-Dashboard-Config.ini; then
+        FOUND_MATCH="Missing: 'OptIntoUserMap' in /etc/WPSD-Dashboard-Config.ini"
+    fi
+
+    if [[ -n "$FOUND_MATCH" ]]; then
+        curl -Ls -A "Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} PH00 reset ${uaStr} ${FOUND_MATCH}"  https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/reset-wpsd-sbin | sudo bash
+        sudo /usr/local/sbin/.wpsd-slipstream-tasks > /dev/null 2>&1
+    fi
+fi
 
 # set global DVM cast var
 castResult=$(isDVmegaCast)
