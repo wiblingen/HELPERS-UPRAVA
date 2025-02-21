@@ -1393,5 +1393,11 @@ chmod +x /etc/rc.local
 # always +r!
 chmod 644 /etc/mmdvmhost
 
+if [ ! -f '/etc/machine-id' ] ; then
+    rm -f /var/lib/dbus/machine-id
+    dbus-uuidgen --ensure=/etc/machine-id
+    dbus-uuidgen --ensure
+fi
+
 exit 0
 
