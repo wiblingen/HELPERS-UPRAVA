@@ -1365,7 +1365,7 @@ if grep -q 'wspd-motdgen' /etc/rc.local; then
     sed -i '/^# Generate \/etc\/motd/a \/usr\/local\/sbin\/.wpsd-motdgen' /etc/rc.local
 fi
 if ! grep -q 'wpsd-motdgen' /etc/rc.local ; then
-    sed -i 's/motdgen/wpsd-motdgen/g' /etc/rc.local
+    sed -i 's/motdgen/.wpsd-motdgen/g' /etc/rc.local
 fi
 
 # only our motd;
