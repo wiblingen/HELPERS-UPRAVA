@@ -53,6 +53,14 @@ fi
 # set global DVM cast var
 castResult=$(isDVmegaCast)
 
+# legacy cleanups 2/2025
+if [ -f '/etc/dstar-radio.dstarrepeater' ] ; then
+    rm -f /etc/dstar-radio.dstarrepeater
+fi
+if [ -f '/etc/dstarrepeater' ] ; then
+    rm -f /etc/dstarrepeater
+fi
+
 # 6/4/23 Ensure we can update successfully:
 find /usr/local/sbin -type f -exec chattr -i {} +
 find /usr/local/sbin -type d -exec chattr -i {} +
