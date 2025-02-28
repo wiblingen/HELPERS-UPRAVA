@@ -250,10 +250,10 @@ fi
 
 # default loc.
 FILE="/etc/mmdvmhost"
-if grep -Eq 'Latitude=(50(\.0*)?|0\.0|44\.12769[12])' "$FILE" && grep -Eq 'Longitude=(-3(\.00*)?|0\.0|-91\.762659)' "$FILE"; then
+if grep -Eq 'Latitude=(0\.0|44\.12769[12])' "$FILE" && grep -Eq 'Longitude=(0\.0|-91\.762659)' "$FILE"; then
     sed -i -E '
-        s/Latitude=(50(\.0*)?|0\.0|44\.12769[12])/Latitude=0/g;
-        s/Longitude=(-3(\.00*)?|0\.0|-91\.762659)/Longitude=0/g
+        s/Latitude=(0\.0|44\.12769[12])/Latitude=0/g;
+        s/Longitude=(0\.0|-91\.762659)/Longitude=0/g
     ' "$FILE"
 fi
 NEW_LAT="0"
