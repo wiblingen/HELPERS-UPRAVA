@@ -1412,5 +1412,9 @@ if echo "$MMDVMCALL" | grep -q "TEST"; then
     reboot
 fi
 
+if [ -f '/usr/local/etc/TGList_AmComm.txt' ] ; then
+    rm -f /usr/local/etc/TGList_AmCom*
+fi
+
 exit 0
 
