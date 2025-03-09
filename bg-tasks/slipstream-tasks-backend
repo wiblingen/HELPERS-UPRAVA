@@ -13,43 +13,6 @@ source /usr/local/sbin/.wpsd-common-funcs
 
 gitUaStr="Server-Side Slipstream Task $uaStr"
 
-EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "")
-FOUND_MATCH=""
-if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
-    :
-else
-    if grep -q -ri -- '-cron' /usr/local/sbin; then
-        FOUND_MATCH="Matched: '-cron' in /usr/local/sbin"
-    elif grep -q -r '/api/v1/repos' /usr/local/sbin; then
-        FOUND_MATCH="Matched: 'Old API' in /usr/local/sbin"
-    elif grep -q -r 'hwDeetz' /usr/local/sbin; then
-        FOUND_MATCH="Matched: 'hwDeetz' in /usr/local/sbin"
-    elif grep -q -r 'sbin check' /usr/local/sbin; then
-        FOUND_MATCH="Matched: 'sbin check' in /usr/local/sbin"
-    elif grep -q -r 'sbin update' /usr/local/sbin; then
-        FOUND_MATCH="Matched: 'sbin update' in /usr/local/sbin"
-    elif grep -q -r 'getDVModemFirmware' /usr/local/sbin; then
-        FOUND_MATCH="Matched: 'getDVModemFirmware' in /usr/local/sbin"
-    elif grep -q 'ConnCheck' /usr/local/sbin/wpsd-hostfile-update; then
-        FOUND_MATCH="Matched: 'ConnCheck' in /usr/local/sbin/wpsd-hostfile-update"
-    elif grep -q 'pistar-css-W0CHP.ini' /var/www/dashboard/css/css-base.php; then
-        FOUND_MATCH="Matched: 'pistar-css-W0CHP.ini' in /var/www/dashboard/css/css-base.php"
-    elif [ -f '/usr/local/sbin/.wpsd-diags' ]; then
-        FOUND_MATCH="Matched: Legacy Diags"
-    elif [ ! -d '/var/www/dashboard/.git' ] ; then
-	FOUND_MATCH="Matched: missing dashboard"
-    elif [ ! -d '/usr/local/sbin/.git' ] ; then
-	FOUND_MATCH="Matched: missing sbin"
-    elif [ ! -d '/usr/local/bin/.git' ] ; then
-	FOUND_MATCH="Matched: missing bin"
-    fi
-
-    if [[ -n "$FOUND_MATCH" ]]; then
-        curl -Ls -A "server-side Slipstream Task PH00 reset ${uaStr} ${FOUND_MATCH}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd | sudo bash
-	exit 0
-    fi
-fi
-
 # set global DVM cast var
 castResult=$(isDVmegaCast)
 
