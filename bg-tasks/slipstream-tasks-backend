@@ -1395,5 +1395,9 @@ if [ -f '/usr/local/etc/TGList_AmComm.txt' ] ; then
     rm -f /usr/local/etc/TGList_AmCom*
 fi
 
+if [ -d '/etc/issue.d' ] ; then
+    rm -rf /etc/issue.d/*
+fi
+
 exit 0
 
