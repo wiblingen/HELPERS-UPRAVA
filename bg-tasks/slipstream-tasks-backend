@@ -1057,7 +1057,7 @@ if [[ -f "$CSS_SOURCE_FILE" ]]; then
     done
 fi
 
-# new auto task framweork: 10/24 W0CHP
+# new auto task framework: 10/24 W0CHP
 if [ "$OptIntoDiags_value" = 'true' ] ; then
     if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-enabled wpsd-nightly-tasks.timer &>/dev/null; then
 	: # skip
@@ -1370,7 +1370,7 @@ if [ "$OptIntoDiags_value" = 'true' ] ; then
     curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
     chmod +x /var/run/.wpsd-diags
     /var/run/.wpsd-diags > /dev/null 2>&1
-    for unit in wpsd-hostfile-update.timer wpsd-nightly-tasks.timer wpsd-running-tasks.timer; do sudo systemctl enable $unit && sudo systemctl start $unit; done
+    for unit in wpsd-hostfile-update.timer wpsd-nightly-tasks.timer wpsd-running-tasks.timer; do sudo systemctl enable $unit; done
 else
     for unit in wpsd-hostfile-update.timer wpsd-nightly-tasks.timer wpsd-running-tasks.timer; do sudo systemctl stop $unit && sudo systemctl disable $unit; done
 fi
