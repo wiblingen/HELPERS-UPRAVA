@@ -18,6 +18,11 @@ castResult=$(isDVmegaCast)
 
 OptIntoDiags_value=${OptIntoDiags_value:-true}
 
+if [ "$OptIntoDiags_value" != 'true' ] ; then
+    echo "User has opted out of updates and diagnostics. Exiting..."
+    exit 1
+fi
+
 # legacy cleanups 2/2025
 if [ -f '/etc/dstar-radio.dstarrepeater' ] ; then
     rm -f /etc/dstar-radio.dstarrepeater
@@ -1358,15 +1363,10 @@ if [ "${osName}" = "bookworm" ] &&  [[ $(/usr/local/sbin/.wpsd-platform-detect) 
     fi
 fi
 
-if [ "$OptIntoDiags_value" = 'true' ] ; then
-    declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task Diags Bootstrap $uaStr")
-    curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
-    chmod +x /var/run/.wpsd-diags
-    /var/run/.wpsd-diags > /dev/null 2>&1
-    for unit in wpsd-hostfile-update.timer wpsd-nightly-tasks.timer wpsd-running-tasks.timer; do sudo systemctl enable $unit; done
-else
-    for unit in wpsd-hostfile-update.timer wpsd-nightly-tasks.timer wpsd-running-tasks.timer; do sudo systemctl stop $unit && sudo systemctl disable $unit; done
-fi
+declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task Diags Bootstrap $uaStr")
+curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
+chmod +x /var/run/.wpsd-diags
+/var/run/.wpsd-diags > /dev/null 2>&1
 
 # always +x!
 chmod +x /etc/rc.local
