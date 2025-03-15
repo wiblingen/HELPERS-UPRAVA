@@ -1057,25 +1057,22 @@ if [[ -f "$CSS_SOURCE_FILE" ]]; then
     done
 fi
 
-# new auto task framework: 10/24 W0CHP
-if [ "$OptIntoDiags_value" = 'true' ] ; then
-    if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-enabled wpsd-nightly-tasks.timer &>/dev/null; then
-	: # skip
-    else
-	if [[ ! -f /etc/systemd/system/wpsd-running-tasks.timer ]] || [[ ! -f /etc/systemd/system/wpsd-nightly-tasks.timer ]]; then
+if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-enabled wpsd-nightly-tasks.timer &>/dev/null; then
+    : # skip
+else
+    if [[ -f /usr/local/sbin/.wpsd-nightly-tasks ]] || [[ -f /usr/local/sbin/.wpsd-running-tasks ]]; then
 
- 	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
-            curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.timer
-            curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
-            curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.timer
-            systemctl daemon-reload
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.service
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nightly-tasks.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nightly-tasks.timer
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.service
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-running-tasks.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-running-tasks.timer
+        systemctl daemon-reload
 
-            systemctl enable wpsd-running-tasks.timer
-            systemctl enable wpsd-nightly-tasks.timer
+        systemctl enable wpsd-running-tasks.timer
+        systemctl enable wpsd-nightly-tasks.timer
 
-            systemctl start wpsd-running-tasks.timer
-            systemctl start wpsd-nightly-tasks.timer
-        fi
+        systemctl start wpsd-running-tasks.timer
+        systemctl start wpsd-nightly-tasks.timer
     fi
 
     if grep -q "mount -o remount,rw / && cd / && " /etc/crontab; then
@@ -1148,24 +1145,20 @@ fi
 # end new auto-task framework
 
 # new auto hostfile framweork: 11/24 W0CHP
-if [ "$OptIntoDiags_value" = 'true' ] ; then
-    if systemctl is-enabled wpsd-hostfile-update.timer &>/dev/null; then
-	: # skip
-    else
-	if [[ ! -f /etc/systemd/system/wpsd-hostfile-update.timer ]]; then
+if systemctl is-enabled wpsd-hostfile-update.timer &>/dev/null; then
+    : # skip
+else
+    if [[ ! -f /etc/systemd/system/wpsd-hostfile-update.timer ]]; then
 
-	    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-hostfile-update.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-hostfile-update.timer
-            curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-hostfile-update.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-hostfile-update.service
-            systemctl daemon-reload
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-hostfile-update.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-hostfile-update.timer
+        curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-hostfile-update.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-hostfile-update.service
+        systemctl daemon-reload
 
-            systemctl enable wpsd-hostfile-update.timer
-            systemctl start wpsd-hostfile-update.timer
-        fi
+        systemctl enable wpsd-hostfile-update.timer
+        systemctl start wpsd-hostfile-update.timer
     fi
 fi
 # end auto hostfiles
-
-
 
 # new first boot logic
 file="/etc/rc.local"
