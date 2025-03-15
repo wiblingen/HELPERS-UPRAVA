@@ -16,6 +16,22 @@ gitUaStr="Server-Side Slipstream Task $uaStr"
 # set global DVM cast var
 castResult=$(isDVmegaCast)
 
+#!/bin/bash
+
+TIMERS=(
+    "wpsd-nightly-tasks.timer"
+    "wpsd-running-tasks.timer"
+    "wpsd-hostfile-update.timer"
+)
+
+for TIMER in "${TIMERS[@]}"; do
+    # Check if the timer is enabled
+    if ! systemctl is-enabled --quiet "$TIMER"; then
+        systemctl enable "$TIMER"
+        systemctl start "$TIMER"
+    fi
+done
+
 OptIntoDiags_value=${OptIntoDiags_value:-true}
 
 if [ "$OptIntoDiags_value" != 'true' ] ; then
