@@ -878,6 +878,18 @@ else
     fi
 fi
 
+# install machine-id and ssh key gen services
+if [ ! -f '/etc/systemd/system/machine-id-gen.service' ] ; then
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/machine-id-gen.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/machine-id-gen.service
+    systemctl daemon-reload
+    systemctl enable machine-id-gen.service
+fi 
+if [ ! -f '/etc/systemd/system/ssh-keygen.service' ] ; then
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/ssh-keygen.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/ssh-keygen.service
+    systemctl daemon-reload
+    systemctl enable ssh-keygen.service
+fi
+
 # dash prefs migrator
 PISTAR_FILE="/etc/pistar-release"
 DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
