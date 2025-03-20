@@ -1071,6 +1071,11 @@ if ! dpkg -l i2c-tools | grep -q '^ii'; then
     sudo apt update && sudo apt install -y i2c-tools
 fi
 
+# Check if py serial is installed
+if ! dpkg -l python3-serial | grep -q '^ii'; then
+    sudo apt update && sudo apt install -y python3-serial
+fi
+
 # ensure new web ini and css ini is in each stored profile
 SOURCE_FILE="/etc/WPSD-Dashboard-Config.ini"
 CSS_SOURCE_FILE="/etc/wpsd-css.ini"
