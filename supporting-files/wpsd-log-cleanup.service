@@ -1,5 +1,5 @@
 [Unit]
-Description=WPSD Log Cleanup Service
+Description=WPSD MMDVM Log Cleanup Service 
 After=network.target
 
 [Service]
