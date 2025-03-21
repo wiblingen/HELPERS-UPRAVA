@@ -1,0 +1,12 @@
+[Unit]
+Description=WPSD Log Cleanup Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/.wpsd-log-cleanup
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
