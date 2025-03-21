@@ -898,7 +898,7 @@ if [ ! -f '/etc/systemd/system/wpsd-log-cleanup.timer' ] ; then
     systemctl enable wpsd-log-cleanup.timer
     systemctl restart wpsd-log-cleanup.timer
 fi
-if 
+
 # dash prefs migrator
 PISTAR_FILE="/etc/pistar-release"
 DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
