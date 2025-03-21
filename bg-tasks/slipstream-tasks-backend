@@ -893,12 +893,12 @@ fi
 # install wpsd log cleanup service & timer
 if [ ! -f '/etc/systemd/system/wpsd-log-cleanup.timer' ] ; then
     curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-log-cleanup.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-log-cleanup.timer
-    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-log-cleanup.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-log-cleamup.service
+    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-log-cleanup.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-log-cleanup.service
     systemctl daemon-reload
     systemctl enable wpsd-log-cleanup.timer
     systemctl restart wpsd-log-cleanup.timer
 fi
-
+if 
 # dash prefs migrator
 PISTAR_FILE="/etc/pistar-release"
 DASHBOARD_CONFIG="/etc/WPSD-Dashboard-Config.ini"
