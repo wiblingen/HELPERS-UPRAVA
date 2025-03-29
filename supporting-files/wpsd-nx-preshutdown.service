@@ -8,7 +8,7 @@ Before=shutdown.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" Powerdown, please wait..."
+ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" "Please wait..." ; /usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t1" "Do not remove power yet..."
 Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
 
 [Install]

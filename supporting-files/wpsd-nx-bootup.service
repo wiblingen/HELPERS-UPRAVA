@@ -1,5 +1,5 @@
 [Unit]
-Description=Run WPSD NX Text Update on Shutdown
+Description=Run WPSD NX Text Update on Bootup
 DefaultDependencies=no
 Before=nextiondriver.service mmdvmhost.service
 After=local-fs.target
@@ -8,7 +8,7 @@ RequiresMountsFor=/dev/ttyAMA0
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" Booting up..."
+ExecStart=/home/pi-star/Nextion-modem.py "/dev/ttyAMA0" "t0" "Booting up..."
 Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
 
 [Install]
