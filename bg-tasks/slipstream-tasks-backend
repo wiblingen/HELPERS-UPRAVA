@@ -836,46 +836,84 @@ if grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
 fi
 
 # install new nx driver shutdown service
+DISPLAY_VALUE=$(grep 'Display=' /etc/mmdvmhost | cut -d'=' -f2)
 if [ "${osName}" = "bookworm" ] ; then 
     if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.timer' ] || ! grep -q 'Bookworm' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
 	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bookworm
 	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.timer
-	systemctl daemon-reload
-	systemctl stop nextiondriver-shutdown.service
-	systemctl disable nextiondriver-shutdown.service
-	systemctl enable nextiondriver-shutdown.timer
-	systemctl restart nextiondriver-shutdown.timer
-	systemctl restart mmdvmhost.service
+	if [ "$DISPLAY_VALUE" == "Nextion" ] ; then
+	    systemctl daemon-reload
+	    systemctl stop nextiondriver-shutdown.service
+	    systemctl disable nextiondriver-shutdown.service
+	    systemctl enable nextiondriver-shutdown.timer
+	    systemctl restart nextiondriver-shutdown.timer
+	    systemctl restart mmdvmhost.service
+	else
+            systemctl daemon-reload
+            systemctl stop nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.timer
+            systemctl restart mmdvmhost.service
+	fi
     fi
     if grep -q 'WantedBy=final.target' /etc/systemd/system/nextiondriver-shutdown.service ; then
 	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bookworm
-	systemctl daemon-reload
-	systemctl stop nextiondriver-shutdown.service
-	systemctl disable nextiondriver-shutdown.service
-	systemctl enable nextiondriver-shutdown.timer
-	systemctl restart nextiondriver-shutdown.timer
-	systemctl restart mmdvmhost.service
+	if [ "$DISPLAY_VALUE" == "Nextion" ] ; then
+	    systemctl daemon-reload
+	    systemctl stop nextiondriver-shutdown.service
+	    systemctl disable nextiondriver-shutdown.service
+	    systemctl enable nextiondriver-shutdown.timer
+	    systemctl restart nextiondriver-shutdown.timer
+	    systemctl restart mmdvmhost.service
+	else
+            systemctl daemon-reload
+            systemctl stop nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.timer
+            systemctl restart mmdvmhost.service
+	fi
     fi
     if ! grep -q 'poweroff.target' /etc/systemd/system/nextiondriver-shutdown.service ; then
 	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bookworm
-	systemctl daemon-reload
-	systemctl stop nextiondriver-shutdown.service
-	systemctl disable nextiondriver-shutdown.service
-	systemctl enable nextiondriver-shutdown.timer
-	systemctl restart nextiondriver-shutdown.timer
-	systemctl restart mmdvmhost.service
+	if [ "$DISPLAY_VALUE" == "Nextion" ] ; then
+	    systemctl daemon-reload
+	    systemctl stop nextiondriver-shutdown.service
+	    systemctl disable nextiondriver-shutdown.service
+	    systemctl enable nextiondriver-shutdown.timer
+	    systemctl restart nextiondriver-shutdown.timer
+	    systemctl restart mmdvmhost.service
+	else
+            systemctl daemon-reload
+            systemctl stop nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.timer
+            systemctl restart mmdvmhost.service
+	fi
     fi
 else
     if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.timer' ] || ! grep -q 'Bullseye' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
 	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.service-bullseye
 	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/nextiondriver-shutdown.timer https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/nextiondriver-shutdown.timer
-	systemctl daemon-reload
-	systemctl stop nextiondriver-shutdown.service
-	systemctl disable nextiondriver-shutdown.service
-	systemctl enable nextiondriver-shutdown.timer
-	systemctl restart nextiondriver-shutdown.timer
-	systemctl restart mmdvmhost.service
+	if [ "$DISPLAY_VALUE" == "Nextion" ] ; then
+	    systemctl daemon-reload
+	    systemctl stop nextiondriver-shutdown.service
+	    systemctl disable nextiondriver-shutdown.service
+	    systemctl enable nextiondriver-shutdown.timer
+	    systemctl restart nextiondriver-shutdown.timer
+	    systemctl restart mmdvmhost.service
+	else
+            systemctl daemon-reload
+            systemctl stop nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.service
+            systemctl disable nextiondriver-shutdown.timer
+            systemctl restart mmdvmhost.service
+	fi
     fi
+fi
+if systemctl is-enabled nextiondriver-shutdown.timer &>/dev/null && [ "$DISPLAY_VALUE" != "Nextion" ]; then
+    systemctl stop nextiondriver-shutdown.service
+    systemctl stop nextiondriver-shutdown.timer
+    systemctl disable nextiondriver-shutdown.timer
 fi
 
 # install machine-id and ssh key gen services
