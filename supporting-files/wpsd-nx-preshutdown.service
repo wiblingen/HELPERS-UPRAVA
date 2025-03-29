@@ -1,0 +1,15 @@
+[Unit]
+Description=Run WPSD NX Text Update on Shutdown
+DefaultDependencies=no
+Requires=nextiondriver.service
+After=nextiondriver.service
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" Powerdown, please wait..."
+Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
+
+[Install]
+WantedBy=shutdown.target
