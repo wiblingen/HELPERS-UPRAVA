@@ -930,9 +930,12 @@ if [ "${osName}" = "bookworm" ] ; then
 	fi
     fi
 fi
-if [ -f '/etc/systemd/system/wpsd-nx-preshutdown.service' ] && grep -q "yet" /etc/systemd/system/wpsd-nx-preshutdown.service ; then
-    curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-preshutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-preshutdown.service
-    systemctl daemon-reload
+if [ "${osName}" = "bookworm" ] ; then 
+    if [ -f '/etc/systemd/system/wpsd-nx-preshutdown.service' ] && ! grep -q "ExecStartPre" /etc/systemd/system/wpsd-nx-preshutdown.service ; then
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-reboot.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-reboot.service
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-preshutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-preshutdown.service
+	systemctl daemon-reload
+    fi
 fi
 
 # install machine-id and ssh key gen services
