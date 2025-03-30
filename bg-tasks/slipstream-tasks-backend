@@ -835,7 +835,7 @@ if grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
     systemctl restart avahi-daemon.service
 fi
 
-# install new nx driver shutdown service
+# install new nx driver shutdown service and nx text services
 DISPLAY_VALUE=$(grep 'Display=' /etc/mmdvmhost | cut -d'=' -f2)
 if [ "${osName}" = "bookworm" ] ; then 
     if [ ! -f '/etc/systemd/system/nextiondriver-shutdown.timer' ] || ! grep -q 'Bookworm' /etc/systemd/system/nextiondriver-shutdown.service || grep -qi 'not found' /etc/systemd/system/nextiondriver-shutdown.service ; then
@@ -914,6 +914,21 @@ if systemctl is-enabled nextiondriver-shutdown.timer &>/dev/null && [ "$DISPLAY_
     systemctl stop nextiondriver-shutdown.service
     systemctl stop nextiondriver-shutdown.timer
     systemctl disable nextiondriver-shutdown.timer
+fi
+if [ "${osName}" = "bookworm" ] ; then 
+    if [ ! -f '/etc/systemd/system/wpsd-nx-bootup.service' ] ; then
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-bootup.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-bootup.service
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-reboot.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-reboot.service
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-shutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-shutdown.service
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-preshutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-preshutdown.service
+	if [ "$DISPLAY_VALUE" == "Nextion" ] ; then
+	    systemctl daemon-reload
+	    systemctl enable wpsd-nx-bootup.service
+	    systemctl enable wpsd-nx-reboot.service
+	    systemctl enable wpsd-nx-shutdown.service
+	    systemctl enable wpsd-nx-preshutdown.service
+	fi
+    fi
 fi
 
 # install machine-id and ssh key gen services
