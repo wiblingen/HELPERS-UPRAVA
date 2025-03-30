@@ -4,12 +4,14 @@ DefaultDependencies=no
 Requires=nextiondriver.service
 After=umount.target
 Before=final.target
+Conflicts=reboot.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" "Safe to power off" ; /usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t1" "Shutdown Complete!"
+ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" "Safe to Power Off" ; /usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t1" "Shutdown Complete"
 Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
 
 [Install]
-WantedBy=umount.target
+WantedBy=final.target
+

@@ -1,9 +1,11 @@
 [Unit]
-Description=Run WPSD NX Text Update on Shutdown
+Description=Run WPSD NX Text Update on Pre-Shutdown
 DefaultDependencies=no
 Requires=nextiondriver.service
 After=nextiondriver.service
-Before=shutdown.target
+Before=poweroff.target
+Conflicts=multi-user.target
+ConditionPathExists=!/run/systemd/reboot
 
 [Service]
 Type=oneshot
@@ -12,4 +14,5 @@ ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" "Please wait
 Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
 
 [Install]
-WantedBy=shutdown.target
+WantedBy=poweroff.target
+
