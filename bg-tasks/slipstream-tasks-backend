@@ -12,6 +12,7 @@ chmod +x /etc/rc.local
 source /usr/local/sbin/.wpsd-common-funcs
 
 gitUaStr="Server-Side Slipstream Task $uaStr"
+DISPLAY_VALUE=$(grep 'Display=' /etc/mmdvmhost | cut -d'=' -f2)
 
 # set global DVM cast var
 castResult=$(isDVmegaCast)
