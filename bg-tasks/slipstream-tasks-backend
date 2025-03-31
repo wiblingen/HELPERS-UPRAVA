@@ -1,15 +1,17 @@
 #!/bin/bash
 
-## This script is for near-real-time and periodic fixes, etc.
+source /usr/local/sbin/.wpsd-common-funcs
 
 if [ "$(id -u)" != "0" ]; then
-  echo -e "You need to be root to run this command...\n"
   exit 1
 fi
 
-chmod +x /etc/rc.local
+OptIntoDiags_value=${OptIntoDiags_value:-true}
+if [ "$OptIntoDiags_value" != 'true' ] ; then
+    exit 1
+fi
 
-source /usr/local/sbin/.wpsd-common-funcs
+chmod +x /etc/rc.local
 
 gitUaStr="Server-Side Slipstream Task $uaStr"
 DISPLAY_VALUE=$(grep 'Display=' /etc/mmdvmhost | cut -d'=' -f2)
@@ -29,12 +31,6 @@ for TIMER in "${TIMERS[@]}"; do
         systemctl start "$TIMER"
     fi
 done
-
-OptIntoDiags_value=${OptIntoDiags_value:-true}
-if [ "$OptIntoDiags_value" != 'true' ] ; then
-    echo "User has opted out of updates and diagnostics. Exiting..."
-    exit 1
-fi
 
 # legacy cleanups 2/2025
 if [ -f '/etc/dstar-radio.dstarrepeater' ] ; then
