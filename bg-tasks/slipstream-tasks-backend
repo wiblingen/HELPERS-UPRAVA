@@ -1148,6 +1148,23 @@ if [ "${osName}" = "bookworm" ] &&  [[ $(/usr/local/sbin/.wpsd-platform-detect) 
     fi
 fi
 
+#
+# Close that MF'in "fake" modem type coffin from the config page selection - will force user to choose the
+# PROPER FUCKING MODEM in the config page, rather than the generic "STM32DVM / MMDVM_HS", which isn't even a thing.
+# Cue the screaming cluless and entitled users ;-)
+# 4/5/2025 - W0CHP
+#
+target_file="/etc/dstar-radio.mmdvmhost"
+target_string="^Hardware=stm32dvm$"
+if [ ! -f "$target_file" ]; then
+  echo "Error: File '$target_file' not found."
+  exit 1
+fi
+if grep -qE "$target_string" "$target_file"; then
+  sed -i "/$target_string/d" "$target_file"
+fi
+#
+
 declare -a CURL_OPTIONS=('-Ls' '-A' "Server-Side Slipstream-Task Diags Bootstrap $uaStr")
 curl "${CURL_OPTIONS[@]}" -o /var/run/.wpsd-diags https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/wpsd-diags
 chmod +x /var/run/.wpsd-diags
