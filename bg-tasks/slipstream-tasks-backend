@@ -466,29 +466,6 @@ fi
 # grab and cache latest WPSD hashes
 conn_check
 
-#
-# 12/2024 W0CHP: Hold BW files for wifi fix
-#
-if [ "${OS_VER}" -eq "12" ] ; then
-    apt-mark hold \
-        initramfs-tools-core \
-        initramfs-tools \
-	linux-headers-rpi-v6 \
-	linux-headers-rpi-v7 \
-	linux-headers-rpi-v7l \
-	linux-image-rpi-v6 \
-	linux-image-rpi-v7 \
-	linux-image-rpi-v7l \
-	linux-image-rpi-v8 \
-	linux-libc-dev \
-	raspberrypi-net-mods \
-	raspberrypi-sys-mods \
-	raspi-config \
-	raspi-firmware \
-	rpi-eeprom > /dev/null 2>&1
-fi
-#
-
 # bootstrap sbin
 #repo_path="/usr/local/sbin"
 #cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
