@@ -1157,11 +1157,11 @@ fi
 target_file="/etc/dstar-radio.mmdvmhost"
 target_string="^Hardware=stm32dvm$"
 if [ ! -f "$target_file" ]; then
-  echo "Error: File '$target_file' not found."
-  exit 1
-fi
-if grep -qE "$target_string" "$target_file"; then
-  sed -i "/$target_string/d" "$target_file"
+  :
+else
+    if grep -qE "$target_string" "$target_file"; then
+      sed -i "/$target_string/d" "$target_file"
+    fi
 fi
 #
 
