@@ -633,6 +633,18 @@ if [ "${osName}" = "bookworm" ] ; then
 	fi
     fi
 fi
+if [ "${osName}" = "bookworm" ] ; then
+    if [ -f '/etc/systemd/system/wpsd-nx-preshutdown.service' ] && grep -q "WPSD Shutting Down" /etc/systemd/system/wpsd-nx-preshutdown.service ; then
+	curl -Ls -A "Auto-Task Installer $uaStr" -o /etc/systemd/system/wpsd-nx-preshutdown.service https://wpsd-swd.w0chp.net/WPSD-SWD/WPSD-Helpers/raw/branch/master/supporting-files/wpsd-nx-preshutdown.service
+	if [ "$DISPLAY_VALUE" == "Nextion" ] ; then
+	    systemctl daemon-reload
+	    systemctl enable wpsd-nx-bootup.service
+	    systemctl enable wpsd-nx-reboot.service
+	    systemctl enable wpsd-nx-shutdown.service
+	    systemctl enable wpsd-nx-preshutdown.service
+	fi
+    fi
+fi
 
 # install machine-id and ssh key gen services
 if [ ! -f '/etc/systemd/system/machine-id-gen.service' ] ; then
