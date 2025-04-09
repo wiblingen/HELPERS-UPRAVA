@@ -8,7 +8,7 @@ RequiresMountsFor=/dev/ttyAMA0
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" "Booting up..." ; /usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t1" "Please wait..."
+ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "t0" "WPSD Booting up..." ; /usr/local/sbin/.wpsd-nextion-text.py "t1" "Please wait..."
 Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
 
 [Install]

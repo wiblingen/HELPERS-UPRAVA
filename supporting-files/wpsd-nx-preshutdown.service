@@ -11,7 +11,7 @@ ConditionPathExists=!/run/systemd/reboot
 Type=oneshot
 RemainAfterExit=yes
 ExecStartPre=/bin/sleep 2
-ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" "Please wait..." ; /usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t1" "Don't remove power..."
+ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "t0" "WPSD Shutting Down..." ; /usr/local/sbin/.wpsd-nextion-text.py "t1" "Don't remove pwr..."
 Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
 
 [Install]

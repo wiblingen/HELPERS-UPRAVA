@@ -9,7 +9,7 @@ Conflicts=reboot.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t0" "Safe to Power Off" ; /usr/local/sbin/.wpsd-nextion-text.py "/dev/ttyAMA0" "t1" "Shutdown Complete"
+ExecStart=/usr/local/sbin/.wpsd-nextion-text.py "t0" "Safe to Power Off" ; /usr/local/sbin/.wpsd-nextion-text.py "t1" "Shutdown Complete"
 Environment=SYSTEMD_INHIBIT_DELAY_MAX_USEC=0
 
 [Install]
