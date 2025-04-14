@@ -13,6 +13,7 @@ fi
 
 chmod +x /etc/rc.local
 
+uaStr=""
 gitUaStr="Server-Side Slipstream Task $uaStr"
 DISPLAY_VALUE=$(grep 'Display=' /etc/mmdvmhost | cut -d'=' -f2)
 

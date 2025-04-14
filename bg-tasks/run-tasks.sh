@@ -6,20 +6,13 @@ if [ ! -f '/etc/WPSD-release' ] ; then
 else
     release_file="/etc/WPSD-release"
 fi
+
 CALL=$( grep "Callsign" "$release_file" | awk '{print $3}' )
-osName=$( lsb_release -cs )
-gitBranch=$(git --work-tree=/var/www/dashboard --git-dir=/var/www/dashboard/.git branch | grep '*' | cut -f2 -d ' ')
-dashVer=$( git --work-tree=/var/www/dashboard --git-dir=/var/www/dashboard/.git rev-parse --short=10 ${gitBranch} )
-UUID=$( grep "UUID" "$release_file" | awk '{print $3}' )
-uuidStr=$(egrep 'UUID' "$release_file" | awk {'print $3'})
-hwDeetz=$( /usr/local/sbin/.wpsd-platform-detect )
-modem=$(grep '^ModemFW\s*=\s*.*' "$release_file" | sed 's/ModemFW = //g')
-modemType=$(grep '^ModemType\s*=\s*.*' "$release_file" | sed 's/ModemType = //g')
-uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task Ver.# ${dashVer} Call:${CALL} UUID:${uuidStr} [${osName} Modem: ${modem} ${modemType}]"
+uaStr="Server-Side Exec: WPSD-BG-Bootstrap-Task"
 
 sudo sed -i '/DEBUG/d' "$release_file"
 
-EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "")
+EXCLUDED_CALLS=("W0CHP" "M1ABC" "N0CALL" "NOCALL" "PE1XYZ" "PE1ABC" "WPSD42")
 if [[ " ${EXCLUDED_CALLS[@]} " =~ " ${CALL} " ]]; then
     exit 1
 fi
