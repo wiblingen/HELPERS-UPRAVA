@@ -13,8 +13,8 @@ fi
 
 chmod +x /etc/rc.local
 
-uaStr=""
-gitUaStr="Server-Side Slipstream Task $uaStr"
+uaStr="Server-Side Slipstream Task"
+gitUaStr="Server-Side Slipstream Task"
 DISPLAY_VALUE=$(grep 'Display=' /etc/mmdvmhost | cut -d'=' -f2)
 
 # set global DVM cast var
