@@ -468,10 +468,10 @@ fi
 conn_check
 
 # bootstrap sbin
-#repo_path="/usr/local/sbin"
-#cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
-#git update-index --assume-unchanged pistar-firewall
-#GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side sbin Update bootstrap ${gitUaStr}" git pull origin master
+repo_path="/usr/local/sbin"
+cd "$repo_path" || { echo "Failed to change directory to $repo_path"; exit 1; }
+git update-index --assume-unchanged pistar-firewall
+GIT_HTTP_CONNECT_TIMEOUT="10" GIT_HTTP_USER_AGENT="Server-Side sbin Update bootstrap ${gitUaStr}" git pull origin master
 
 # DVMega sun8i stuff
 if [[ -f "$armbian_env_file" ]]; then
